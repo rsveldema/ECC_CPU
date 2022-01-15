@@ -4,7 +4,7 @@
 cmake_minimum_required (VERSION 3.12)
 
 # Add source to this project's executable.
-add_library (CoreLib "CoreLib.cpp" "CoreLib.h" "SimComponent.h")
+add_library (CoreLib "CoreLib.cpp" "CoreLib.h" "SimComponent.h" "SimComponent.cpp" "task.h" "ExampleSimComponent.h")
 
 set_property(TARGET CoreLib PROPERTY CXX_STANDARD 20)
 

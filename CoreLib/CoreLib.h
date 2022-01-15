@@ -12,14 +12,20 @@ namespace Simulator
 	class Multiplexer : public SimComponent
 	{
 	public:
-		void run() override
+		Multiplexer(SimComponentRegistry& registry) : SimComponent(registry, "multiplexer")
+		{
+		}
+
+		coro::ReturnObject run() override
 		{
 			while (1)
 			{
-				waitForTick();
+				co_await *this;
+				i++;
 			}
 		}
 	};
+
 
 
 	class FetchToDecodeBus
@@ -37,14 +43,14 @@ namespace Simulator
 		FetchToDecodeBus& decode_bus;
 
 	public:
-		FetchStage(SimComponentRegistry& registry, FetchToDecodeBus& decode_bus) : SimComponent(registry), decode_bus(decode_bus)
+		FetchStage(SimComponentRegistry& registry, FetchToDecodeBus& decode_bus) : SimComponent(registry, "fetch"), decode_bus(decode_bus)
 		{}
 
-		void run() override
+		coro::ReturnObject run() override
 		{
 			while (1)
 			{
-				waitForTick();
+				co_await *this;
 			}
 		}
 	};
@@ -55,14 +61,14 @@ namespace Simulator
 		FetchToDecodeBus& fetch_bus;
 
 	public:
-		DecodeStage(SimComponentRegistry& registry, FetchToDecodeBus& fetch_bus) : SimComponent(registry), fetch_bus(fetch_bus)
+		DecodeStage(SimComponentRegistry& registry, FetchToDecodeBus& fetch_bus) : SimComponent(registry, "decode"), fetch_bus(fetch_bus)
 		{}
 
-		void run() override
+		coro::ReturnObject run() override
 		{
 			while (1)
 			{
-				waitForTick();
+				co_await *this;
 			}
 		}
 
@@ -71,14 +77,14 @@ namespace Simulator
 	class ExecuteStage : public SimComponent
 	{
 	public:
-		ExecuteStage(SimComponentRegistry& registry) : SimComponent(registry)
+		ExecuteStage(SimComponentRegistry& registry) : SimComponent(registry, "execute")
 		{}
 
-		void run() override
+		coro::ReturnObject run() override
 		{
 			while (1)
 			{
-				waitForTick();
+				co_await *this;
 			}
 		}
 
@@ -87,14 +93,14 @@ namespace Simulator
 	class StoreStage : public SimComponent
 	{
 	public:
-		StoreStage(SimComponentRegistry& registry) : SimComponent(registry)
+		StoreStage(SimComponentRegistry& registry) : SimComponent(registry, "storer")
 		{}
 
-		void run() override
+		coro::ReturnObject run() override
 		{
 			while (1)
 			{
-				waitForTick();
+				co_await *this;
 			}
 		}
 	};
@@ -102,6 +108,7 @@ namespace Simulator
 	class Core
 	{
 	private:
+
 		FetchToDecodeBus fetch_decode_bus;
 		FetchStage fetch;
 		DecodeStage decode;
@@ -139,14 +146,16 @@ namespace Simulator
 		MemoryBus& toMemory;
 
 		Cache(SimComponentRegistry& registry,
+			const std::string& name,
 			MemoryBus& toCPU,
-			MemoryBus& toMemory) : SimComponent(registry), toCPU(toCPU), toMemory(toMemory) {}
+			MemoryBus& toMemory) : SimComponent(registry, name), toCPU(toCPU), toMemory(toMemory) {}
 
-		void run() override
+		coro::ReturnObject run() override
 		{
+			std::cerr << "booted: " << name << std::endl;
 			while (1)
 			{
-				waitForTick();
+				co_await *this;
 			}
 		}
 	};
@@ -158,13 +167,13 @@ namespace Simulator
 		std::vector<byte> storage;
 
 		DRAM(SimComponentRegistry& registry,
-			MemoryBus& toCPU) : SimComponent(registry), toCPU(toCPU) {}
+			MemoryBus& toCPU) : SimComponent(registry, "DRAM"), toCPU(toCPU) {}
 
-		void run() override
+		coro::ReturnObject run() override
 		{
 			while (1)
 			{
-				waitForTick();
+				co_await *this;
 			}
 		}
 	};
@@ -204,9 +213,9 @@ namespace Simulator
 		Processor processor;
 
 		Machine(SimComponentRegistry& registry, int num_cores)
-			: L1(registry, core_L1, L1_L2),
-			L2(registry, L1_L2, L2_L3),
-			L3(registry, L2_L3, L3_DRAM),
+			: L1(registry, "L1", core_L1, L1_L2),
+			L2(registry, "L2", L1_L2, L2_L3),
+			L3(registry, "L3", L2_L3, L3_DRAM),
 			dram(registry, L3_DRAM),
 			processor(registry, num_cores)
 		{

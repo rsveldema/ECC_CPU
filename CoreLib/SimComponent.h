@@ -1,5 +1,8 @@
 #pragma once
 
+#include "task.h"
+#include <vector>
+
 namespace Simulator
 {
 	using byte = unsigned char;
@@ -8,7 +11,7 @@ namespace Simulator
 
 	class SimComponentRegistry
 	{
-	private:
+	public:
 		std::vector<SimComponent*> components;
 
 	public:
@@ -17,30 +20,27 @@ namespace Simulator
 			components.push_back(component);
 		}
 
-		void run()
-		{
-
-		}
+		void run();
 	};
 
-	class SimComponent
+	class SimComponent : public coro::Task
 	{
+	private:
+		SimComponentRegistry& registry;
+
 	public:
-		SimComponent(SimComponentRegistry& registry)
+		const std::string name;
+
+	public:
+		SimComponent(SimComponentRegistry& registry, const std::string& name)
+			: registry(registry),
+			name(name)
 		{
 			registry.registerComponent(this);
 		}
 
-		virtual void run() = 0;
+		virtual coro::ReturnObject run() = 0;
 
-		void waitForTick()
-		{
-		}
-
-		void start()
-		{
-
-		}
 	};
 
 

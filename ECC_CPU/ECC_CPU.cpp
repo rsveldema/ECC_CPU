@@ -12,6 +12,8 @@ int main()
 	SimComponentRegistry registry;
 	Machine machine(registry, 1);
 
+	registry.run();
+
 	std::cerr << "finished simulation" << std::endl;
 
 	return 0;
