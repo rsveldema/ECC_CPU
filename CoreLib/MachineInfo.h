@@ -122,6 +122,8 @@ namespace MachineInfo
 
 	};
 
+	static constexpr auto INSTRUCTION_SIZE = 4;
+
 	struct InstructionInfo
 	{
 		const Opcode opcode;

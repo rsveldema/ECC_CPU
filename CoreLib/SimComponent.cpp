@@ -2,7 +2,7 @@
 
 namespace Simulator
 {
-	const int NUM_SIM_STEPS = 4;
+	const int NUM_SIM_STEPS = 40;
 
 	void SimComponentRegistry::run()
 	{

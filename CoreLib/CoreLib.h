@@ -29,60 +29,9 @@ namespace Simulator
 }
 
 #include "FetchDecodeBus.h"
-
-namespace Simulator
-{
-	class DecodeStage : public SimComponent
-	{
-	private:
-		FetchToDecodeBus& fetch_bus;
-
-	public:
-		DecodeStage(SimComponentRegistry& registry, FetchToDecodeBus& fetch_bus) : SimComponent(registry, "decode"), fetch_bus(fetch_bus)
-		{}
-
-		coro::ReturnObject run() override
-		{
-			while (1)
-			{
-				co_await *this;
-			}
-		}
-
-	};
-
-	class ExecuteStage : public SimComponent
-	{
-	public:
-		ExecuteStage(SimComponentRegistry& registry) : SimComponent(registry, "execute")
-		{}
-
-		coro::ReturnObject run() override
-		{
-			while (1)
-			{
-				co_await *this;
-			}
-		}
-
-	};
-
-	class StoreStage : public SimComponent
-	{
-	public:
-		StoreStage(SimComponentRegistry& registry) : SimComponent(registry, "storer")
-		{}
-
-		coro::ReturnObject run() override
-		{
-			while (1)
-			{
-				co_await *this;
-			}
-		}
-	};
-}
-
+#include "DecodeStage.h"
+#include "ExecuteStage.h"
+#include "StoreStage.h"
 
 #include "FetchStage.h"
 
