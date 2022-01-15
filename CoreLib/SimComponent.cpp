@@ -12,6 +12,7 @@ namespace Simulator
 			{
 				for (auto* c : components)
 				{
+					std::cerr << "booted: " << c->name << std::endl;
 					c->run();
 				}
 			}

@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "SimComponent.h"
+#include "MachineInfo.h"
 
 namespace Simulator
 {
@@ -21,40 +22,16 @@ namespace Simulator
 			while (1)
 			{
 				co_await *this;
-				i++;
 			}
 		}
 	};
 
+}
 
+#include "FetchDecodeBus.h"
 
-	class FetchToDecodeBus
-	{
-	public:
-		class Packet
-		{
-
-		};
-	};
-
-	class FetchStage : public SimComponent
-	{
-	private:
-		FetchToDecodeBus& decode_bus;
-
-	public:
-		FetchStage(SimComponentRegistry& registry, FetchToDecodeBus& decode_bus) : SimComponent(registry, "fetch"), decode_bus(decode_bus)
-		{}
-
-		coro::ReturnObject run() override
-		{
-			while (1)
-			{
-				co_await *this;
-			}
-		}
-	};
-
+namespace Simulator
+{
 	class DecodeStage : public SimComponent
 	{
 	private:
@@ -104,96 +81,71 @@ namespace Simulator
 			}
 		}
 	};
+}
 
+
+#include "FetchStage.h"
+
+namespace Simulator
+{
+
+	class RegisterFile
+	{
+	public:
+		int64_t regs[static_cast<int>(MachineInfo::Register::MAX_REG_ID)];
+
+		int64_t& operator [](const MachineInfo::Register& id)
+		{
+			return regs[static_cast<int>(id)];
+		}
+	};
+}
+
+#include "Cache.h"
+
+namespace Simulator
+{
 	class Core
 	{
 	private:
-
+		RegisterFile regs;
 		FetchToDecodeBus fetch_decode_bus;
 		FetchStage fetch;
 		DecodeStage decode;
 		ExecuteStage execute;
 		StoreStage store;
 
+		Cache L1;
+		MemoryBus core_L1;
 	public:
-		Core(SimComponentRegistry& registry)
-			: fetch(registry, fetch_decode_bus),
+		Core(SimComponentRegistry& registry, MemoryBus& memory_bus, MachineInfo::CoreID core_id)
+			: regs{},
+			fetch(registry, fetch_decode_bus, core_L1, MemoryBus::createBusID(core_id, MachineInfo::CoreComponentID::FETCH)),
 			decode(registry, fetch_decode_bus),
 			execute(registry),
-			store(registry)
+			store(registry),
+			L1(registry, "L1", core_L1, memory_bus)
 		{
 		}
 	};
+}
 
-	class MemoryBus
-	{
-	public:
-		class Packet
-		{
-			unsigned address;
-			char payload[16];
-		};
+#include "DRAM.h"
 
-		std::queue<Packet> queue;
-
-		std::unique_ptr<Packet> acceptIncoming();
-	};
-
-	class Cache : public SimComponent
-	{
-	public:
-		MemoryBus& toCPU;
-		MemoryBus& toMemory;
-
-		Cache(SimComponentRegistry& registry,
-			const std::string& name,
-			MemoryBus& toCPU,
-			MemoryBus& toMemory) : SimComponent(registry, name), toCPU(toCPU), toMemory(toMemory) {}
-
-		coro::ReturnObject run() override
-		{
-			std::cerr << "booted: " << name << std::endl;
-			while (1)
-			{
-				co_await *this;
-			}
-		}
-	};
-
-	class DRAM : public SimComponent
-	{
-	public:
-		MemoryBus& toCPU;
-		std::vector<byte> storage;
-
-		DRAM(SimComponentRegistry& registry,
-			MemoryBus& toCPU) : SimComponent(registry, "DRAM"), toCPU(toCPU) {}
-
-		coro::ReturnObject run() override
-		{
-			while (1)
-			{
-				co_await *this;
-			}
-		}
-	};
-
+namespace Simulator
+{
 	class Processor
 	{
 	public:
 		std::vector<std::unique_ptr<Core>> cores;
 
-		Processor(SimComponentRegistry& registry, int num_cores)
+		Processor(SimComponentRegistry& registry, unsigned num_cores, MemoryBus& memory_bus)
 		{
-			for (int i = 0; i < num_cores; i++)
+			for (unsigned i = 0; i < num_cores; i++)
 			{
-				cores.emplace_back(std::make_unique<Core>(registry));
+				cores.emplace_back(std::make_unique<Core>(registry, memory_bus, static_cast<MachineInfo::CoreID>(i)));
 			}
 		}
-	};
-
-	class RegisterFile
-	{
 	};
 
 	class Machine
@@ -201,10 +153,8 @@ namespace Simulator
 	public:
 		MemoryBus L3_DRAM;
 		MemoryBus L2_L3;
-		MemoryBus L1_L2;
-		MemoryBus core_L1;
+		MemoryBus core_to_L2;
 
-		Cache L1;
 		Cache L2;
 		Cache L3;
 
@@ -213,11 +163,11 @@ namespace Simulator
 		Processor processor;
 
 		Machine(SimComponentRegistry& registry, int num_cores)
-			: L1(registry, "L1", core_L1, L1_L2),
-			L2(registry, "L2", L1_L2, L2_L3),
+			:
+			L2(registry, "L2", core_to_L2, L2_L3),
 			L3(registry, "L3", L2_L3, L3_DRAM),
 			dram(registry, L3_DRAM),
-			processor(registry, num_cores)
+			processor(registry, num_cores, core_to_L2)
 		{
 		}
 	};
