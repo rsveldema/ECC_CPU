@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 
 	read_memory_dump(machine, filename);
 
-	registry.run();
+	registry.run(machine);
 
 	std::cerr << "finished simulation" << std::endl;
 

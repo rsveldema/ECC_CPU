@@ -1,13 +1,19 @@
 #include "SimComponent.h"
+#include "CoreLib.h"
 
 namespace Simulator
 {
-	const int NUM_SIM_STEPS = 40;
+	const int NUM_SIM_STEPS = 140;
 
-	void SimComponentRegistry::run()
+	void SimComponentRegistry::run(Machine& machine)
 	{
 		for (int i = 0; i < NUM_SIM_STEPS; i++)
 		{
+			if (machine.hasHalted())
+			{
+				break;
+			}
+
 			if (i == 0)
 			{
 				for (auto* c : components)

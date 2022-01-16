@@ -6,6 +6,7 @@
 namespace Simulator
 {
 	using byte = unsigned char;
+	class Machine;
 
 	class SimComponent;
 
@@ -20,7 +21,7 @@ namespace Simulator
 			components.push_back(component);
 		}
 
-		void run();
+		void run(Machine& machine);
 	};
 
 	class SimComponent : public coro::Task

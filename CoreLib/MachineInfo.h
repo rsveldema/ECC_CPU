@@ -5,6 +5,8 @@
 
 namespace MachineInfo
 {
+	static constexpr unsigned POINTER_SIZE = 8;
+
 	enum class Register
 	{
 		R0,
@@ -25,6 +27,8 @@ namespace MachineInfo
 		MAX_REG_ID
 	};
 
+	static const uint32_t REG_HALT_FLAG = (1 << 0);
+
 	enum class CoreID
 	{
 		Core0,
@@ -44,6 +48,7 @@ namespace MachineInfo
 		EXECUTE,
 		STORE
 	};
+
 
 	enum class Opcode
 	{
@@ -119,7 +124,25 @@ namespace MachineInfo
 
 		RESTORE_PC,     // PC = [rX + offset]
 		MOVE_PCREL_REG_CONST16,
+	};
 
+	enum class ExecuteStageOpcode
+	{
+		NOP,
+		MOVE_REG_VALUE,
+		STORE_ADDR_VALUE,
+		JMP,
+		RESTORE_PC
+	};
+
+	enum class StorageStageOpcode
+	{
+		NOP,
+		RESTORE_PC,
+		STORE_PC,
+		STORE_REG,
+		STORE_MEM,
+		JMP
 	};
 
 	static constexpr auto INSTRUCTION_SIZE = 4;
@@ -129,6 +152,62 @@ namespace MachineInfo
 		const Opcode opcode;
 	};
 
+	struct ExecuteStageInsnInfo
+	{
+		ExecuteStageOpcode opcode;
+	};
+
 	extern std::map<std::string, InstructionInfo> insnInfo;
 	extern std::map<std::string, Register> regnames;
+	extern std::map<std::string, ExecuteStageInsnInfo> execInsnInfo;
+
+	static bool changesControlFlow(Opcode op)
+	{
+		switch (op)
+		{
+		case Opcode::JMP:
+		case Opcode::RESTORE_PC:
+			return true;
+		default:
+			return false;
+		}
+		return false;
+	}
+
+	static std::string to_string(Opcode op)
+	{
+		for (auto it : insnInfo)
+		{
+			if (it.second.opcode == op)
+			{
+				return it.first;
+			}
+		}
+		return "unknown insn";
+	}
+
+
+	static std::string to_string(ExecuteStageOpcode op)
+	{
+		for (auto it : execInsnInfo)
+		{
+			if (it.second.opcode == op)
+			{
+				return it.first;
+			}
+		}
+		return "unknown exec insn";
+	}
+
+	static std::string to_string(StorageStageOpcode op)
+	{
+		switch (op)
+		{
+		case MachineInfo::StorageStageOpcode::NOP: return "nop";
+		case MachineInfo::StorageStageOpcode::STORE_PC: return "store-pc";
+		case MachineInfo::StorageStageOpcode::STORE_REG: return "store_reg";
+		case MachineInfo::StorageStageOpcode::STORE_MEM: return "store_mem";
+		}
+		return "unknown store type";
+	}
 }

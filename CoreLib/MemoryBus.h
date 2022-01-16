@@ -54,6 +54,16 @@ namespace Simulator
 			send_request(pkt);
 		}
 
+		void send_write_request(memory_address_t address,
+			const BusID& source,
+			unsigned size,
+			uint64_t data)
+		{
+			Packet pkt{ Type::write, source, address, size };
+			*reinterpret_cast<uint64_t*>(&pkt.payload) = data;
+			send_request(pkt);
+		}
+
 		void send_read_response(const payload_t& value, const BusID& source, unsigned size)
 		{
 			Packet pkt{ Type::read_response, source, 0, size, value };

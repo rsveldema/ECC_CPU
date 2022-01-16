@@ -35,22 +35,10 @@ namespace Simulator
 
 #include "FetchStage.h"
 
-namespace Simulator
-{
-
-	class RegisterFile
-	{
-	public:
-		int64_t regs[static_cast<int>(MachineInfo::Register::MAX_REG_ID)];
-
-		int64_t& operator [](const MachineInfo::Register& id)
-		{
-			return regs[static_cast<int>(id)];
-		}
-	};
-}
 
 #include "Cache.h"
+#include "DecodeToExecuteBus.h"
+#include "ExecuteToStoreBus.h"
 
 namespace Simulator
 {
@@ -58,9 +46,12 @@ namespace Simulator
 	{
 	private:
 		RegisterFile regs;
+		StoreToFetchBus store_fetch_bus;
 		FetchToDecodeBus fetch_decode_bus;
 		FetchStage fetch;
+		DecodeToExecuteBus decode_execute_bus;
 		DecodeStage decode;
+		ExecuteToStoreBus execute_store_bus;
 		ExecuteStage execute;
 		StoreStage store;
 
@@ -69,12 +60,17 @@ namespace Simulator
 	public:
 		Core(SimComponentRegistry& registry, MemoryBus& memory_bus, MachineInfo::CoreID core_id)
 			: regs{},
-			fetch(registry, fetch_decode_bus, core_L1, MemoryBus::createBusID(core_id, MachineInfo::CoreComponentID::FETCH)),
-			decode(registry, fetch_decode_bus),
-			execute(registry),
-			store(registry),
+			fetch(registry, fetch_decode_bus, core_L1, MemoryBus::createBusID(core_id, MachineInfo::CoreComponentID::FETCH), store_fetch_bus),
+			decode(registry, fetch_decode_bus, decode_execute_bus, regs),
+			execute(registry, decode_execute_bus, execute_store_bus),
+			store(registry, execute_store_bus, memory_bus, regs, MemoryBus::createBusID(core_id, MachineInfo::CoreComponentID::STORE), store_fetch_bus),
 			L1(registry, "L1", core_L1, memory_bus)
 		{
+		}
+
+		bool hasHalted()
+		{
+			return regs.hasHalted();
 		}
 	};
 }
@@ -94,6 +90,18 @@ namespace Simulator
 			{
 				cores.emplace_back(std::make_unique<Core>(registry, memory_bus, static_cast<MachineInfo::CoreID>(i)));
 			}
+		}
+
+		bool hasHalted() const
+		{
+			for (unsigned i = 0; i < cores.size(); i++)
+			{
+				if (cores[i]->hasHalted())
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 	};
 
@@ -118,6 +126,11 @@ namespace Simulator
 			dram(registry, L3_DRAM),
 			processor(registry, num_cores, core_to_L2)
 		{
+		}
+
+		bool hasHalted()
+		{
+			return processor.hasHalted();
 		}
 	};
 }
