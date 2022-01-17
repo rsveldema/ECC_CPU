@@ -12,10 +12,7 @@
 #include "DecodeStage.h"
 #include "ExecuteStage.h"
 #include "StoreStage.h"
-
 #include "FetchStage.h"
-
-
 #include "Cache.h"
 #include "DecodeToExecuteBus.h"
 #include "ExecuteToStoreBus.h"

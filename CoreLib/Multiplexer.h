@@ -6,16 +6,23 @@
 
 namespace Simulator
 {
+	/** @brief N-inputs and 1-output.
+	* When some data comes back up (a reponse), the multiplexer also de-multiplexes to send the reply to
+	* the correct up-stream input.
+	*/
 	class Multiplexer : public SimComponent
 	{
+	public:
+		using demultiplexer_func_t = std::function<bool(MemoryBus::Packet&)>;
+
 	private:
 		MemoryBus& out;
 
-		using demultiplexer_func_t = std::function<bool(MemoryBus::Packet&)>;
-
+		/** @brief N inputs
+		*/
 		struct Input {
 			MemoryBus* bus;
-			demultiplexer_func_t selected;
+			demultiplexer_func_t packetResponseShouldBeSentToThisInput;
 		};
 
 		std::vector<Input> inputs;
@@ -51,15 +58,17 @@ namespace Simulator
 				// in one step, hence no co_await here.
 				if (auto pkt = out.try_accept_response())
 				{
+					bool sent = false;
 					for (auto& in : inputs)
 					{
-						if (in.selected(*pkt))
+						if (in.packetResponseShouldBeSentToThisInput(*pkt))
 						{
+							sent = true;
 							in.bus->send_response(*pkt);
 						}
 					}
+					assert(sent);
 				}
-
 				co_await *this;
 			}
 		}
