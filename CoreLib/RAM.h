@@ -3,21 +3,27 @@
 #include <vector>
 #include "SimComponent.h"
 #include "MemoryBus.h"
-
+#include "RAM_Config.h"
 
 namespace Simulator
 {
-
-	class DRAM : public SimComponent
+	class RAM : public SimComponent
 	{
 	public:
 		MemoryBus& toCPU;
 		std::vector<byte> storage;
+		RAM_Config config;
 
-		DRAM(SimComponentRegistry& registry,
-			MemoryBus& toCPU) : SimComponent(registry, "DRAM"), toCPU(toCPU)
+
+		RAM(SimComponentRegistry& registry,
+			MemoryBus& _toCPU,
+			const RAM_Config& _config)
+
+			: SimComponent(registry, "RAM"),
+			toCPU(_toCPU),
+			config(_config)
 		{
-			storage.resize(1024 * 1024);
+			storage.resize(config.size);
 		}
 
 		coro::ReturnObject run() override;

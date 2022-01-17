@@ -31,16 +31,16 @@ namespace Simulator
 		MemoryBus L1d_multiplexer;
 
 		MemoryBus external_memory_bus;
-
+		MemoryBus idle_core_memory_bus;
 
 	public:
-		Core(SimComponentRegistry& registry, MachineInfo::CoreID core_id)
+		Core(SimComponentRegistry& registry, MachineInfo::CoreID core_id, GlobalStats& stats)
 			: core_logger(MachineInfo::to_string(core_id)),
 			regs{},
-			fetch(registry, fetch_decode_bus, core_L1i, MemoryBus::createBusID(core_id, MachineInfo::CoreComponentID::FETCH), store_fetch_bus),
+			fetch(registry, fetch_decode_bus, core_L1i, MemoryBus::createBusID(core_id, MachineInfo::CoreComponentID::FETCH), store_fetch_bus, stats),
 			decode(registry, fetch_decode_bus, decode_execute_bus, regs, core_logger),
-			execute(registry, decode_execute_bus, execute_store_bus),
-			store(registry, execute_store_bus, core_L1d, regs, MemoryBus::createBusID(core_id, MachineInfo::CoreComponentID::STORE), store_fetch_bus),
+			execute(registry, decode_execute_bus, execute_store_bus, core_logger),
+			store(registry, execute_store_bus, core_L1d, regs, MemoryBus::createBusID(core_id, MachineInfo::CoreComponentID::STORE), store_fetch_bus, core_logger),
 			L1i(registry, "L1i", core_L1i, L1i_multiplexer),
 			L1d(registry, "L1d", core_L1d, L1d_multiplexer),
 			multiplexer(registry, external_memory_bus)
@@ -55,6 +55,10 @@ namespace Simulator
 
 		MemoryBus& getExternalMemoryBus() {
 			return external_memory_bus;
+		}
+
+		MemoryBus& getIdleCoreMemoryBus() {
+			return idle_core_memory_bus;
 		}
 
 		bool hasHalted()

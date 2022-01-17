@@ -49,16 +49,31 @@ int main(int argc, char** argv)
 
 	std::cerr << "starting simulation: " << filename << std::endl;
 
+	GlobalStats globalStats;
 
+	MachineConfig config{
+		.grid_mem_config {
+			.size = 1024 * 1024,
+			.read_latency = Cycles(100),
+			.write_latency = Cycles(100),
+		},
+		.sram_config {
+			.size = 1024,
+			.read_latency = Cycles(10),
+			.write_latency = Cycles(10),
+		},
+		.num_cores = num_cores
+	};
 
-	SimComponentRegistry registry;
-	CoreClusterGrid machine(registry, num_cores);
+	SimComponentRegistry registry(globalStats);
+	CoreClusterGrid machine(registry, config, globalStats);
 
 	read_memory_dump(machine, filename);
 
 	registry.run(machine);
 
 	std::cerr << "finished simulation" << std::endl;
+	globalStats.dump();
 
 	return 0;
 }

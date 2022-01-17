@@ -11,12 +11,15 @@ namespace Simulator
 	private:
 		DecodeToExecuteBus& decode_bus;
 		ExecuteToStoreBus& store_bus;
+		Logger& logger;
 
 	public:
-		ExecuteStage(SimComponentRegistry& registry, DecodeToExecuteBus& _decode_bus, ExecuteToStoreBus& _store_bus)
+		ExecuteStage(SimComponentRegistry& registry, DecodeToExecuteBus& _decode_bus, ExecuteToStoreBus& _store_bus,
+			Logger& _logger)
 			: SimComponent(registry, "execute"),
 			decode_bus(_decode_bus),
-			store_bus(_store_bus)
+			store_bus(_store_bus),
+			logger(_logger)
 		{}
 
 		coro::ReturnObject run() override;

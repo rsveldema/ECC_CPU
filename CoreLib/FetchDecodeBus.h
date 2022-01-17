@@ -30,6 +30,11 @@ namespace Simulator
 			return v;
 		}
 
+		bool is_busy() const
+		{
+			return queue.size() > 0;
+		}
+
 		std::queue<Packet> queue;
 	};
 }

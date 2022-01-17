@@ -19,6 +19,11 @@ namespace Simulator
 				co_await *this;
 			}
 
+			while (decode_bus.is_busy())
+			{
+				co_await *this;
+			}
+
 			unsigned size = MachineInfo::INSTRUCTION_SIZE; // 32 bit fixed width insns
 			memory_bus.send_read_request(fetch_PC, memory_bus_id, size);
 
@@ -48,6 +53,7 @@ namespace Simulator
 				}
 				else
 				{
+					stats.waitForInsnFetch++;
 					co_await *this;
 				}
 			}

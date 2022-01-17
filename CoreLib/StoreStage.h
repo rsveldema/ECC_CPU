@@ -17,6 +17,7 @@ namespace Simulator
 		ExecuteToStoreBus& execute_bus;
 		MemoryBus::BusID memory_bus_id;
 		StoreToFetchBus& fetch_bus;
+		Logger& logger;
 
 	public:
 		StoreStage(SimComponentRegistry& registry,
@@ -24,14 +25,16 @@ namespace Simulator
 			MemoryBus& _memory_bus,
 			RegisterFile& _regs,
 			MemoryBus::BusID bus_id,
-			StoreToFetchBus& _fetch_bus)
+			StoreToFetchBus& _fetch_bus,
+			Logger& _logger)
 
 			: SimComponent(registry, "storer"),
 			execute_bus(_execute_bus),
 			memory_bus(_memory_bus),
 			regs(_regs),
 			memory_bus_id(bus_id),
-			fetch_bus(_fetch_bus)
+			fetch_bus(_fetch_bus),
+			logger(_logger)
 		{}
 
 		coro::ReturnObject run() override;

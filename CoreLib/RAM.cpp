@@ -1,9 +1,9 @@
-#include "DRAM.h"
+#include "RAM.h"
 
 namespace Simulator
 {
 
-	coro::ReturnObject DRAM::run()
+	coro::ReturnObject RAM::run()
 	{
 		while (1)
 		{
@@ -23,6 +23,11 @@ namespace Simulator
 
 					std::copy(storage.begin() + address, storage.begin() + address + pkt.size, value.begin());
 
+					for (uint64_t i = 0; i < config.read_latency.cycles; i++)
+					{
+						co_await *this;
+					}
+
 					toCPU.send_read_response(value, pkt.source, pkt.size);
 					break;
 				}
@@ -32,6 +37,11 @@ namespace Simulator
 					const auto address = pkt.address;
 					assert(address >= 0);
 					assert(address < (storage.size() - 8));
+
+					for (uint64_t i = 0; i < config.write_latency.cycles; i++)
+					{
+						co_await *this;
+					}
 
 					std::copy(pkt.payload.begin(), pkt.payload.end(), storage.begin() + address);
 					break;

@@ -17,7 +17,7 @@
 #include "DecodeToExecuteBus.h"
 #include "ExecuteToStoreBus.h"
 #include "Core.h"
-#include "DRAM.h"
+#include "RAM.h"
 #include "CoreCluster.h"
 #include "CoreClusterGrid.h"
 
