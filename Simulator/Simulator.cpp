@@ -13,7 +13,7 @@ void Usage()
 }
 
 
-void read_memory_dump(Machine& machine, const std::string& filename)
+void read_memory_dump(CoreClusterGrid& machine, const std::string& filename)
 {
 	std::fstream f;
 	f.open(filename, std::ios::binary | std::ios::in);
@@ -48,7 +48,7 @@ int main(int argc, char** argv)
 	std::cerr << "starting simulation: " << filename << std::endl;
 
 	SimComponentRegistry registry;
-	Machine machine(registry, 1);
+	CoreClusterGrid machine(registry, 1);
 
 	read_memory_dump(machine, filename);
 

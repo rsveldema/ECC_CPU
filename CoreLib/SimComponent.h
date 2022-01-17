@@ -1,28 +1,13 @@
 #pragma once
 
 #include "task.h"
-#include <vector>
+
+#include "SimComponentRegistry.h"
 
 namespace Simulator
 {
 	using byte = unsigned char;
-	class Machine;
 
-	class SimComponent;
-
-	class SimComponentRegistry
-	{
-	public:
-		std::vector<SimComponent*> components;
-
-	public:
-		void registerComponent(SimComponent* component)
-		{
-			components.push_back(component);
-		}
-
-		void run(Machine& machine);
-	};
 
 	class SimComponent : public coro::Task
 	{

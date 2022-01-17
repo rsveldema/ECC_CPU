@@ -5,7 +5,7 @@ namespace Simulator
 {
 	const int NUM_SIM_STEPS = 140;
 
-	void SimComponentRegistry::run(Machine& machine)
+	void SimComponentRegistry::run(CoreClusterGrid& machine)
 	{
 		for (int i = 0; i < NUM_SIM_STEPS; i++)
 		{
