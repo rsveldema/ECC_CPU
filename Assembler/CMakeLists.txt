@@ -8,6 +8,8 @@ add_executable (Assembler "Assembler.cpp" "Assembler.h" "parser.cpp" "Jmp.h" "In
 
 target_link_libraries(Assembler LINK_PUBLIC CoreLib) 
 
-set_property(TARGET Assembler PROPERTY CXX_STANDARD 20)
+
+target_compile_features(Assembler PRIVATE cxx_std_20)
+#set_property(TARGET Assembler PROPERTY CXX_STANDARD 20)
 
 # TODO: Add tests and install targets if needed.

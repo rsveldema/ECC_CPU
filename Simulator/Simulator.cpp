@@ -1,7 +1,7 @@
 ﻿// ECC_CPU.cpp : Defines the entry point for the application.
 //
 
-#include "ECC_CPU.h"
+#include "Simulator.h"
 
 #include <fstream>
 
