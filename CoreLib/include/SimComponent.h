@@ -1,6 +1,6 @@
 #pragma once
 
-#include "task.h"
+#include "Task.h"
 
 #include "SimComponentRegistry.h"
 

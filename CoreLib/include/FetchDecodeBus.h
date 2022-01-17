@@ -16,6 +16,7 @@ namespace Simulator
 
 		void send(const Packet& pkt)
 		{
+			assert(!is_busy());
 			queue.push(pkt);
 		}
 

@@ -15,7 +15,10 @@ The CPU architecture is:
       - run microcode on memory fetch latency
       - virtual memory support / memory mapping
       - shared memory between cores
-      - 
-   
-   Best Regards,
-   Ronald.
+     
+
+The idea behind running code on fetch misses is to allow the CPU
+to perform intelligent/application dependent prefetching
+and task switching.
+
+
