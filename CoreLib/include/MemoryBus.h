@@ -29,7 +29,7 @@ namespace Simulator
 			write_response
 		};
 
-		using payload_t = std::array<byte, 16>;
+		using payload_t = std::array<uint8_t, 16>;
 
 		struct Packet
 		{

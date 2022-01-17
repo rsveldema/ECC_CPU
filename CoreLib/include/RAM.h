@@ -11,7 +11,7 @@ namespace Simulator
 	{
 	public:
 		MemoryBus& toCPU;
-		std::vector<byte> storage;
+		std::vector<uint8_t> storage;
 		RAM_Config config;
 
 

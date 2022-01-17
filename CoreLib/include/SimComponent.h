@@ -6,9 +6,6 @@
 
 namespace Simulator
 {
-	using byte = unsigned char;
-
-
 	class SimComponent : public coro::Task
 	{
 	private:
