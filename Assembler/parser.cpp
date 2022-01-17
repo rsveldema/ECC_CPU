@@ -2,6 +2,7 @@
 #include <sstream>
 #include <string>
 #include <cctype>
+#include <climits>
 
 #include "Assembler.h"
 
