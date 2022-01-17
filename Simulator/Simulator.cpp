@@ -9,7 +9,7 @@ using namespace Simulator;
 
 void Usage()
 {
-	std::cerr << "USAGE: sim <memorydump.bin>" << std::endl;
+	std::cerr << "USAGE: sim <memorydump.bin> <num_cores>" << std::endl;
 }
 
 
@@ -37,7 +37,7 @@ void read_memory_dump(CoreClusterGrid& machine, const std::string& filename)
 
 int main(int argc, char** argv)
 {
-	if (argc != 2)
+	if (argc != 3)
 	{
 		Usage();
 		return -1;
@@ -45,10 +45,14 @@ int main(int argc, char** argv)
 
 	std::string filename(argv[1]);
 
+	unsigned num_cores = std::stoi(argv[2]);
+
 	std::cerr << "starting simulation: " << filename << std::endl;
 
+
+
 	SimComponentRegistry registry;
-	CoreClusterGrid machine(registry, 1);
+	CoreClusterGrid machine(registry, num_cores);
 
 	read_memory_dump(machine, filename);
 

@@ -5,6 +5,8 @@ namespace Simulator
 	class Core
 	{
 	private:
+		Logger core_logger;
+
 		RegisterFile regs;
 		StoreToFetchBus store_fetch_bus;
 		FetchToDecodeBus fetch_decode_bus;
@@ -30,11 +32,13 @@ namespace Simulator
 
 		MemoryBus external_memory_bus;
 
+
 	public:
 		Core(SimComponentRegistry& registry, MachineInfo::CoreID core_id)
-			: regs{},
+			: core_logger(MachineInfo::to_string(core_id)),
+			regs{},
 			fetch(registry, fetch_decode_bus, core_L1i, MemoryBus::createBusID(core_id, MachineInfo::CoreComponentID::FETCH), store_fetch_bus),
-			decode(registry, fetch_decode_bus, decode_execute_bus, regs),
+			decode(registry, fetch_decode_bus, decode_execute_bus, regs, core_logger),
 			execute(registry, decode_execute_bus, execute_store_bus),
 			store(registry, execute_store_bus, core_L1d, regs, MemoryBus::createBusID(core_id, MachineInfo::CoreComponentID::STORE), store_fetch_bus),
 			L1i(registry, "L1i", core_L1i, L1i_multiplexer),

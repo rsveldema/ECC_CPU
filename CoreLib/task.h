@@ -7,6 +7,8 @@
 
 namespace coro
 {
+	/** C++ coroutines require the return type to hold a nested promise_type.
+	*/
 	struct ReturnObject {
 		struct promise_type {
 			ReturnObject get_return_object() { return {}; }
@@ -18,7 +20,9 @@ namespace coro
 	};
 
 
-
+	/** active components (simulated things that do stuff)
+	* should inherit from this so that we can semi-parallel execute them using co-routines.
+	*/
 	class Task
 	{
 	public:

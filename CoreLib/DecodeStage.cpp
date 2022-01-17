@@ -15,7 +15,7 @@ namespace Simulator
 				auto PC = pkt.PC;
 				auto opcode = (MachineInfo::Opcode)(pkt.insn & 0xff);
 
-				std::cerr << "[DECODE " << std::to_string(PC) << "] exec: " << MachineInfo::to_string(opcode) << std::endl;
+				logger.debug("DECODE[" + std::to_string(PC) + "] exec: " + MachineInfo::to_string(opcode));
 
 				switch (opcode)
 				{

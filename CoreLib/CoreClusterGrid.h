@@ -14,9 +14,9 @@ namespace Simulator
 
 		DRAM dram;
 
-		Processor processor;
+		CoreCluster processor;
 
-		CoreClusterGrid(SimComponentRegistry& registry, int num_cores)
+		CoreClusterGrid(SimComponentRegistry& registry, unsigned num_cores)
 			:
 			L2(registry, "L2", core_to_L2, L2_L3),
 			L3(registry, "L3", L2_L3, L3_DRAM),

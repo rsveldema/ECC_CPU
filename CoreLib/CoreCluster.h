@@ -2,15 +2,15 @@
 
 namespace Simulator
 {
-	class Processor
+	class CoreCluster
 	{
 	public:
 		std::vector<std::unique_ptr<Core>> cores;
 
 		Multiplexer multiplexer;
 
-		Processor(SimComponentRegistry& registry, unsigned num_cores, MemoryBus& memory_bus)
-			: multiplexer(registry, memory_bus)
+		CoreCluster(SimComponentRegistry& registry, unsigned num_cores, MemoryBus& _memory_bus)
+			: multiplexer(registry, _memory_bus)
 		{
 			for (unsigned i = 0; i < num_cores; i++)
 			{

@@ -210,4 +210,9 @@ namespace MachineInfo
 		}
 		return "unknown store type";
 	}
+
+	static std::string to_string(MachineInfo::CoreID core_id)
+	{
+		return "core[" + std::to_string((int)core_id) + "]";
+	}
 }
