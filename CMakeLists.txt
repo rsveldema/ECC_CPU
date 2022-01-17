@@ -8,6 +8,6 @@ project ("ECC_CPU")
 # Include sub-projects.
 add_subdirectory ("CoreLib")
 add_subdirectory ("Assembler")
-add_subdirectory ("ECC_CPU")
+add_subdirectory ("Simulator")
 
 
