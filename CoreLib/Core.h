@@ -39,10 +39,10 @@ namespace Simulator
 			L1d(registry, "L1d", core_L1d, L1d_multiplexer),
 			multiplexer(registry, _memory_bus)
 		{
-			multiplexer.addInput(&L1i_multiplexer, [](MemoryBus::Packet& p) {
+			multiplexer.addInput(&L1i_multiplexer, [](const MemoryBus::Packet& p) {
 				return p.source.within_core_id == MachineInfo::CoreComponentID::FETCH;
 				});
-			multiplexer.addInput(&L1d_multiplexer, [](MemoryBus::Packet& p) {
+			multiplexer.addInput(&L1d_multiplexer, [](const MemoryBus::Packet& p) {
 				return p.source.within_core_id == MachineInfo::CoreComponentID::STORE;
 				});
 		}

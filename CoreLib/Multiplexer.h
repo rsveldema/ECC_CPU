@@ -11,9 +11,11 @@ namespace Simulator
 	private:
 		MemoryBus& out;
 
+		using demultiplexer_func_t = std::function<bool(MemoryBus::Packet&)>;
+
 		struct Input {
 			MemoryBus* bus;
-			std::function<bool(MemoryBus::Packet&)> selected;
+			demultiplexer_func_t selected;
 		};
 
 		std::vector<Input> inputs;
@@ -26,7 +28,7 @@ namespace Simulator
 		{
 		}
 
-		void addInput(MemoryBus* input, std::function<bool(MemoryBus::Packet&)> func)
+		void addInput(MemoryBus* input, demultiplexer_func_t func)
 		{
 			inputs.push_back(Input{ input, func });
 		}
