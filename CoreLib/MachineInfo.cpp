@@ -25,7 +25,7 @@ namespace MachineInfo
 		{"move_r0_cb", { Opcode::OR_R0_CONST_24B}},   // r0 |= CONST << 24 bit
 		{"move_r0_cc", { Opcode::OR_R0_CONST_24C}},   // r0 |= CONST << 48 (64 - 48 = 16 bits)
 
-		{"load_r2r", { Opcode::LOAD_REG_REG}},        // rX = [rY + offset] 
+		{"load_rcr", { Opcode::LOAD_REG_CONST_REG}},        // rX = [rY + offset] 
 		{"store_rcr", { Opcode::STORE_REG_CONST_REG}}, // [rY + offset] = rX
 
 		{"cmpn_reg_reg", { Opcode::CMP8_REG_REG}},         // flags = rX <> rY
@@ -80,7 +80,7 @@ namespace MachineInfo
 
 		{"jmp", { Opcode::JMP}},         // PC += CONST 
 
-		{"restore_pc", { Opcode::RESTORE_PC}},     // PC = [rX + offset]
+		{"restore_pc", { Opcode::LOAD_RESTORE_PC}},     // PC = [rX + offset]
 		{"move_pcrel", { Opcode::MOVE_PCREL_REG_CONST16}}
 	};
 
@@ -96,6 +96,7 @@ namespace MachineInfo
 		{ "%r8", Register::R8 },
 		{ "%sp", Register::SP },
 		{ "%flags", Register::FLAGS },
+		{ "%pc", Register::PC },
 	};
 
 }

@@ -68,7 +68,8 @@ namespace {
 		ADD,
 		JMP,
 		STORE,
-		RESTORE_PC
+		LOAD_RESTORE_PC,
+		LOAD
 	};
 
 	Mnemonic stringToOpcode(const std::string& opcodeName, const SourcePosition& pos)
@@ -89,12 +90,15 @@ namespace {
 			return Mnemonic::JMP;
 
 		if (opcodeName == "restorepc")
-			return Mnemonic::RESTORE_PC;
+			return Mnemonic::LOAD_RESTORE_PC;
 
 		if (opcodeName == "store")
 			return Mnemonic::STORE;
 
-		pos.error("unrecognized insn: " + opcodeName);
+		if (opcodeName == "load")
+			return Mnemonic::LOAD;
+
+		pos.error("unrecognized insn in string2opcode: " + opcodeName);
 		return Mnemonic::NOP;
 	}
 }
@@ -244,7 +248,18 @@ void Program::parseLine(const Line& line, const SourcePosition& pos)
 		break;
 	}
 
-	case Mnemonic::RESTORE_PC:
+	case Mnemonic::LOAD:
+	{
+		auto dest_reg = getRegisterID(toks[1]);
+		auto src_memory_access = parse_memory_access(toks[2]);
+
+		//  0(%sp), %r0
+
+		Add(new LoadRegister(dest_reg, src_memory_access.base_reg, src_memory_access.offset));
+		break;
+	}
+
+	case Mnemonic::LOAD_RESTORE_PC:
 	{
 		auto memory_access = parse_memory_access(toks[1]);
 		Add(new RestorePC(memory_access.base_reg, memory_access.offset));

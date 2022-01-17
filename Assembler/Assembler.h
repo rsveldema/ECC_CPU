@@ -15,6 +15,7 @@
 #include "MoveRegReg.h"
 #include "RestorePC.h"
 #include "StoreRegister.h"
+#include "LoadRegister.h"
 #include "MoveRegSymbol.h"
 
 class Line

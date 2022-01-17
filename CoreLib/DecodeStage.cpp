@@ -113,14 +113,32 @@ namespace Simulator
 					break;
 				}
 
-				case MachineInfo::Opcode::RESTORE_PC:
+				case MachineInfo::Opcode::LOAD_RESTORE_PC:
 				{
 					auto base = static_cast<MachineInfo::Register>((pkt.insn >> 8) & 0xff);
 					auto off1 = static_cast<int16_t>(pkt.insn >> 16);
 
 					auto off2 = regs[base];
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::RESTORE_PC,
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::LOAD_RESTORE_PC,
+							(int64_t)off1,
+							(int64_t)off2,
+					};
+					execute_bus.send(execute_pkt);
+					break;
+				}
+
+
+				case MachineInfo::Opcode::LOAD_REG_CONST_REG:
+				{
+					auto dest = static_cast<MachineInfo::Register>((pkt.insn >> 8) & 0xff);
+					auto base = static_cast<MachineInfo::Register>((pkt.insn >> 16) & 0xff);
+					auto off1 = static_cast<int16_t>(pkt.insn >> 24);
+
+					auto off2 = regs[base];
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::LOAD_REG,
+							(int64_t)dest,
 							(int64_t)off1,
 							(int64_t)off2,
 					};

@@ -8,6 +8,10 @@ MAIN:
 	mov %r1, 1
 	add %r2, %r3, %r1
 
+	mov %r4, 512
+	store 8(%sp), %r4
+	load %r4, 8(%sp)
+
 	# call bar
 	add %sp, %sp, -40
 	mov %r0, retlabel

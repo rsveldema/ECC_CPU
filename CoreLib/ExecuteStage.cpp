@@ -44,18 +44,39 @@ namespace Simulator
 					break;
 				}
 
-				case MachineInfo::ExecuteStageOpcode::RESTORE_PC:
+				case MachineInfo::ExecuteStageOpcode::LOAD_RESTORE_PC:
 				{
 					int64_t off1 = pkt.dest;
 					int64_t off2 = pkt.value1;
 
 					auto offset = off1 + off2;
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::RESTORE_PC, offset, 0 };
+					auto dest = MachineInfo::Register::PC;
+
+					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::LOAD_REG,
+						(int64_t)dest, offset, 0 };
+					store_pkt.is_store_to_pc = true;
 
 					store_bus.send(store_pkt);
 					break;
 				}
+
+				case MachineInfo::ExecuteStageOpcode::LOAD_REG:
+				{
+					auto dest = pkt.dest;
+					int64_t off1 = pkt.value1;
+					int64_t off2 = pkt.value2;
+
+					auto offset = off1 + off2;
+
+					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::LOAD_REG,
+						dest, offset };
+
+					store_bus.send(store_pkt);
+					break;
+				}
+
+
 
 
 				case MachineInfo::ExecuteStageOpcode::JMP:

@@ -15,6 +15,7 @@ namespace Simulator
 			MachineInfo::StorageStageOpcode opcode;
 			int64_t dest;
 			int64_t value;
+			bool is_store_to_pc = false;
 		};
 
 		void send(const Packet& pkt)

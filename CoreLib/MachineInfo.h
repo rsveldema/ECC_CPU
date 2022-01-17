@@ -24,6 +24,8 @@ namespace MachineInfo
 		SP,
 		FLAGS,
 
+		PC,
+
 		MAX_REG_ID
 	};
 
@@ -67,8 +69,8 @@ namespace MachineInfo
 		OR_R0_CONST_24B,   // r0 |= CONST << 24 bit
 		OR_R0_CONST_24C,   // r0 |= CONST << 48 (64 - 48 = 16 bits)
 
-		LOAD_REG_REG,        // rX = [rY + offset] 
-		STORE_REG_CONST_REG, // [rY + offset] = rX
+		LOAD_REG_CONST_REG,       // rX = [rY + offset] 
+		STORE_REG_CONST_REG,  // [rY + offset] = rX
 
 		CMP8_REG_REG,         // flags = rX <> rY
 		CMP16_REG_REG,        // flags = rX <> rY
@@ -122,7 +124,7 @@ namespace MachineInfo
 
 		JMP,         // PC += CONST 
 
-		RESTORE_PC,     // PC = [rX + offset]
+		LOAD_RESTORE_PC,     // PC = [rX + offset]
 		MOVE_PCREL_REG_CONST16,
 	};
 
@@ -132,17 +134,18 @@ namespace MachineInfo
 		MOVE_REG_VALUE,
 		STORE_ADDR_VALUE,
 		JMP,
-		RESTORE_PC
+		LOAD_RESTORE_PC,
+		LOAD_REG
 	};
 
 	enum class StorageStageOpcode
 	{
 		NOP,
-		RESTORE_PC,
 		STORE_PC,
 		STORE_REG,
 		STORE_MEM,
-		JMP
+		JMP,
+		LOAD_REG
 	};
 
 	static constexpr auto INSTRUCTION_SIZE = 4;
@@ -166,12 +169,24 @@ namespace MachineInfo
 		switch (op)
 		{
 		case Opcode::JMP:
-		case Opcode::RESTORE_PC:
+		case Opcode::LOAD_RESTORE_PC:
 			return true;
 		default:
 			return false;
 		}
 		return false;
+	}
+
+	static std::string to_string(Register r)
+	{
+		for (auto it : regnames)
+		{
+			if (it.second == r)
+			{
+				return it.first;
+			}
+		}
+		return "unknown_register?";
 	}
 
 	static std::string to_string(Opcode op)

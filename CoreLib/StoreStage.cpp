@@ -32,6 +32,7 @@ namespace Simulator
 					abort();
 					break;
 				}
+
 				case MachineInfo::StorageStageOpcode::STORE_REG:
 				{
 					assert(pkt.dest >= 0);
@@ -42,30 +43,45 @@ namespace Simulator
 					break;
 				}
 
-				case MachineInfo::StorageStageOpcode::RESTORE_PC:
+				case MachineInfo::StorageStageOpcode::LOAD_REG:
 				{
-					auto restore_address = pkt.dest;
+					auto is_store_to_pc = pkt.is_store_to_pc;
+					assert(pkt.dest >= 0);
+					assert(pkt.dest < (int)MachineInfo::Register::MAX_REG_ID);
+					auto src = static_cast<MachineInfo::Register>(pkt.dest);
+					auto addr = pkt.value;
 
-					memory_bus.send_read_request(restore_address, memory_bus_id, MachineInfo::POINTER_SIZE);
+					memory_bus.send_read_request(addr, memory_bus_id, MachineInfo::POINTER_SIZE);
 
 					while (1)
 					{
 						if (auto new_pc_pkt_opt = memory_bus.try_accept_response())
 						{
 							auto new_pc_pkt = *new_pc_pkt_opt;
-							auto new_address = *(int64_t*)&new_pc_pkt.payload[0];
+							auto value = *(int64_t*)&new_pc_pkt.payload[0];
 
-							assert((new_address % 4) == 0);
+							regs[src] = value;
 
-							fetch_bus.send(StoreToFetchBus::Packet{ new_address });
+							//std::cerr << "REG[" << MachineInfo::to_string(src) << "] = " << std::to_string(value) << std::endl;
+
+							if (is_store_to_pc)
+							{
+								fetch_bus.send(StoreToFetchBus::Packet{ value });
+							}
 							break;
+						}
+						else
+						{
+							stats.waitForOperandFetch++;
 						}
 
 						co_await *this;
 					}
 
+
 					break;
 				}
+
 
 				case MachineInfo::StorageStageOpcode::JMP:
 				{

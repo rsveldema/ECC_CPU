@@ -10,10 +10,14 @@ struct GlobalStats
 
 	Cycles numCyclesUsed;
 
+	Cycles waitForOperandFetch;
+
 
 	void dump()
 	{
-		std::cout << "TOOK " << std::to_string(numCyclesUsed.cycles) << std::endl;
-		std::cout << "#wait cycles in fetch-insn: " << std::to_string(waitForInsnFetch.cycles) << std::endl;
+		std::cout << "-----------------<<[  Stats ]>>------------------" << std::endl;
+		std::cout << "Total #cycles                   : " << std::to_string(numCyclesUsed.cycles) << std::endl;
+		std::cout << "wait #wait cycles in fetch-insn : " << std::to_string(waitForInsnFetch.cycles) << std::endl;
+		std::cout << "wait #wait cycles in fetch-op   : " << std::to_string(waitForOperandFetch.cycles) << std::endl;
 	}
 };

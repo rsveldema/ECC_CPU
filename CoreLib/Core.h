@@ -40,7 +40,7 @@ namespace Simulator
 			fetch(registry, fetch_decode_bus, core_L1i, MemoryBus::createBusID(core_id, MachineInfo::CoreComponentID::FETCH), store_fetch_bus, stats),
 			decode(registry, fetch_decode_bus, decode_execute_bus, regs, core_logger),
 			execute(registry, decode_execute_bus, execute_store_bus, core_logger),
-			store(registry, execute_store_bus, core_L1d, regs, MemoryBus::createBusID(core_id, MachineInfo::CoreComponentID::STORE), store_fetch_bus, core_logger),
+			store(registry, execute_store_bus, core_L1d, regs, MemoryBus::createBusID(core_id, MachineInfo::CoreComponentID::STORE), store_fetch_bus, core_logger, stats),
 			L1i(registry, "L1i", core_L1i, L1i_multiplexer),
 			L1d(registry, "L1d", core_L1d, L1d_multiplexer),
 			multiplexer(registry, external_memory_bus)

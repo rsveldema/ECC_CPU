@@ -20,7 +20,7 @@ namespace Insns
 
 		uint32_t getEncodedInstruction() override
 		{
-			return ((uint32_t)MachineInfo::Opcode::RESTORE_PC) | ((uint32_t)reg << 8) | ((uint32_t)offset << 16);
+			return ((uint32_t)MachineInfo::Opcode::LOAD_RESTORE_PC) | ((uint32_t)reg << 8) | ((uint32_t)offset << 16);
 		}
 
 
