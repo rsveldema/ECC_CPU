@@ -27,7 +27,7 @@ namespace Simulator
 				if (auto response = memory_bus.try_accept_response())
 				{
 					auto* ptr = response->payload.data();
-					///std::cerr << "received response: " << ptr << std::endl;
+					//std::cerr << "received response: " << ptr << std::endl;
 
 					uint32_t insn = *reinterpret_cast<uint32_t*>(ptr);
 
