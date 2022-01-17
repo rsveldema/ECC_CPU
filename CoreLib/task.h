@@ -22,6 +22,8 @@ namespace coro
 
 	/** active components (simulated things that do stuff)
 	* should inherit from this so that we can semi-parallel execute them using co-routines.
+	*  - When calling 'co_await *this', it calls await_resume() and then suspends itself.
+	*  - when calling 'resume()' the coroutine is restarted (=called).
 	*/
 	class Task
 	{
