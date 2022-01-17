@@ -4,12 +4,12 @@
 cmake_minimum_required (VERSION 3.15)
 
 # Add source to this project's executable.
-add_library (CoreLib  "CoreLib.h" "SimComponent.h" "SimComponentRegistry.cpp" "Task.h" "ExampleSimComponent.h" "MachineInfo.h" "FetchStage.cpp" "FetchStage.h" "MemoryBus.h" "FetchDecodeBus.h" "Cache.h" "RAM.h" "RAM.cpp" "MachineInfo.cpp" "DecodeStage.h" "DecodeStage.cpp" "ExecuteStage.h" "StoreStage.h" "ExecuteStage.cpp" "StoreStage.cpp" "RegisterFile.h" "DecodeToExecuteBus.h" "ExecuteToStoreBus.h" "StoreToFetchBus.h" "Multiplexer.h" "Core.h" "CoreCluster.h" "CoreClusterGrid.h" "SimComponentRegistry.h" "Logger.h" "Stats.h" "MachineConfig.h" "units.h" "RAM_Config.h")
+add_library (CoreLib  "include/CoreLib.h" "include/SimComponent.h" "SimComponentRegistry.cpp" "include/Task.h" "include/ExampleSimComponent.h" "include/MachineInfo.h" "FetchStage.cpp" "include/FetchStage.h" "include/MemoryBus.h" "include/FetchDecodeBus.h" "include/Cache.h" "include/RAM.h" "RAM.cpp" "MachineInfo.cpp" "include/DecodeStage.h" "include/DecodeStage.cpp" "include/ExecuteStage.h" "include/StoreStage.h" "include/ExecuteStage.cpp" "StoreStage.cpp" "include/RegisterFile.h" "include/DecodeToExecuteBus.h" "include/ExecuteToStoreBus.h" "include/StoreToFetchBus.h" "include/Multiplexer.h" "include/Core.h" "include/CoreCluster.h" "include/CoreClusterGrid.h" "include/SimComponentRegistry.h" "include/Logger.h" "include/Stats.h" "include/MachineConfig.h" "include/units.h" "include/RAM_Config.h")
 
 target_compile_features(CoreLib PUBLIC cxx_std_20)
 
 #set_property(TARGET CoreLib PROPERTY CXX_STANDARD 20)
 
-target_include_directories (CoreLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories (CoreLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # TODO: Add tests and install targets if needed.
