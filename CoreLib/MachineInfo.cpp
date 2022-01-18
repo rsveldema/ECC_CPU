@@ -61,19 +61,19 @@ namespace MachineInfo
 		{"move_pcrel", { Opcode::MOVE_PCREL_REG_CONST16}}
 	};
 
-	std::map<std::string, Register> regnames{
-		{ "%r0", Register::R0 },
-		{ "%r1", Register::R1 },
-		{ "%r2", Register::R2 },
-		{ "%r3", Register::R3 },
-		{ "%r4", Register::R4 },
-		{ "%r5", Register::R5 },
-		{ "%r6", Register::R6 },
-		{ "%r7", Register::R7 },
-		{ "%r8", Register::R8 },
-		{ "%sp", Register::SP },
-		{ "%flags", Register::FLAGS },
-		{ "%pc", Register::PC },
+	std::map<std::string, RegisterID> regnames{
+		{ "%r0", RegisterID::R0 },
+		{ "%r1", RegisterID::R1 },
+		{ "%r2", RegisterID::R2 },
+		{ "%r3", RegisterID::R3 },
+		{ "%r4", RegisterID::R4 },
+		{ "%r5", RegisterID::R5 },
+		{ "%r6", RegisterID::R6 },
+		{ "%r7", RegisterID::R7 },
+		{ "%r8", RegisterID::R8 },
+		{ "%sp", RegisterID::SP },
+		{ "%flags", RegisterID::FLAGS },
+		{ "%pc", RegisterID::PC },
 	};
 
 }

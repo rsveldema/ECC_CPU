@@ -34,7 +34,7 @@ namespace Simulator
 				if (auto response = memory_bus.try_accept_response())
 				{
 					auto* ptr = response->payload.data();
-					std::cerr << "received response for address " << fetch_PC << std::endl;
+					//std::cerr << "received response for address " << fetch_PC << std::endl;
 
 					uint32_t insn = *reinterpret_cast<uint32_t*>(ptr);
 

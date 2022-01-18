@@ -8,12 +8,12 @@ namespace Insns
 	{
 	private:
 		const SourcePosition pos;
-		MachineInfo::Register dest;
+		MachineInfo::RegisterID dest;
 		std::string symbol;
 		int64_t src;
 
 	public:
-		MoveRegSymbol(MachineInfo::Register dest, std::string symbol, const SourcePosition& pos)
+		MoveRegSymbol(MachineInfo::RegisterID dest, std::string symbol, const SourcePosition& pos)
 			: pos(pos)
 		{
 			this->dest = dest;

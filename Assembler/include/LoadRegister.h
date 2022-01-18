@@ -8,12 +8,12 @@ namespace Insns
 	class LoadRegister : public Instruction
 	{
 	private:
-		MachineInfo::Register dest;
-		MachineInfo::Register base;
+		MachineInfo::RegisterID dest;
+		MachineInfo::RegisterID base;
 		int16_t offset;
 
 	public:
-		LoadRegister(MachineInfo::Register dest, MachineInfo::Register base, int16_t offset)
+		LoadRegister(MachineInfo::RegisterID dest, MachineInfo::RegisterID base, int16_t offset)
 			: dest(dest), base(base), offset(offset)
 		{
 		}

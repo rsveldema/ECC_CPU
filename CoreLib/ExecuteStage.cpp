@@ -34,7 +34,7 @@ namespace Simulator
 					if (value1 < value2)
 						result |= MachineInfo::FLAGS_MASK_LT;
 
-					auto dest = MachineInfo::Register::FLAGS;
+					auto dest = MachineInfo::RegisterID::FLAGS;
 					auto src = result;
 
 					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::STORE_REG, (int64_t)dest, src };
@@ -45,8 +45,8 @@ namespace Simulator
 				case MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE:
 				{
 					assert(pkt.dest >= 0);
-					assert(pkt.dest < (int)MachineInfo::Register::MAX_REG_ID);
-					auto dest = static_cast<MachineInfo::Register>(pkt.dest);
+					assert(pkt.dest < (int)MachineInfo::RegisterID::MAX_REG_ID);
+					auto dest = static_cast<MachineInfo::RegisterID>(pkt.dest);
 					auto src = pkt.value1;
 
 					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::STORE_REG, (int64_t)dest, src };
@@ -76,7 +76,7 @@ namespace Simulator
 
 					auto offset = off1 + off2;
 
-					auto dest = MachineInfo::Register::PC;
+					auto dest = MachineInfo::RegisterID::PC;
 
 					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::LOAD_REG,
 						(int64_t)dest, offset, 0 };

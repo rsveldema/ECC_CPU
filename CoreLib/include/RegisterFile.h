@@ -7,21 +7,23 @@ namespace Simulator
 	class RegisterFile
 	{
 	public:
-		int64_t regs[static_cast<int>(MachineInfo::Register::MAX_REG_ID)];
+		using Register = int64_t;
 
-		int64_t& operator [](const MachineInfo::Register& id)
+		Register regs[static_cast<int>(MachineInfo::RegisterID::MAX_REG_ID)];
+
+		Register& operator [](const MachineInfo::RegisterID& id)
 		{
 			return regs[static_cast<int>(id)];
 		}
 
-		int64_t operator [](const MachineInfo::Register& id) const
+		Register operator [](const MachineInfo::RegisterID& id) const
 		{
 			return regs[static_cast<int>(id)];
 		}
 
 		bool hasHalted() const
 		{
-			return (*this)[MachineInfo::Register::FLAGS] & MachineInfo::FLAGS_MASK_HALT;
+			return (*this)[MachineInfo::RegisterID::FLAGS] & MachineInfo::FLAGS_MASK_HALT;
 		}
 	};
 }

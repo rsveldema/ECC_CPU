@@ -121,7 +121,7 @@ bool isRegister(const std::string& str)
 	return false;
 }
 
-MachineInfo::Register getRegisterID(const std::string& str)
+MachineInfo::RegisterID getRegisterID(const std::string& str)
 {
 	return MachineInfo::regnames[str];
 }
