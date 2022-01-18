@@ -21,7 +21,7 @@ namespace Simulator
 
 		bool hasHalted() const
 		{
-			return (*this)[MachineInfo::Register::FLAGS] & MachineInfo::REG_HALT_FLAG;
+			return (*this)[MachineInfo::Register::FLAGS] & MachineInfo::FLAGS_MASK_HALT;
 		}
 	};
 }

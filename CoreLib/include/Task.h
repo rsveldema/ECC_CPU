@@ -35,6 +35,10 @@ namespace coro
 		void await_suspend(std::coroutine_handle<> h) { h_ = h; suspended = true; }
 		constexpr void await_resume() const noexcept {}
 
+		Task() {}
+
+		Task(Task&) = delete;
+
 		void resume()
 		{
 			assert(suspended);

@@ -60,18 +60,6 @@ void Program::Add(Instruction* insn)
 
 namespace {
 
-	enum class Mnemonic
-	{
-		NOP,
-		HALT,
-		MOV,
-		ADD,
-		JMP,
-		STORE,
-		LOAD_RESTORE_PC,
-		LOAD
-	};
-
 	Mnemonic stringToOpcode(const std::string& opcodeName, const SourcePosition& pos)
 	{
 		if (opcodeName == "nop")
@@ -97,6 +85,27 @@ namespace {
 
 		if (opcodeName == "load")
 			return Mnemonic::LOAD;
+
+		if (opcodeName == "cmp")
+			return Mnemonic::CMP;
+
+		if (opcodeName == "je")
+			return Mnemonic::JE;
+
+		if (opcodeName == "jne")
+			return Mnemonic::JNE;
+
+		if (opcodeName == "jg")
+			return Mnemonic::JG;
+
+		if (opcodeName == "jge")
+			return Mnemonic::JGE;
+
+		if (opcodeName == "jl")
+			return Mnemonic::JL;
+
+		if (opcodeName == "jle")
+			return Mnemonic::JLE;
 
 		pos.error("unrecognized insn in string2opcode: " + opcodeName);
 		return Mnemonic::NOP;
@@ -201,7 +210,7 @@ void Program::parseLine(const Line& line, const SourcePosition& pos)
 	}
 
 	auto toks = tokenize(line.data, LINE_SPLIT_CHARS);
-	switch (stringToOpcode(toks[0], pos))
+	switch (auto op = stringToOpcode(toks[0], pos))
 	{
 	case Mnemonic::HALT:
 	{
@@ -210,9 +219,29 @@ void Program::parseLine(const Line& line, const SourcePosition& pos)
 	}
 
 	case Mnemonic::JMP:
+	case Mnemonic::JE:
+	case Mnemonic::JNE:
+	case Mnemonic::JG:
+	case Mnemonic::JGE:
+	case Mnemonic::JL:
+	case Mnemonic::JLE:
 	{
 		auto l = toks[1];
-		Add(new Jmp(l, pos));
+		Add(new Jmp(l, pos, op));
+		break;
+	}
+
+
+	case Mnemonic::CMP:
+	{
+		if (isRegister(toks[1]) && isRegister(toks[2]))
+		{
+			Add(new CmpRegReg(getRegisterID(toks[1]), getRegisterID(toks[2])));
+		}
+		else
+		{
+			pos.error(std::string("failed to find a matching cmp insn for: ") + line.data);
+		}
 		break;
 	}
 
@@ -232,7 +261,7 @@ void Program::parseLine(const Line& line, const SourcePosition& pos)
 		}
 		else
 		{
-			pos.error(std::string("failed to find a matching insn for: ") + line.data);
+			pos.error(std::string("failed to find a matching mov insn for: ") + line.data);
 		}
 		break;
 	}
@@ -278,7 +307,7 @@ void Program::parseLine(const Line& line, const SourcePosition& pos)
 		}
 		else
 		{
-			pos.error("failed to find a matching insn for: " + line.data);
+			pos.error("failed to find a matching add insn for: " + line.data);
 		}
 		break;
 	}

@@ -4,7 +4,7 @@
 cmake_minimum_required (VERSION 3.15)
 
 # Add source to this project's executable.
-add_executable (Assembler "Assembler.cpp" "include/Assembler.h" "parser.cpp" "include/Jmp.h" "include/Instruction.h" "include/SourcePosition.h" "include/MemoryAccess.h" "include/Halt.h" "include/AddRegRegConst.h" "include/AddRegRegReg.h" "include/MoveRegConst.h" "include/MoveRegReg.h" "include/RestorePC.h" "include/StoreRegister.h" "include/MoveRegSymbol.h" "Linker.cpp" "include/Linker.h" "include/ObjectWriter.h" "ObjectWriter.cpp" "include/LoadRegister.h")
+add_executable (Assembler "Assembler.cpp" "include/Assembler.h" "parser.cpp" "include/Jmp.h" "include/Instruction.h" "include/SourcePosition.h" "include/MemoryAccess.h" "include/Halt.h" "include/AddRegRegConst.h" "include/AddRegRegReg.h" "include/MoveRegConst.h" "include/MoveRegReg.h" "include/RestorePC.h" "include/StoreRegister.h" "include/MoveRegSymbol.h" "Linker.cpp" "include/Linker.h" "include/ObjectWriter.h" "ObjectWriter.cpp" "include/LoadRegister.h" "include/CmpRegReg.h" "include/Mnemonics.h")
 
 target_link_libraries(Assembler LINK_PUBLIC CoreLib) 
 

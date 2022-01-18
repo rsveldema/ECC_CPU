@@ -9,7 +9,8 @@
 
 namespace Simulator
 {
-
+	/** simple memory bus that allows sending requests and receiving replies.
+	*/
 	class MemoryBus
 	{
 	public:
@@ -94,12 +95,18 @@ namespace Simulator
 
 		void send_request(const Packet& pkt)
 		{
+			assert(!is_busy());
 			request_queue.push(pkt);
 		}
 
 		void send_response(const Packet& pkt)
 		{
 			response_queue.push(pkt);
+		}
+
+		bool is_busy() const
+		{
+			return request_queue.size() > 0;
 		}
 	};
 

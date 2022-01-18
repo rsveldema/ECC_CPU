@@ -12,6 +12,17 @@ MAIN:
 	store 8(%sp), %r4
 	load %r4, 8(%sp)
 
+	cmp %r4, %r1
+	
+	je retlabel
+	jne retlabel
+	
+	jg retlabel
+	jge retlabel
+	
+	jl retlabel
+	jle retlabel
+
 	# call bar
 	add %sp, %sp, -40
 	mov %r0, retlabel

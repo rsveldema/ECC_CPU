@@ -29,7 +29,10 @@ namespace MachineInfo
 		MAX_REG_ID
 	};
 
-	static const uint32_t REG_HALT_FLAG = (1 << 0);
+	static const uint64_t FLAGS_MASK_HALT = (1 << 0);
+	static const uint64_t FLAGS_MASK_EQ = (1 << 1);
+	static const uint64_t FLAGS_MASK_GT = (1 << 2);
+	static const uint64_t FLAGS_MASK_LT = (1 << 3);
 
 	enum class CoreID
 	{
@@ -72,22 +75,10 @@ namespace MachineInfo
 		LOAD_REG_CONST_REG,       // rX = [rY + offset] 
 		STORE_REG_CONST_REG,  // [rY + offset] = rX
 
-		CMP8_REG_REG,         // flags = rX <> rY
-		CMP16_REG_REG,        // flags = rX <> rY
-		CMP32_REG_REG,        // flags = rX <> rY
-		CMP64_REG_REG,        // flags = rX <> rY
+		CMP_REG_REG,        // flags = rX <> rY
 
-		ADD8_REG_REG_REG,     // rX = rY + rZ
-		ADD8_REG_REG_CONST,   // rX = rY + const
-
-		ADD16_REG_REG_REG,     // rX = rY + rZ
-		ADD16_REG_REG_CONST,   // rX = rY + const
-
-		ADD32_REG_REG_REG,     // rX = rY + rZ
-		ADD32_REG_REG_CONST,   // rX = rY + const
-
-		ADD64_REG_REG_REG,     // rX = rY + rZ
-		ADD64_REG_REG_CONST,   // rX = rY + const
+		ADD_REG_REG_REG,     // rX = rY + rZ
+		ADD_REG_REG_CONST,   // rX = rY + const
 
 		RSHIFT_REG_REG_REG,     // rX = rY << rZ
 		RSHIFT_REG_REG_CONST,   // rX = rY << const
@@ -98,31 +89,19 @@ namespace MachineInfo
 		L_USHIFT_REG_REG_REG,     // rX = rY >> rZ
 		L_USHIFT_REG_REG_CONST,   // rX = rY >> const
 
-		MUL8_REG_REG_REG,     // rX = rY * rZ
-		MUL8_REG_REG_CONST,   // rX = rY * const
+		MUL_REG_REG_REG,     // rX = rY * rZ
+		MUL_REG_REG_CONST,   // rX = rY * const
 
-		MUL16_REG_REG_REG,     // rX = rY * rZ
-		MUL16_REG_REG_CONST,   // rX = rY * const
+		DIV_REG_REG_REG,     // rX = rY / rZ
+		DIV_REG_REG_CONST,   // rX = rY / const
 
-		MUL32_REG_REG_REG,     // rX = rY * rZ
-		MUL32_REG_REG_CONST,   // rX = rY * const
-
-		MUL64_REG_REG_REG,     // rX = rY * rZ
-		MUL64_REG_REG_CONST,   // rX = rY * const
-
-		DIV8_REG_REG_REG,     // rX = rY / rZ
-		DIV8_REG_REG_CONST,   // rX = rY / const
-
-		DIV16_REG_REG_REG,     // rX = rY / rZ
-		DIV16_REG_REG_CONST,   // rX = rY / const
-
-		DIV32_REG_REG_REG,     // rX = rY / rZ
-		DIV32_REG_REG_CONST,   // rX = rY / const
-
-		DIV64_REG_REG_REG,     // rX = rY / rZ
-		DIV64_REG_REG_CONST,   // rX = rY / const
-
-		JMP,         // PC += CONST 
+		JMP_ALWAYS,         // PC += CONST 
+		JMP_EQUAL,
+		JMP_NOT_EQUAL,
+		JMP_LOWER,
+		JMP_LOWER_EQUAL,
+		JMP_GREATER,
+		JMP_GREATER_EQUAL,
 
 		LOAD_RESTORE_PC,     // PC = [rX + offset]
 		MOVE_PCREL_REG_CONST16,
@@ -135,7 +114,8 @@ namespace MachineInfo
 		STORE_ADDR_VALUE,
 		JMP,
 		LOAD_RESTORE_PC,
-		LOAD_REG
+		LOAD_REG,
+		CMP
 	};
 
 	enum class StorageStageOpcode
@@ -168,7 +148,13 @@ namespace MachineInfo
 	{
 		switch (op)
 		{
-		case Opcode::JMP:
+		case Opcode::JMP_ALWAYS:
+		case Opcode::JMP_EQUAL:
+		case Opcode::JMP_NOT_EQUAL:
+		case Opcode::JMP_GREATER:
+		case Opcode::JMP_GREATER_EQUAL:
+		case Opcode::JMP_LOWER:
+		case Opcode::JMP_LOWER_EQUAL:
 		case Opcode::LOAD_RESTORE_PC:
 			return true;
 		default:

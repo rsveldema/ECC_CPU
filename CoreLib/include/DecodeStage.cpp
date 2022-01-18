@@ -25,7 +25,7 @@ namespace Simulator
 				}
 				case MachineInfo::Opcode::HALT:
 				{
-					regs[MachineInfo::Register::FLAGS] |= MachineInfo::REG_HALT_FLAG;
+					regs[MachineInfo::Register::FLAGS] |= MachineInfo::FLAGS_MASK_HALT;
 					break;
 				}
 
@@ -77,7 +77,7 @@ namespace Simulator
 					break;
 				}
 
-				case MachineInfo::Opcode::ADD64_REG_REG_REG:
+				case MachineInfo::Opcode::ADD_REG_REG_REG:
 				{
 					auto dst_reg = static_cast<MachineInfo::Register>((pkt.insn >> 8) & 0xff);
 					auto src1_reg = static_cast<MachineInfo::Register>((pkt.insn >> 16) & 0xff);
@@ -91,7 +91,7 @@ namespace Simulator
 					break;
 				}
 
-				case MachineInfo::Opcode::ADD64_REG_REG_CONST:
+				case MachineInfo::Opcode::ADD_REG_REG_CONST:
 				{
 					auto dst_reg = static_cast<MachineInfo::Register>((pkt.insn >> 8) & 0xff);
 					auto src1_reg = static_cast<MachineInfo::Register>((pkt.insn >> 16) & 0xff);
@@ -104,7 +104,7 @@ namespace Simulator
 					break;
 				}
 
-				case MachineInfo::Opcode::JMP:
+				case MachineInfo::Opcode::JMP_ALWAYS:
 				{
 					auto off = static_cast<int32_t>(pkt.insn >> 8);
 
@@ -112,6 +112,36 @@ namespace Simulator
 					execute_bus.send(execute_pkt);
 					break;
 				}
+
+				case MachineInfo::Opcode::CMP_REG_REG:
+				{
+					auto reg1 = static_cast<MachineInfo::Register>(pkt.insn >> 8);
+					auto reg2 = static_cast<MachineInfo::Register>(pkt.insn >> 16);
+
+					auto value1 = regs[reg1];
+					auto value2 = regs[reg2];
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::CMP,
+						value1,
+						value2,
+					};
+					execute_bus.send(execute_pkt);
+					break;
+				}
+
+
+				case MachineInfo::Opcode::JMP_EQUAL:
+				{
+					auto jmp_mask = MachineInfo::FLAGS_MASK_EQ;
+
+					auto off = static_cast<int32_t>(pkt.insn >> 8);
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::JMP,
+						(int64_t)off };
+					execute_bus.send(execute_pkt);
+					break;
+				}
+
 
 				case MachineInfo::Opcode::LOAD_RESTORE_PC:
 				{

@@ -8,6 +8,8 @@ add_library (CoreLib  "include/CoreLib.h" "include/SimComponent.h" "SimComponent
 
 target_compile_features(CoreLib PUBLIC cxx_std_20)
 
+target_link_options(CoreLib PUBLIC -fcoroutines)
+
 #set_property(TARGET CoreLib PROPERTY CXX_STANDARD 20)
 
 target_include_directories (CoreLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

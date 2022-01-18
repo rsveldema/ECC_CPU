@@ -1,0 +1,15 @@
+C:/Users/rove/source/repos/ecc/ECC_CPU/build/CMakeFiles/rebuild_cache.dir
+C:/Users/rove/source/repos/ecc/ECC_CPU/build/CMakeFiles/test.dir
+C:/Users/rove/source/repos/ecc/ECC_CPU/build/CMakeFiles/edit_cache.dir
+C:/Users/rove/source/repos/ecc/ECC_CPU/build/CoreLib/CMakeFiles/rebuild_cache.dir
+C:/Users/rove/source/repos/ecc/ECC_CPU/build/CoreLib/CMakeFiles/test.dir
+C:/Users/rove/source/repos/ecc/ECC_CPU/build/CoreLib/CMakeFiles/CoreLib.dir
+C:/Users/rove/source/repos/ecc/ECC_CPU/build/CoreLib/CMakeFiles/edit_cache.dir
+C:/Users/rove/source/repos/ecc/ECC_CPU/build/Assembler/CMakeFiles/Assembler.dir
+C:/Users/rove/source/repos/ecc/ECC_CPU/build/Assembler/CMakeFiles/rebuild_cache.dir
+C:/Users/rove/source/repos/ecc/ECC_CPU/build/Assembler/CMakeFiles/test.dir
+C:/Users/rove/source/repos/ecc/ECC_CPU/build/Assembler/CMakeFiles/edit_cache.dir
+C:/Users/rove/source/repos/ecc/ECC_CPU/build/Simulator/CMakeFiles/rebuild_cache.dir
+C:/Users/rove/source/repos/ecc/ECC_CPU/build/Simulator/CMakeFiles/test.dir
+C:/Users/rove/source/repos/ecc/ECC_CPU/build/Simulator/CMakeFiles/Simulator.dir
+C:/Users/rove/source/repos/ecc/ECC_CPU/build/Simulator/CMakeFiles/edit_cache.dir

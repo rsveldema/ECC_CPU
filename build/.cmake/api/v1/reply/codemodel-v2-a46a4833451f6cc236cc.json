@@ -1,0 +1,126 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3
+					],
+					"jsonFile" : "directory-.-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"projectIndex" : 0,
+					"source" : "."
+				},
+				{
+					"build" : "CoreLib",
+					"jsonFile" : "directory-CoreLib-d5b706910a6c7659078e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.15"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "CoreLib",
+					"targetIndexes" : 
+					[
+						1
+					]
+				},
+				{
+					"build" : "Assembler",
+					"jsonFile" : "directory-Assembler-c053d6029c149d7b1109.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.15"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "Assembler",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "Simulator",
+					"jsonFile" : "directory-Simulator-e58182db3e407e557bc5.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.15"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "Simulator",
+					"targetIndexes" : 
+					[
+						2
+					]
+				}
+			],
+			"name" : "",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					],
+					"name" : "ECC_CPU",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 2,
+					"id" : "Assembler::@c40e7f82f1514c28c642",
+					"jsonFile" : "target-Assembler-50327a24166ee98d7ae4.json",
+					"name" : "Assembler",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "CoreLib::@bc98ed1b17cfb02367df",
+					"jsonFile" : "target-CoreLib-f1f79c7c43d6fa15f309.json",
+					"name" : "CoreLib",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "Simulator::@a346c7eb8af351c25daa",
+					"jsonFile" : "target-Simulator-29d3bbe15ce86b01da18.json",
+					"name" : "Simulator",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/rove/source/repos/ecc/ECC_CPU/build",
+		"source" : "C:/Users/rove/source/repos/ecc/ECC_CPU"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

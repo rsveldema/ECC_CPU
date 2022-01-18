@@ -37,6 +37,7 @@ void read_memory_dump(CoreClusterGrid& machine, const std::string& filename)
 
 int main(int argc, char** argv)
 {
+	printf("booted!\n");
 	if (argc != 3)
 	{
 		Usage();

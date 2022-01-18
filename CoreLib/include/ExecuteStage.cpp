@@ -18,6 +18,30 @@ namespace Simulator
 					break;
 				}
 
+				case MachineInfo::ExecuteStageOpcode::CMP:
+				{
+					auto value1 = pkt.value1;
+					auto value2 = pkt.value2;
+
+					auto result = 0;
+
+					if (value1 == value2)
+						result |= MachineInfo::FLAGS_MASK_EQ;
+
+					if (value1 > value2)
+						result |= MachineInfo::FLAGS_MASK_GT;
+
+					if (value1 < value2)
+						result |= MachineInfo::FLAGS_MASK_LT;
+
+					auto dest = MachineInfo::Register::FLAGS;
+					auto src = result;
+
+					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::STORE_REG, (int64_t)dest, src };
+					store_bus.send(store_pkt);
+					break;
+				}
+
 				case MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE:
 				{
 					assert(pkt.dest >= 0);
@@ -36,6 +60,7 @@ namespace Simulator
 					int64_t value = pkt.dest;
 					auto addr1 = pkt.value1;
 					auto addr2 = pkt.value2;
+
 					auto addr = addr1 + addr2;
 
 					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::STORE_MEM, addr, value };

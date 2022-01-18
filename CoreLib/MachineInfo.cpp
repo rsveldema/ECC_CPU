@@ -11,6 +11,7 @@ namespace MachineInfo
 
 	std::map<std::string, InstructionInfo> insnInfo{
 		{ "nop", { Opcode::NOP}},
+
 		{ "halt", { Opcode::HALT}},
 
 		{"movreg2reg", { Opcode::MOVE_REG_REG}}, // rX = rY
@@ -28,22 +29,10 @@ namespace MachineInfo
 		{"load_rcr", { Opcode::LOAD_REG_CONST_REG}},        // rX = [rY + offset] 
 		{"store_rcr", { Opcode::STORE_REG_CONST_REG}}, // [rY + offset] = rX
 
-		{"cmpn_reg_reg", { Opcode::CMP8_REG_REG}},         // flags = rX <> rY
-		{"cmps_reg_reg", { Opcode::CMP16_REG_REG}},        // flags = rX <> rY
-		{"cmpw_reg_reg", { Opcode::CMP32_REG_REG}},        // flags = rX <> rY
-		{"cmpl_reg_reg", { Opcode::CMP64_REG_REG}},        // flags = rX <> rY
+		{"cmp_reg_reg", { Opcode::CMP_REG_REG}},        // flags = rX <> rY
 
-		{"addb_rrr", { Opcode::ADD8_REG_REG_REG}},     // rX = rY + rZ
-		{"addb_rrc", { Opcode::ADD8_REG_REG_CONST}},   // rX = rY + const
-
-		{"adds_rrr", { Opcode::ADD16_REG_REG_REG}},     // rX = rY + rZ
-		{"adds_rrc", { Opcode::ADD16_REG_REG_CONST}},   // rX = rY + const
-
-		{"addw_rrr", { Opcode::ADD32_REG_REG_REG}},     // rX = rY + rZ
-		{"addw_rrc", { Opcode::ADD32_REG_REG_CONST}},   // rX = rY + const
-
-		{"addl_rrr", { Opcode::ADD64_REG_REG_REG}},     // rX = rY + rZ
-		{"addl_rrc", { Opcode::ADD64_REG_REG_CONST}},   // rX = rY + const
+		{"add_rrr", { Opcode::ADD_REG_REG_REG}},     // rX = rY + rZ
+		{"add_rrc", { Opcode::ADD_REG_REG_CONST}},   // rX = rY + const
 
 		{"rs_rrr", { Opcode::RSHIFT_REG_REG_REG}},     // rX = rY << rZ
 		{"rs_rrc", { Opcode::RSHIFT_REG_REG_CONST}},   // rX = rY << const
@@ -54,31 +43,19 @@ namespace MachineInfo
 		{"uls_rrr", { Opcode::L_USHIFT_REG_REG_REG}},     // rX = rY >> rZ
 		{"uls_rrc", { Opcode::L_USHIFT_REG_REG_CONST}},   // rX = rY >> const
 
-		{"mulb_rrr", { Opcode::MUL8_REG_REG_REG}},     // rX = rY * rZ
-		{"mulb_rrc", { Opcode::MUL8_REG_REG_CONST}},   // rX = rY * const
+		{"mul_rrr", { Opcode::MUL_REG_REG_REG}},     // rX = rY * rZ
+		{"mul_rrc", { Opcode::MUL_REG_REG_CONST}},   // rX = rY * const
 
-		{"muls_rrr", { Opcode::MUL16_REG_REG_REG}},     // rX = rY * rZ
-		{"muls_rrc", { Opcode::MUL16_REG_REG_CONST}},   // rX = rY * const
+		{"div_rrr", { Opcode::DIV_REG_REG_REG}},     // rX = rY / rZ
+		{"div_rrc", { Opcode::DIV_REG_REG_CONST}},   // rX = rY / const
 
-		{"mulw_rrr", { Opcode::MUL32_REG_REG_REG}},     // rX = rY * rZ
-		{"mulw_rrc", { Opcode::MUL32_REG_REG_CONST}},   // rX = rY * const
-
-		{"mull_rrr", { Opcode::MUL64_REG_REG_REG}},     // rX = rY * rZ
-		{"mull_rrc", { Opcode::MUL64_REG_REG_CONST}},   // rX = rY * const
-
-		{"divb_rrr", { Opcode::DIV8_REG_REG_REG}},     // rX = rY / rZ
-		{"divb_rrc", { Opcode::DIV8_REG_REG_CONST}},   // rX = rY / const
-
-		{"divs_rrr", { Opcode::DIV16_REG_REG_REG}},     // rX = rY / rZ
-		{"divs_rrc", { Opcode::DIV16_REG_REG_CONST}},   // rX = rY / const
-
-		{"divw_rrr", { Opcode::DIV32_REG_REG_REG}},     // rX = rY / rZ
-		{"divw_rrc", { Opcode::DIV32_REG_REG_CONST}},   // rX = rY / const
-
-		{"divl_rrr", { Opcode::DIV64_REG_REG_REG}},     // rX = rY / rZ
-		{"divl_rrc", { Opcode::DIV64_REG_REG_CONST}},   // rX = rY / const
-
-		{"jmp", { Opcode::JMP}},         // PC += CONST 
+		{"jmp", { Opcode::JMP_ALWAYS}},         // PC += CONST 
+		{"je", { Opcode::JMP_EQUAL}},         // PC += CONST 
+		{"jne", { Opcode::JMP_NOT_EQUAL}},         // PC += CONST 
+		{"jl", { Opcode::JMP_LOWER}},         // PC += CONST 
+		{"jle", { Opcode::JMP_LOWER_EQUAL}},         // PC += CONST 
+		{"jg", { Opcode::JMP_GREATER}},         // PC += CONST 
+		{"jge", { Opcode::JMP_GREATER_EQUAL}},         // PC += CONST 
 
 		{"restore_pc", { Opcode::LOAD_RESTORE_PC}},     // PC = [rX + offset]
 		{"move_pcrel", { Opcode::MOVE_PCREL_REG_CONST16}}
