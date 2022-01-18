@@ -10,7 +10,7 @@ namespace Simulator
 		{
 			if (auto pkt_opt = this->decode_bus.try_recv())
 			{
-				auto pkt = *pkt_opt;
+				DecodeToExecuteBus::Packet& pkt = *pkt_opt;
 				switch (pkt.opcode)
 				{
 				case MachineInfo::ExecuteStageOpcode::NOP:
@@ -22,6 +22,7 @@ namespace Simulator
 				{
 					auto value1 = pkt.value1;
 					auto value2 = pkt.value2;
+
 
 					auto result = 0;
 
@@ -36,6 +37,8 @@ namespace Simulator
 
 					auto dest = MachineInfo::RegisterID::FLAGS;
 					auto src = result;
+
+					fprintf(stderr, "CMP: %ld, %ld ==> %d\n", value1, value2, result);
 
 					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::STORE_REG, (int64_t)dest, src };
 					store_bus.send(store_pkt);
@@ -101,6 +104,31 @@ namespace Simulator
 					break;
 				}
 
+
+				case MachineInfo::ExecuteStageOpcode::COND_JMP:
+				{
+					int64_t offset = pkt.dest;
+					auto PC = pkt.PC;
+					auto new_address = PC + offset;
+					auto next_address = PC + 4;
+
+					auto jmp_mask = pkt.value1;
+					auto flags = pkt.value2;
+
+					bool should_jmp = flags & jmp_mask;
+
+					if (should_jmp)
+					{
+						ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::JMP, (int64_t)new_address, should_jmp };
+						store_bus.send(store_pkt);
+					}
+					else
+					{
+						ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::JMP, (int64_t)next_address, should_jmp };
+						store_bus.send(store_pkt);
+					}
+					break;
+				}
 
 
 

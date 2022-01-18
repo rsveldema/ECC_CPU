@@ -132,15 +132,90 @@ namespace Simulator
 
 				case MachineInfo::Opcode::JMP_EQUAL:
 				{
-					auto jmp_mask = MachineInfo::FLAGS_MASK_EQ;
+					int64_t jmp_mask = MachineInfo::FLAGS_MASK_EQ;
 
 					auto off = static_cast<int32_t>(pkt.insn >> 8);
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::JMP,
-						(int64_t)off };
+					int64_t flags = regs[MachineInfo::RegisterID::FLAGS];
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::COND_JMP,
+						(int64_t)off, jmp_mask, flags };
 					execute_bus.send(execute_pkt);
 					break;
 				}
+
+
+				case MachineInfo::Opcode::JMP_NOT_EQUAL:
+				{
+					int64_t jmp_mask = MachineInfo::FLAGS_MASK_GT | MachineInfo::FLAGS_MASK_LT;
+
+					auto off = static_cast<int32_t>(pkt.insn >> 8);
+
+					int64_t flags = regs[MachineInfo::RegisterID::FLAGS];
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::COND_JMP,
+						(int64_t)off, jmp_mask, flags };
+					execute_bus.send(execute_pkt);
+					break;
+				}
+
+
+				case MachineInfo::Opcode::JMP_GREATER:
+				{
+					int64_t jmp_mask = MachineInfo::FLAGS_MASK_GT;
+
+					auto off = static_cast<int32_t>(pkt.insn >> 8);
+
+					int64_t flags = regs[MachineInfo::RegisterID::FLAGS];
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::COND_JMP,
+						(int64_t)off, jmp_mask, flags };
+					execute_bus.send(execute_pkt);
+					break;
+				}
+
+				case MachineInfo::Opcode::JMP_GREATER_EQUAL:
+				{
+					int64_t jmp_mask = MachineInfo::FLAGS_MASK_GT | MachineInfo::FLAGS_MASK_EQ;
+
+					auto off = static_cast<int32_t>(pkt.insn >> 8);
+
+					int64_t flags = regs[MachineInfo::RegisterID::FLAGS];
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::COND_JMP,
+						(int64_t)off, jmp_mask, flags };
+					execute_bus.send(execute_pkt);
+					break;
+				}	
+				
+				case MachineInfo::Opcode::JMP_LOWER:
+				{
+					int64_t jmp_mask = MachineInfo::FLAGS_MASK_LT;
+
+					auto off = static_cast<int32_t>(pkt.insn >> 8);
+
+					int64_t flags = regs[MachineInfo::RegisterID::FLAGS];
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::COND_JMP,
+						(int64_t)off, jmp_mask, flags };
+					execute_bus.send(execute_pkt);
+					break;
+				}
+
+				case MachineInfo::Opcode::JMP_LOWER_EQUAL:
+				{
+					int64_t jmp_mask = MachineInfo::FLAGS_MASK_LT | MachineInfo::FLAGS_MASK_EQ;
+
+					auto off = static_cast<int32_t>(pkt.insn >> 8);
+
+					int64_t flags = regs[MachineInfo::RegisterID::FLAGS];
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::COND_JMP,
+						(int64_t)off, jmp_mask, flags };
+					execute_bus.send(execute_pkt);
+					break;
+				}
+
 
 
 				case MachineInfo::Opcode::LOAD_RESTORE_PC:

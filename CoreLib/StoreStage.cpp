@@ -83,7 +83,6 @@ namespace Simulator
 					break;
 				}
 
-
 				case MachineInfo::StorageStageOpcode::JMP:
 				{
 					auto new_address = pkt.dest;

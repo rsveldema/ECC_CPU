@@ -115,7 +115,8 @@ namespace MachineInfo
 		JMP,
 		LOAD_RESTORE_PC,
 		LOAD_REG,
-		CMP
+		CMP,
+		COND_JMP
 	};
 
 	enum class StorageStageOpcode
@@ -125,6 +126,7 @@ namespace MachineInfo
 		STORE_REG,
 		STORE_MEM,
 		JMP,
+		COND_JMP,		
 		LOAD_REG
 	};
 
