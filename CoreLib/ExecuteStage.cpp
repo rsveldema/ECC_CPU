@@ -123,7 +123,9 @@ namespace Simulator
 				}
 			}
 
-			co_await *this;
+
+			Task& t = *this;
+			co_await t;
 		}
 	}
 

@@ -25,7 +25,8 @@ namespace Simulator
 
 					for (uint64_t i = 0; i < config.read_latency.cycles; i++)
 					{
-						co_await *this;
+						Task& t = *this;
+						co_await t;
 					}
 
 					toCPU.send_read_response(value, pkt.source, pkt.size);
@@ -35,12 +36,14 @@ namespace Simulator
 				case MemoryBus::Type::write:
 				{
 					const auto address = pkt.address;
+					printf("access to address %ld\n", address);
 					assert(address >= 0);
 					assert(address < (storage.size() - 8));
 
 					for (uint64_t i = 0; i < config.write_latency.cycles; i++)
 					{
-						co_await *this;
+						Task& t = *this;
+						co_await t;
 					}
 
 					std::copy(pkt.payload.begin(), pkt.payload.end(), storage.begin() + address);
@@ -52,7 +55,8 @@ namespace Simulator
 				}
 			}
 
-			co_await *this;
+			Task& t = *this;
+			co_await t;
 		}
 	}
 }

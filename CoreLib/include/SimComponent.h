@@ -12,12 +12,9 @@ namespace Simulator
 		SimComponentRegistry& registry;
 
 	public:
-		const std::string name;
-
-	public:
-		SimComponent(SimComponentRegistry& registry, const std::string& name)
-			: registry(registry),
-			name(name)
+		SimComponent(SimComponentRegistry& registry, const std::string& _name)
+			: coro::Task(_name), 
+			registry(registry)
 		{
 			registry.registerComponent(this);
 		}
