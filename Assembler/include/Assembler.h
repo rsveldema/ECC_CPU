@@ -3,6 +3,8 @@
 #include <string>
 #include "CoreLib.h"
 
+#include "Mnemonics.h"
+
 #include "SourcePosition.h"
 
 #include "Instruction.h"
@@ -13,6 +15,7 @@
 #include "AddRegRegReg.h"
 #include "MoveRegConst.h"
 #include "MoveRegReg.h"
+#include "CmpRegReg.h"
 #include "RestorePC.h"
 #include "StoreRegister.h"
 #include "LoadRegister.h"
