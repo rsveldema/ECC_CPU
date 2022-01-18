@@ -15,6 +15,13 @@ void Usage()
 
 void read_memory_dump(CoreClusterGrid& machine, const std::string& filename)
 {
+	if (! filename.ends_with(".bin"))
+	{
+		std::cerr << "expected a .bin file"  << std::endl;
+		Usage();
+		return;
+	}
+
 	std::fstream f;
 	f.open(filename, std::ios::binary | std::ios::in);
 	if (!f.is_open())

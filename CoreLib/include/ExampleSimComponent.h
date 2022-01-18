@@ -14,7 +14,7 @@ public:
 		while (1)
 		{
 			printf("loop-ExampleComponent: %d\n", i);
-			co_await *this;
+			co_await self();
 			i++;
 		}
 	}

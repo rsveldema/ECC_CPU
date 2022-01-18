@@ -8,6 +8,51 @@
 
 namespace coro
 {
+
+
+	/** active components (simulated things that do stuff)
+	* should inherit from this so that we can semi-parallel execute them using co-routines.
+	*  - When calling 'co_await self()', it calls await_resume() and then suspends itself.
+	*  - when calling 'resume()' the coroutine is restarted (=called).
+	*/
+	class Task
+	{
+	public:
+		bool suspended = false;
+		const std::string name;
+		bool dead = false;
+		bool running = false;
+
+		Task(const std::string& _name)
+			: name(_name)
+		{}
+
+		Task(const Task& ) = delete;
+		Task(const Task&& ) = delete;
+
+		void operator = (const Task& t) = delete;
+
+		Task()
+		{
+			dead = true;
+		}
+
+		std::coroutine_handle<> h_;
+		
+		constexpr bool await_ready() const noexcept 
+		{
+			return false; 
+		}
+		
+		void await_suspend(std::coroutine_handle<> h);
+		
+		constexpr void await_resume() const noexcept 
+		{
+		}
+
+		void resume();
+	};
+
 	/** C++ coroutines require the return type to hold a nested promise_type.
 	*/
 	struct ReturnObject {
@@ -18,27 +63,5 @@ namespace coro
 			void return_void() {}
 			void unhandled_exception() {}
 		};
-	};
-
-
-	/** active components (simulated things that do stuff)
-	* should inherit from this so that we can semi-parallel execute them using co-routines.
-	*  - When calling 'co_await *this', it calls await_resume() and then suspends itself.
-	*  - when calling 'resume()' the coroutine is restarted (=called).
-	*/
-	class Task
-	{
-	public:
-		bool suspended = false;
-		std::coroutine_handle<> h_;
-		constexpr bool await_ready() const noexcept { return false; }
-		void await_suspend(std::coroutine_handle<> h) { h_ = h; suspended = true; }
-		constexpr void await_resume() const noexcept {}
-
-		void resume()
-		{
-			assert(suspended);
-			h_();
-		}
 	};
 }

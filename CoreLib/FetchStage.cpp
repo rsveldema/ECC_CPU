@@ -16,12 +16,14 @@ namespace Simulator
 					fetch_PC = jmp_retarget->newpc;
 					break;
 				}
-				co_await *this;
+				Task& t = *this;
+				co_await t;
 			}
 
 			while (decode_bus.is_busy())
 			{
-				co_await *this;
+				Task& t = *this;
+				co_await t;
 			}
 
 			unsigned size = MachineInfo::INSTRUCTION_SIZE; // 32 bit fixed width insns
@@ -32,7 +34,7 @@ namespace Simulator
 				if (auto response = memory_bus.try_accept_response())
 				{
 					auto* ptr = response->payload.data();
-					//std::cerr << "received response: " << ptr << std::endl;
+					std::cerr << "received response for address " << fetch_PC << std::endl;
 
 					uint32_t insn = *reinterpret_cast<uint32_t*>(ptr);
 
@@ -54,11 +56,13 @@ namespace Simulator
 				else
 				{
 					stats.waitForInsnFetch++;
-					co_await *this;
+					Task& t = *this;
+					co_await t;
 				}
 			}
 
-			co_await *this;
+			Task& t = *this;
+			co_await t;
 		}
 	}
 }

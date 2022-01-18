@@ -51,7 +51,8 @@ namespace Simulator
 						out.send_request(*pkt);
 					}
 					// sending one packet will cost us a cycle (as will testing if an input has a pkt for us to send.
-					co_await *this;
+					Task &t = *this;
+					co_await t;
 				}
 
 				// we should be able to forward the incoming packet to the source
@@ -69,7 +70,8 @@ namespace Simulator
 					}
 					assert(sent);
 				}
-				co_await *this;
+				Task& t = *this;
+				co_await t;
 			}
 		}
 	};
