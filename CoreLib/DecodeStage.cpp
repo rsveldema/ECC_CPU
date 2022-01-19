@@ -10,7 +10,7 @@ namespace Simulator
 		{
 			if (auto pkt_opt = this->fetch_bus.try_recv())
 			{
-				auto pkt = *pkt_opt;
+				const auto& pkt = *pkt_opt;
 
 				auto PC = pkt.PC;
 				auto opcode = (MachineInfo::Opcode)(pkt.insn & 0xff);
