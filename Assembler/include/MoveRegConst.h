@@ -8,11 +8,11 @@ namespace Insns
 	class MoveRegConst : public Instruction
 	{
 	private:
-		MachineInfo::Register dst;
+		MachineInfo::RegisterID dst;
 		int16_t src;
 
 	public:
-		MoveRegConst(MachineInfo::Register dst, int16_t src2)
+		MoveRegConst(MachineInfo::RegisterID dst, int16_t src2)
 		{
 			this->dst = dst;
 			this->src = src2;

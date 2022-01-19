@@ -9,10 +9,10 @@ namespace Insns
 	{
 	private:
 		int16_t offset;
-		MachineInfo::Register reg;
+		MachineInfo::RegisterID reg;
 
 	public:
-		RestorePC(MachineInfo::Register reg, int16_t offset)
+		RestorePC(MachineInfo::RegisterID reg, int16_t offset)
 		{
 			this->reg = reg;
 			this->offset = offset;

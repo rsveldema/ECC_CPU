@@ -36,8 +36,8 @@ namespace Simulator
 				case MachineInfo::StorageStageOpcode::STORE_REG:
 				{
 					assert(pkt.dest >= 0);
-					assert(pkt.dest < (int)MachineInfo::Register::MAX_REG_ID);
-					auto src = static_cast<MachineInfo::Register>(pkt.dest);
+					assert(pkt.dest < (int)MachineInfo::RegisterID::MAX_REG_ID);
+					auto src = static_cast<MachineInfo::RegisterID>(pkt.dest);
 					auto value = pkt.value;
 					regs[src] = value;
 					break;
@@ -47,8 +47,8 @@ namespace Simulator
 				{
 					auto is_store_to_pc = pkt.is_store_to_pc;
 					assert(pkt.dest >= 0);
-					assert(pkt.dest < (int)MachineInfo::Register::MAX_REG_ID);
-					auto src = static_cast<MachineInfo::Register>(pkt.dest);
+					assert(pkt.dest < (int)MachineInfo::RegisterID::MAX_REG_ID);
+					auto src = static_cast<MachineInfo::RegisterID>(pkt.dest);
 					auto addr = pkt.value;
 
 					memory_bus.send_read_request(addr, memory_bus_id, MachineInfo::POINTER_SIZE);
@@ -82,7 +82,6 @@ namespace Simulator
 
 					break;
 				}
-
 
 				case MachineInfo::StorageStageOpcode::JMP:
 				{

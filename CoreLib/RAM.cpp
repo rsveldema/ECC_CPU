@@ -2,14 +2,13 @@
 
 namespace Simulator
 {
-
 	coro::ReturnObject RAM::run()
 	{
 		while (1)
 		{
 			if (const auto pkt_opt = toCPU.try_accept_request())
 			{
-				const auto& pkt = *pkt_opt;
+				const auto &pkt = *pkt_opt;
 
 				switch (pkt.type)
 				{
@@ -25,7 +24,7 @@ namespace Simulator
 
 					for (uint64_t i = 0; i < config.read_latency.cycles; i++)
 					{
-						Task& t = *this;
+						Task &t = *this;
 						co_await t;
 					}
 
@@ -36,13 +35,13 @@ namespace Simulator
 				case MemoryBus::Type::write:
 				{
 					const auto address = pkt.address;
-					printf("access to address %ld\n", address);
+					//printf("access to address %ld\n", address);
 					assert(address >= 0);
 					assert(address < (storage.size() - 8));
 
 					for (uint64_t i = 0; i < config.write_latency.cycles; i++)
 					{
-						Task& t = *this;
+						Task &t = *this;
 						co_await t;
 					}
 
@@ -55,7 +54,7 @@ namespace Simulator
 				}
 			}
 
-			Task& t = *this;
+			Task &t = *this;
 			co_await t;
 		}
 	}

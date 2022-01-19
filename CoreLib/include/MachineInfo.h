@@ -7,7 +7,7 @@ namespace MachineInfo
 {
 	static constexpr unsigned POINTER_SIZE = 8;
 
-	enum class Register
+	enum class RegisterID
 	{
 		R0,
 		R1,
@@ -115,7 +115,8 @@ namespace MachineInfo
 		JMP,
 		LOAD_RESTORE_PC,
 		LOAD_REG,
-		CMP
+		CMP,
+		COND_JMP
 	};
 
 	enum class StorageStageOpcode
@@ -125,6 +126,7 @@ namespace MachineInfo
 		STORE_REG,
 		STORE_MEM,
 		JMP,
+		COND_JMP,		
 		LOAD_REG
 	};
 
@@ -141,7 +143,7 @@ namespace MachineInfo
 	};
 
 	extern std::map<std::string, InstructionInfo> insnInfo;
-	extern std::map<std::string, Register> regnames;
+	extern std::map<std::string, RegisterID> regnames;
 	extern std::map<std::string, ExecuteStageInsnInfo> execInsnInfo;
 
 	static bool changesControlFlow(Opcode op)
@@ -163,7 +165,7 @@ namespace MachineInfo
 		return false;
 	}
 
-	static std::string to_string(Register r)
+	static std::string to_string(RegisterID r)
 	{
 		for (auto it : regnames)
 		{

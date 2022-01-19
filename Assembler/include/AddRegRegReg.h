@@ -8,12 +8,12 @@ namespace Insns
 	class AddRegRegReg : public Instruction
 	{
 	private:
-		MachineInfo::Register dst;
-		MachineInfo::Register src1;
-		MachineInfo::Register src2;
+		MachineInfo::RegisterID dst;
+		MachineInfo::RegisterID src1;
+		MachineInfo::RegisterID src2;
 
 	public:
-		AddRegRegReg(MachineInfo::Register dst, MachineInfo::Register src1, MachineInfo::Register src2)
+		AddRegRegReg(MachineInfo::RegisterID dst, MachineInfo::RegisterID src1, MachineInfo::RegisterID src2)
 		{
 			this->dst = dst;
 			this->src1 = src1;

@@ -25,13 +25,13 @@ namespace Simulator
 				}
 				case MachineInfo::Opcode::HALT:
 				{
-					regs[MachineInfo::Register::FLAGS] |= MachineInfo::FLAGS_MASK_HALT;
+					regs[MachineInfo::RegisterID::FLAGS] |= MachineInfo::FLAGS_MASK_HALT;
 					break;
 				}
 
 				case MachineInfo::Opcode::MOVE_PCREL_REG_CONST16:
 				{
-					auto reg = static_cast<MachineInfo::Register>((pkt.insn >> 8) & 0xff);
+					auto reg = static_cast<MachineInfo::RegisterID>((pkt.insn >> 8) & 0xff);
 					auto constValue = static_cast<int64_t>((pkt.insn >> 16) & 0xffff);
 
 					auto value = constValue + (pkt.PC);
@@ -43,8 +43,8 @@ namespace Simulator
 
 				case MachineInfo::Opcode::STORE_REG_CONST_REG:
 				{
-					auto src_reg = static_cast<MachineInfo::Register>((pkt.insn >> 8) & 0xff);
-					auto base = static_cast<MachineInfo::Register>((pkt.insn >> 16) & 0xff);
+					auto src_reg = static_cast<MachineInfo::RegisterID>((pkt.insn >> 8) & 0xff);
+					auto base = static_cast<MachineInfo::RegisterID>((pkt.insn >> 16) & 0xff);
 					auto addr1 = static_cast<int16_t>((pkt.insn >> 24) & 0xff);
 					auto addr2 = regs[base];
 
@@ -57,7 +57,7 @@ namespace Simulator
 
 				case MachineInfo::Opcode::MOVE_REG_CONST16:
 				{
-					auto reg = static_cast<MachineInfo::Register>((pkt.insn >> 8) & 0xff);
+					auto reg = static_cast<MachineInfo::RegisterID>((pkt.insn >> 8) & 0xff);
 					auto value = static_cast<int16_t>((pkt.insn >> 16) & 0xffff);
 
 					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE, (int64_t)reg, value };
@@ -67,8 +67,8 @@ namespace Simulator
 
 				case MachineInfo::Opcode::MOVE_REG_REG:
 				{
-					auto reg = static_cast<MachineInfo::Register>((pkt.insn >> 8) & 0xff);
-					auto src_reg = static_cast<MachineInfo::Register>((pkt.insn >> 16) & 0xff);
+					auto reg = static_cast<MachineInfo::RegisterID>((pkt.insn >> 8) & 0xff);
+					auto src_reg = static_cast<MachineInfo::RegisterID>((pkt.insn >> 16) & 0xff);
 
 					auto value = regs[src_reg];
 
@@ -79,9 +79,9 @@ namespace Simulator
 
 				case MachineInfo::Opcode::ADD_REG_REG_REG:
 				{
-					auto dst_reg = static_cast<MachineInfo::Register>((pkt.insn >> 8) & 0xff);
-					auto src1_reg = static_cast<MachineInfo::Register>((pkt.insn >> 16) & 0xff);
-					auto src2_reg = static_cast<MachineInfo::Register>((pkt.insn >> 24) & 0xff);
+					auto dst_reg = static_cast<MachineInfo::RegisterID>((pkt.insn >> 8) & 0xff);
+					auto src1_reg = static_cast<MachineInfo::RegisterID>((pkt.insn >> 16) & 0xff);
+					auto src2_reg = static_cast<MachineInfo::RegisterID>((pkt.insn >> 24) & 0xff);
 
 					auto value1 = regs[src1_reg];
 					auto value2 = regs[src2_reg];
@@ -93,8 +93,8 @@ namespace Simulator
 
 				case MachineInfo::Opcode::ADD_REG_REG_CONST:
 				{
-					auto dst_reg = static_cast<MachineInfo::Register>((pkt.insn >> 8) & 0xff);
-					auto src1_reg = static_cast<MachineInfo::Register>((pkt.insn >> 16) & 0xff);
+					auto dst_reg = static_cast<MachineInfo::RegisterID>((pkt.insn >> 8) & 0xff);
+					auto src1_reg = static_cast<MachineInfo::RegisterID>((pkt.insn >> 16) & 0xff);
 					auto value2 = static_cast<int8_t>((pkt.insn >> 24) & 0xff);
 
 					auto value1 = regs[src1_reg];
@@ -115,8 +115,8 @@ namespace Simulator
 
 				case MachineInfo::Opcode::CMP_REG_REG:
 				{
-					auto reg1 = static_cast<MachineInfo::Register>(pkt.insn >> 8);
-					auto reg2 = static_cast<MachineInfo::Register>(pkt.insn >> 16);
+					auto reg1 = static_cast<MachineInfo::RegisterID>(pkt.insn >> 8);
+					auto reg2 = static_cast<MachineInfo::RegisterID>(pkt.insn >> 16);
 
 					auto value1 = regs[reg1];
 					auto value2 = regs[reg2];
@@ -132,20 +132,95 @@ namespace Simulator
 
 				case MachineInfo::Opcode::JMP_EQUAL:
 				{
-					auto jmp_mask = MachineInfo::FLAGS_MASK_EQ;
+					int64_t jmp_mask = MachineInfo::FLAGS_MASK_EQ;
 
 					auto off = static_cast<int32_t>(pkt.insn >> 8);
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::JMP,
-						(int64_t)off };
+					int64_t flags = regs[MachineInfo::RegisterID::FLAGS];
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::COND_JMP,
+						(int64_t)off, jmp_mask, flags };
 					execute_bus.send(execute_pkt);
 					break;
 				}
 
 
+				case MachineInfo::Opcode::JMP_NOT_EQUAL:
+				{
+					int64_t jmp_mask = MachineInfo::FLAGS_MASK_GT | MachineInfo::FLAGS_MASK_LT;
+
+					auto off = static_cast<int32_t>(pkt.insn >> 8);
+
+					int64_t flags = regs[MachineInfo::RegisterID::FLAGS];
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::COND_JMP,
+						(int64_t)off, jmp_mask, flags };
+					execute_bus.send(execute_pkt);
+					break;
+				}
+
+
+				case MachineInfo::Opcode::JMP_GREATER:
+				{
+					int64_t jmp_mask = MachineInfo::FLAGS_MASK_GT;
+
+					auto off = static_cast<int32_t>(pkt.insn >> 8);
+
+					int64_t flags = regs[MachineInfo::RegisterID::FLAGS];
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::COND_JMP,
+						(int64_t)off, jmp_mask, flags };
+					execute_bus.send(execute_pkt);
+					break;
+				}
+
+				case MachineInfo::Opcode::JMP_GREATER_EQUAL:
+				{
+					int64_t jmp_mask = MachineInfo::FLAGS_MASK_GT | MachineInfo::FLAGS_MASK_EQ;
+
+					auto off = static_cast<int32_t>(pkt.insn >> 8);
+
+					int64_t flags = regs[MachineInfo::RegisterID::FLAGS];
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::COND_JMP,
+						(int64_t)off, jmp_mask, flags };
+					execute_bus.send(execute_pkt);
+					break;
+				}	
+				
+				case MachineInfo::Opcode::JMP_LOWER:
+				{
+					int64_t jmp_mask = MachineInfo::FLAGS_MASK_LT;
+
+					auto off = static_cast<int32_t>(pkt.insn >> 8);
+
+					int64_t flags = regs[MachineInfo::RegisterID::FLAGS];
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::COND_JMP,
+						(int64_t)off, jmp_mask, flags };
+					execute_bus.send(execute_pkt);
+					break;
+				}
+
+				case MachineInfo::Opcode::JMP_LOWER_EQUAL:
+				{
+					int64_t jmp_mask = MachineInfo::FLAGS_MASK_LT | MachineInfo::FLAGS_MASK_EQ;
+
+					auto off = static_cast<int32_t>(pkt.insn >> 8);
+
+					int64_t flags = regs[MachineInfo::RegisterID::FLAGS];
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::COND_JMP,
+						(int64_t)off, jmp_mask, flags };
+					execute_bus.send(execute_pkt);
+					break;
+				}
+
+
+
 				case MachineInfo::Opcode::LOAD_RESTORE_PC:
 				{
-					auto base = static_cast<MachineInfo::Register>((pkt.insn >> 8) & 0xff);
+					auto base = static_cast<MachineInfo::RegisterID>((pkt.insn >> 8) & 0xff);
 					auto off1 = static_cast<int16_t>(pkt.insn >> 16);
 
 					auto off2 = regs[base];
@@ -161,8 +236,8 @@ namespace Simulator
 
 				case MachineInfo::Opcode::LOAD_REG_CONST_REG:
 				{
-					auto dest = static_cast<MachineInfo::Register>((pkt.insn >> 8) & 0xff);
-					auto base = static_cast<MachineInfo::Register>((pkt.insn >> 16) & 0xff);
+					auto dest = static_cast<MachineInfo::RegisterID>((pkt.insn >> 8) & 0xff);
+					auto base = static_cast<MachineInfo::RegisterID>((pkt.insn >> 16) & 0xff);
 					auto off1 = static_cast<int16_t>(pkt.insn >> 24);
 
 					auto off2 = regs[base];

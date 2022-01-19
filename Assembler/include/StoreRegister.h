@@ -9,11 +9,11 @@ namespace Insns
 	{
 	private:
 		int offset;
-		MachineInfo::Register base_reg;
-		MachineInfo::Register src_reg;
+		MachineInfo::RegisterID base_reg;
+		MachineInfo::RegisterID src_reg;
 
 	public:
-		StoreRegister(MachineInfo::Register base_reg, int offset, MachineInfo::Register src_reg)
+		StoreRegister(MachineInfo::RegisterID base_reg, int offset, MachineInfo::RegisterID src_reg)
 		{
 			this->base_reg = base_reg;
 			this->src_reg = src_reg;

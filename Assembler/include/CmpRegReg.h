@@ -8,11 +8,11 @@ namespace Insns
 	class CmpRegReg : public Instruction
 	{
 	private:
-		MachineInfo::Register dst;
-		MachineInfo::Register src;
+		MachineInfo::RegisterID dst;
+		MachineInfo::RegisterID src;
 
 	public:
-		CmpRegReg(MachineInfo::Register dst, MachineInfo::Register src)
+		CmpRegReg(MachineInfo::RegisterID dst, MachineInfo::RegisterID src)
 		{
 			this->dst = dst;
 			this->src = src;
