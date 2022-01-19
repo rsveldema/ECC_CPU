@@ -12,10 +12,10 @@ namespace Insns
 		MachineInfo::RegisterID src;
 
 	public:
-		CmpRegReg(MachineInfo::RegisterID dst, MachineInfo::RegisterID src)
+		CmpRegReg(MachineInfo::RegisterID _dst, MachineInfo::RegisterID _src)
 		{
-			this->dst = dst;
-			this->src = src;
+			this->dst = _dst;
+			this->src = _src;
 		}
 
 		uint32_t getEncodedInstruction() override

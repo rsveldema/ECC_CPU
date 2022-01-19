@@ -20,9 +20,8 @@ namespace Simulator
 
 				case MachineInfo::ExecuteStageOpcode::CMP:
 				{
-					auto value1 = pkt.value1;
-					auto value2 = pkt.value2;
-
+					int64_t value1 = pkt.dest;
+					int64_t value2 = pkt.value1;
 
 					auto result = 0;
 
@@ -38,7 +37,7 @@ namespace Simulator
 					auto dest = MachineInfo::RegisterID::FLAGS;
 					auto src = result;
 
-					fprintf(stderr, "CMP: %ld, %ld ==> %d\n", value1, value2, result);
+					//std::cerr << "[EXECUTE] CMP: " << value1 << " -- " << value2 << "-----" << result << std::endl;
 
 					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::STORE_REG, (int64_t)dest, src };
 					store_bus.send(store_pkt);

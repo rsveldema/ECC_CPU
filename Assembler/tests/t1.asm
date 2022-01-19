@@ -5,14 +5,16 @@ MAIN:
 
 	mov %r0, 123
 	mov %r3, %r0
-	mov %r1, 1
+	mov %r1, 43
 	add %r2, %r3, %r1
 
 	mov %r4, 512
+		
+	cmp %r4, %r1
+
 	store 8(%sp), %r4
 	load %r4, 8(%sp)
 
-	cmp %r4, %r1
 	
 	je retlabel
 	jne retlabel

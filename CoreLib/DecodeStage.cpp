@@ -115,11 +115,13 @@ namespace Simulator
 
 				case MachineInfo::Opcode::CMP_REG_REG:
 				{
-					auto reg1 = static_cast<MachineInfo::RegisterID>(pkt.insn >> 8);
-					auto reg2 = static_cast<MachineInfo::RegisterID>(pkt.insn >> 16);
+					auto reg1 = static_cast<MachineInfo::RegisterID>((pkt.insn >> 8) & 0xff);
+					auto reg2 = static_cast<MachineInfo::RegisterID>((pkt.insn >> 16) & 0xff);
 
 					auto value1 = regs[reg1];
 					auto value2 = regs[reg2];
+
+					//std::cerr << "[DECODE] CMP: " << value1 << " -- " << value2 << std::endl;
 
 					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::CMP,
 						value1,
@@ -186,8 +188,8 @@ namespace Simulator
 						(int64_t)off, jmp_mask, flags };
 					execute_bus.send(execute_pkt);
 					break;
-				}	
-				
+				}
+
 				case MachineInfo::Opcode::JMP_LOWER:
 				{
 					int64_t jmp_mask = MachineInfo::FLAGS_MASK_LT;
