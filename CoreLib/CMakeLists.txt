@@ -8,7 +8,7 @@ add_library (CoreLib  "include/CoreLib.h" "Cache.cpp" "include/SimComponent.h" "
 
 target_compile_features(CoreLib PUBLIC cxx_std_20)
 
-target_link_options(CoreLib PUBLIC -fcoroutines)
+#target_link_options(CoreLib PUBLIC -fcoroutines)
 
 #set_property(TARGET CoreLib PROPERTY CXX_STANDARD 20)
 
