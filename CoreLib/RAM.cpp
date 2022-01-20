@@ -18,12 +18,34 @@ namespace Simulator
 					assert(address >= 0);
 					assert(address < (storage.size() - 8));
 
-					MemoryBus::payload_t value;
 
 					MachineInfo::instruction_t ret;
 					auto* ptr = storage.data() + address;
 					memcpy(&ret, ptr, sizeof(ret));
 
+					MemoryBus::payload_t value(ret);
+
+					for (uint64_t i = 0; i < config.read_latency.cycles; i++)
+					{
+						Task& t = *this;
+						co_await t;
+					}
+
+					toCPU.send_read_response(value, pkt.source);
+					break;
+				}
+
+				case MemoryBus::Type::read_vec:
+				{
+					const auto address = pkt.address;
+					assert(address >= 0);
+					assert(address < (storage.size() - 8));
+
+					VectorValue ret;
+					auto* ptr = storage.data() + address;
+					ret.load_from_int64(ptr);
+
+					MemoryBus::payload_t value(ret);
 
 					for (uint64_t i = 0; i < config.read_latency.cycles; i++)
 					{
@@ -48,8 +70,9 @@ namespace Simulator
 						co_await t;
 					}
 
-					auto* ptr = reinterpret_cast<VectorValue*>(storage.data() + address);
-					*ptr = std::get<VectorValue>(pkt.payload);
+					const auto& vec = std::get<VectorValue>(pkt.payload);
+					uint8_t* ptr = storage.data() + address;
+					vec.store_at(ptr);
 					break;
 				}
 

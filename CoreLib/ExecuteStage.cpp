@@ -48,6 +48,52 @@ namespace Simulator
 					break;
 				}
 
+				case MachineInfo::ExecuteStageOpcode::SHL_REG_VALUE_VALUE:
+				{
+					const auto& dest = std::get<MachineInfo::RegisterID>(pkt.value0);
+					const auto& src1 = pkt.value1;
+					const auto& src2 = pkt.value2;
+
+					auto src = src1.shift_left_int64(src2);
+
+					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::STORE_REG,
+						dest, src };
+
+					store_bus.send(store_pkt);
+					break;
+				}
+
+				case MachineInfo::ExecuteStageOpcode::ADD_REG_VALUE_VALUE:
+				{
+					const auto& dest = std::get<MachineInfo::RegisterID>(pkt.value0);
+					const auto& src1 = pkt.value1;
+					const auto& src2 = pkt.value2;
+
+					auto src = src1.add_int64(src2);
+
+					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::STORE_REG,
+						dest, src };
+
+					store_bus.send(store_pkt);
+					break;
+				}
+
+				// reg = [value + value]
+				case MachineInfo::ExecuteStageOpcode::LOAD_REG:
+				{
+					auto dest = std::get<MachineInfo::RegisterID>(pkt.value0);
+					auto off1 = pkt.value1;
+					auto off2 = pkt.value2;
+
+					auto offset = off1.add_int64(off2);
+
+					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::LOAD_REG,
+						dest, offset };
+
+					store_bus.send(store_pkt);
+					break;
+				}
+
 				case MachineInfo::ExecuteStageOpcode::STORE_ADDR_VALUE:
 				{
 					const auto& value = std::get<VectorValue>(pkt.value0);
@@ -80,21 +126,6 @@ namespace Simulator
 					break;
 				}
 
-				// reg = [value + value]
-				case MachineInfo::ExecuteStageOpcode::LOAD_REG:
-				{
-					auto dest = std::get<MachineInfo::RegisterID>(pkt.value0);
-					auto off1 = pkt.value1;
-					auto off2 = pkt.value2;
-
-					auto offset = off1.add_int64(off2);
-
-					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::LOAD_REG,
-						dest, offset };
-
-					store_bus.send(store_pkt);
-					break;
-				}
 
 
 				case MachineInfo::ExecuteStageOpcode::COND_JMP:
@@ -109,17 +140,25 @@ namespace Simulator
 
 					const auto should_jmp = flags.bit_and_int64(jmp_mask);
 
-					if (false) // TODO: should_jmp)
+					if (should_jmp.all_equal_int64())
 					{
-						ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::JMP,
-							new_address, should_jmp };
-						store_bus.send(store_pkt);
+						if (should_jmp.get_int64(0))
+						{
+							ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::JMP,
+								new_address, should_jmp };
+							store_bus.send(store_pkt);
+						}
+						else
+						{
+							ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::JMP,
+								next_address, should_jmp };
+							store_bus.send(store_pkt);
+						}
 					}
 					else
 					{
-						ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::JMP,
-							next_address, should_jmp };
-						store_bus.send(store_pkt);
+						// divergence: we should let some jmp and some not.
+						abort();
 					}
 					break;
 				}

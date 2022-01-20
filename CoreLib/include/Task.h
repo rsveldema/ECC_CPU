@@ -9,6 +9,20 @@
 namespace coro
 {
 
+	/** C++ coroutines require the return type to hold a nested promise_type.
+	*/
+	struct ReturnObject {
+		struct promise_type {
+			std::exception_ptr exception_ = nullptr;
+
+			ReturnObject get_return_object() { return {}; }
+			std::suspend_never initial_suspend() { return {}; }
+			std::suspend_never final_suspend() noexcept { return {}; }
+			void return_void() {}
+			void unhandled_exception() { exception_ = std::current_exception(); }
+		};
+	};
+
 
 	/** active components (simulated things that do stuff)
 	* should inherit from this so that we can semi-parallel execute them using co-routines.
@@ -22,13 +36,15 @@ namespace coro
 		const std::string name;
 		bool dead = false;
 		bool running = false;
+		void* magic = (void*)(uint64_t)0xdeadbeef;
+
 
 		Task(const std::string& _name)
 			: name(_name)
 		{}
 
-		Task(const Task& ) = delete;
-		Task(const Task&& ) = delete;
+		Task(const Task&) = delete;
+		Task(const Task&&) = delete;
 
 		void operator = (const Task& t) = delete;
 
@@ -37,31 +53,19 @@ namespace coro
 			dead = true;
 		}
 
-		std::coroutine_handle<> h_;
-		
-		constexpr bool await_ready() const noexcept 
+		std::coroutine_handle<ReturnObject::promise_type> h_;
+
+		constexpr bool await_ready() const noexcept
 		{
-			return false; 
+			return false;
 		}
-		
-		void await_suspend(std::coroutine_handle<> h);
-		
-		constexpr void await_resume() const noexcept 
+
+		void await_suspend(std::coroutine_handle<ReturnObject::promise_type> h);
+
+		constexpr void await_resume() const noexcept
 		{
 		}
 
 		void resume();
-	};
-
-	/** C++ coroutines require the return type to hold a nested promise_type.
-	*/
-	struct ReturnObject {
-		struct promise_type {
-			ReturnObject get_return_object() { return {}; }
-			std::suspend_never initial_suspend() { return {}; }
-			std::suspend_never final_suspend() noexcept { return {}; }
-			void return_void() {}
-			void unhandled_exception() {}
-		};
 	};
 }

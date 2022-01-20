@@ -2,8 +2,12 @@
 
 MAIN:
 	mov %sp, 1024
-
+	mov %r0, %block_index
+	shl %r0, %r0, 3
+	add %sp, %sp, %r0  # now %sp = { 1024, 1024+8, 1024 + 16, etc. }
+	
 	mov %r0, 123
+
 	mov %r3, %r0
 	mov %r1, 43
 	add %r2, %r3, %r1

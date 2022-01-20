@@ -14,6 +14,8 @@ namespace MachineInfo
 
 		{ "halt", { Opcode::HALT}},
 
+		{"move_blockid", {Opcode::MOVE_REG_BLOCK_INDEX}},
+
 		{"movreg2reg", { Opcode::MOVE_REG_REG}}, // rX = rY
 
 		{"move_reg_cpuid", { Opcode::MOVE_REG_CPU_ID}},  // rX = <CPU_ID> (32 bit)
@@ -74,6 +76,7 @@ namespace MachineInfo
 		{ "%sp", RegisterID::SP },
 		{ "%flags", RegisterID::FLAGS },
 		{ "%pc", RegisterID::PC },
+		{ "%block_index", RegisterID::BLOCK_INDEX },
 	};
 
 }

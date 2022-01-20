@@ -28,6 +28,9 @@ namespace MachineInfo
 
 		R8,
 		R9,
+
+		BLOCK_INDEX,
+
 		SP,
 		FLAGS,
 
@@ -67,6 +70,8 @@ namespace MachineInfo
 	{
 		NOP,
 		HALT,
+
+		MOVE_REG_BLOCK_INDEX,
 
 		MOVE_REG_REG, // rX = rY
 
@@ -124,7 +129,9 @@ namespace MachineInfo
 		LOAD_RESTORE_PC,
 		LOAD_REG,
 		CMP,
-		COND_JMP
+		COND_JMP,
+		ADD_REG_VALUE_VALUE,
+		SHL_REG_VALUE_VALUE
 	};
 
 	enum class StorageStageOpcode

@@ -36,12 +36,12 @@ namespace Simulator
 
 					MachineInfo::memory_address_t value = constValue + pkt.PC;
 
-					VectorValue vec;
-					vec.setPC(value);
+					VectorValue vec = VectorValue::create_vec_int64(value);
 
 					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE,
 									reg,
-									vec };
+									vec,
+					};
 					execute_bus.send(execute_pkt);
 					break;
 				}
@@ -55,11 +55,23 @@ namespace Simulator
 					const auto& addr2 = regs[base_reg_id];
 					const auto& value = regs[src_reg];
 
-					VectorValue addr1;
-					addr1.replicate_int64(addr_offset_value);
+					VectorValue addr1 = VectorValue::create_vec_int64(addr_offset_value);
 
 					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::STORE_ADDR_VALUE,
 						value, addr1, addr2 };
+					execute_bus.send(execute_pkt);
+					break;
+				}
+
+				// reg = blockIndex
+				case MachineInfo::Opcode::MOVE_REG_BLOCK_INDEX:
+				{
+					const auto& reg = static_cast<MachineInfo::RegisterID>((pkt.insn >> 8) & 0xff);
+
+					VectorValue value = VectorValue::create_vec_int64_blockindex();
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE,
+						reg, value };
 					execute_bus.send(execute_pkt);
 					break;
 				}
@@ -69,8 +81,7 @@ namespace Simulator
 					const auto& reg = static_cast<MachineInfo::RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto& const_value = static_cast<int16_t>((pkt.insn >> 16) & 0xffff);
 
-					VectorValue value;
-					value.replicate_int64(const_value);
+					VectorValue value = VectorValue::create_vec_int64(const_value);
 
 					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE,
 						reg, value };
@@ -91,6 +102,23 @@ namespace Simulator
 					break;
 				}
 
+				case MachineInfo::Opcode::L_SSHIFT_REG_REG_CONST:
+				{
+					const auto dst_reg = static_cast<MachineInfo::RegisterID>((pkt.insn >> 8) & 0xff);
+					const auto src1_reg = static_cast<MachineInfo::RegisterID>((pkt.insn >> 16) & 0xff);
+					const auto value2_const = static_cast<int8_t>((pkt.insn >> 24) & 0xff);
+
+					const auto value2 = VectorValue::create_vec_int64(value2_const);
+
+					const auto& value1 = regs[src1_reg];
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::SHL_REG_VALUE_VALUE,
+						dst_reg, value1, value2 };
+					execute_bus.send(execute_pkt);
+					break;
+				}
+
+
 				case MachineInfo::Opcode::ADD_REG_REG_REG:
 				{
 					const auto dst_reg = static_cast<MachineInfo::RegisterID>((pkt.insn >> 8) & 0xff);
@@ -100,11 +128,12 @@ namespace Simulator
 					const auto& value1 = regs[src1_reg];
 					const auto& value2 = regs[src2_reg];
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE,
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::ADD_REG_VALUE_VALUE,
 						dst_reg, value1, value2 };
 					execute_bus.send(execute_pkt);
 					break;
 				}
+
 
 				// reg = reg + const
 				case MachineInfo::Opcode::ADD_REG_REG_CONST:
@@ -113,12 +142,11 @@ namespace Simulator
 					const auto src1_reg = static_cast<MachineInfo::RegisterID>((pkt.insn >> 16) & 0xff);
 					const auto value2_const = static_cast<int8_t>((pkt.insn >> 24) & 0xff);
 
-					VectorValue value2;
-					value2.replicate_int64(value2_const);
+					VectorValue value2 = VectorValue::create_vec_int64(value2_const);
 
 					const auto& value1 = regs[src1_reg];
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE,
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::ADD_REG_VALUE_VALUE,
 						dst_reg, value1, value2 };
 					execute_bus.send(execute_pkt);
 					break;
@@ -199,8 +227,7 @@ namespace Simulator
 					const auto base = static_cast<MachineInfo::RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto off1_const = static_cast<int16_t>(pkt.insn >> 16);
 
-					VectorValue off1;
-					off1.replicate_int64(off1_const);
+					VectorValue off1 = VectorValue::create_vec_int64(off1_const);
 
 					const auto& off2 = regs[base];
 
@@ -219,8 +246,7 @@ namespace Simulator
 					const auto base = static_cast<MachineInfo::RegisterID>((pkt.insn >> 16) & 0xff);
 					const auto off1_const = static_cast<int16_t>(pkt.insn >> 24);
 
-					VectorValue off1;
-					off1.replicate_int64(off1_const);
+					VectorValue off1 = VectorValue::create_vec_int64(off1_const);
 
 					const auto& off2 = regs[base];
 
@@ -248,18 +274,16 @@ namespace Simulator
 
 	void DecodeStage::handle_conditional_jump(uint32_t jmp_mask_const, const FetchToDecodeBus::Packet& pkt)
 	{
-		auto PC = pkt.PC;
+		const auto PC = pkt.PC;
 
-		VectorValue jmp_mask;
-		jmp_mask.replicate_int64(jmp_mask_const);
+		const VectorValue jmp_mask = VectorValue::create_vec_int64(jmp_mask_const);
 
-		auto off_const = static_cast<int32_t>(pkt.insn >> 8);
-		VectorValue off;
-		off.replicate_int64(off_const);
+		const auto off_const = static_cast<int32_t>(pkt.insn >> 8);
+		const VectorValue off = VectorValue::create_vec_int64(off_const);
 
 		const auto& flags = regs[MachineInfo::RegisterID::FLAGS];
 
-		DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::COND_JMP,
+		const DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::COND_JMP,
 			off, jmp_mask, flags };
 		execute_bus.send(execute_pkt);
 	}

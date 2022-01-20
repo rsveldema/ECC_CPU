@@ -65,6 +65,9 @@ namespace {
 		if (opcodeName == "nop")
 			return Mnemonic::NOP;
 
+		if (opcodeName == "shl")
+			return Mnemonic::SHL;
+
 		if (opcodeName == "halt")
 			return Mnemonic::HALT;
 
@@ -226,7 +229,7 @@ void Program::parseLine(const Line& line, const SourcePosition& pos)
 	case Mnemonic::JL:
 	case Mnemonic::JLE:
 	{
-		auto l = toks[1];
+		const auto& l = toks[1];
 		Add(new Jmp(l, pos, op));
 		break;
 	}
@@ -245,6 +248,19 @@ void Program::parseLine(const Line& line, const SourcePosition& pos)
 		break;
 	}
 
+	case Mnemonic::SHL:
+	{
+		if (isRegister(toks[1]) && isRegister(toks[2]) && isInt8Constant(toks[3]))
+		{
+			Add(new ShlRegRegConst(getRegisterID(toks[1]), getRegisterID(toks[2]), getInt8Constant(toks[3])));
+		}
+		else
+		{
+			pos.error(std::string("failed to find a matching mov insn for: ") + line.data);
+		}
+		break;
+	}
+
 	case Mnemonic::MOV:
 	{
 		if (isRegister(toks[1]) && isInt16Constant(toks[2]))
@@ -253,7 +269,15 @@ void Program::parseLine(const Line& line, const SourcePosition& pos)
 		}
 		else if (isRegister(toks[1]) && isRegister(toks[2]))
 		{
-			Add(new MoveRegReg(getRegisterID(toks[1]), getRegisterID(toks[2])));
+			auto src = getRegisterID(toks[2]);
+			if (src == MachineInfo::RegisterID::BLOCK_INDEX)
+			{
+				Add(new MoveRegBlockIndex(getRegisterID(toks[1]), getRegisterID(toks[2])));
+			}
+			else
+			{
+				Add(new MoveRegReg(getRegisterID(toks[1]), getRegisterID(toks[2])));
+			}
 		}
 		else if (isRegister(toks[1]) && isSymbol(toks[2]))
 		{
@@ -297,7 +321,11 @@ void Program::parseLine(const Line& line, const SourcePosition& pos)
 
 	case Mnemonic::ADD:
 	{
-		if (isRegister(toks[1]) && isRegister(toks[2]) && isInt8Constant(toks[3]))
+		if (toks.size() != 4)
+		{
+			pos.error("need 3 operands to " + line.data);
+		}
+		else if (isRegister(toks[1]) && isRegister(toks[2]) && isInt8Constant(toks[3]))
 		{
 			Add(new AddRegRegConst(getRegisterID(toks[1]), getRegisterID(toks[2]), getInt8Constant(toks[3])));
 		}
@@ -317,7 +345,6 @@ void Program::parseLine(const Line& line, const SourcePosition& pos)
 	}
 }
 
-
 void Line::trim()
 {
 	int start = 0;
@@ -332,6 +359,15 @@ void Line::trim()
 
 	size_t count = data.size() - start;
 	data = data.substr(start, count);
+
+	for (int i = 0; i < data.size(); i++)
+	{
+		if (data[i] == '/' || data[i] == '#')
+		{
+			data = data.substr(0, i);
+			break;
+		}
+	}
 }
 
 bool Line::StartsWith(const std::string& prefix) const
@@ -373,11 +409,6 @@ void Program::parse(const std::string& filename)
 		line.trim();
 
 		if (line.data.size() == 0)
-		{
-			continue;
-		}
-
-		if (line[0] == '#' || line[0] == '/')
 		{
 			continue;
 		}

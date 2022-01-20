@@ -17,5 +17,6 @@ enum class Mnemonic
 	JG,
 	JGE,
 	JL,
-	JLE
+	JLE,
+	SHL
 };

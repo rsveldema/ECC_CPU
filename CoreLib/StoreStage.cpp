@@ -19,12 +19,15 @@ namespace Simulator
 				case MachineInfo::StorageStageOpcode::NOP: break;
 				case MachineInfo::StorageStageOpcode::STORE_MEM:
 				{
-					const auto dest = std::get<MachineInfo::memory_address_t>(pkt.dest);
+					const auto& dest = std::get<VectorValue>(pkt.dest);
 					const auto& src = std::get<VectorValue>(pkt.src);
 
-					this->memory_bus.send_write_request(dest, memory_bus_id, src);
+					assert(dest.are_all_adjacent_memory_addresses(8));
+
+					this->memory_bus.send_write_request(dest.get_int64(0), memory_bus_id, src);
 					break;
 				}
+
 				case MachineInfo::StorageStageOpcode::STORE_PC:
 				{
 					abort();
@@ -48,9 +51,11 @@ namespace Simulator
 					assert(isValid(dest));
 					const auto is_store_to_pc = pkt.is_store_to_pc;
 
-					auto src = std::get<MachineInfo::memory_address_t>(pkt.src);
+					auto src = std::get<VectorValue>(pkt.src);
 
-					memory_bus.send_read_request_vec(src, memory_bus_id);
+					assert(src.are_all_adjacent_memory_addresses(8));
+
+					memory_bus.send_read_request_vec(src.get_int64(0), memory_bus_id);
 
 					while (1)
 					{

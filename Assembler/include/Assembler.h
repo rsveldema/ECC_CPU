@@ -20,6 +20,8 @@
 #include "StoreRegister.h"
 #include "LoadRegister.h"
 #include "MoveRegSymbol.h"
+#include "ShlRegRegConst.h"
+#include "MoveRegBlockIndex.h"
 
 class Line
 {
@@ -29,6 +31,7 @@ public:
 	bool StartsWith(const std::string& s) const;
 	bool EndsWith(const std::string& s) const;
 
+	// remove whitespace and comments
 	void trim();
 
 	char operator[](unsigned ix) const
