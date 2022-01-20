@@ -26,17 +26,14 @@ namespace Simulator
 				co_await t;
 			}
 
-			unsigned size = MachineInfo::INSTRUCTION_SIZE; // 32 bit fixed width insns
-			memory_bus.send_read_request(fetch_PC, memory_bus_id, size);
+			memory_bus.send_read_request_insn(fetch_PC, memory_bus_id);
 
 			while (1)
 			{
 				if (auto response = memory_bus.try_accept_response())
 				{
-					auto* ptr = response->payload.data();
+					auto insn = std::get<MachineInfo::instruction_t>(response->payload);
 					//std::cerr << "received response for address " << fetch_PC << std::endl;
-
-					uint32_t insn = *reinterpret_cast<uint32_t*>(ptr);
 
 					auto opcode = static_cast<MachineInfo::Opcode>(insn & 0xff);
 					if (MachineInfo::changesControlFlow(opcode))

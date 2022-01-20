@@ -7,9 +7,9 @@ namespace Simulator
 	{
 		while (1)
 		{
-			if (auto pkt_opt = this->execute_bus.try_recv())
+			if (const auto pkt_opt = this->execute_bus.try_recv())
 			{
-				auto pkt = *pkt_opt;
+				const auto& pkt = *pkt_opt;
 
 				auto PC = pkt.PC;
 				auto opcode = pkt.opcode;
@@ -19,12 +19,10 @@ namespace Simulator
 				case MachineInfo::StorageStageOpcode::NOP: break;
 				case MachineInfo::StorageStageOpcode::STORE_MEM:
 				{
-					auto addr = pkt.dest;
-					auto value = pkt.value;
+					const auto dest = std::get<MachineInfo::memory_address_t>(pkt.dest);
+					const auto& src = std::get<VectorValue>(pkt.src);
 
-					unsigned size = 8;
-
-					this->memory_bus.send_write_request(addr, memory_bus_id, size, value);
+					this->memory_bus.send_write_request(dest, memory_bus_id, src);
 					break;
 				}
 				case MachineInfo::StorageStageOpcode::STORE_PC:
@@ -35,38 +33,43 @@ namespace Simulator
 
 				case MachineInfo::StorageStageOpcode::STORE_REG:
 				{
-					assert(pkt.dest >= 0);
-					assert(pkt.dest < (int)MachineInfo::RegisterID::MAX_REG_ID);
-					auto src = static_cast<MachineInfo::RegisterID>(pkt.dest);
-					auto value = pkt.value;
-					regs[src] = value;
+					const auto dest = std::get<MachineInfo::RegisterID>(pkt.dest);
+					assert(isValid(dest));
+					const auto& src = std::get<VectorValue>(pkt.src);
+
+					regs[dest] = src;
 					break;
 				}
 
+				// reg = memory[src]
 				case MachineInfo::StorageStageOpcode::LOAD_REG:
 				{
-					auto is_store_to_pc = pkt.is_store_to_pc;
-					assert(pkt.dest >= 0);
-					assert(pkt.dest < (int)MachineInfo::RegisterID::MAX_REG_ID);
-					auto src = static_cast<MachineInfo::RegisterID>(pkt.dest);
-					auto addr = pkt.value;
+					auto dest = std::get<MachineInfo::RegisterID>(pkt.dest);
+					assert(isValid(dest));
+					const auto is_store_to_pc = pkt.is_store_to_pc;
 
-					memory_bus.send_read_request(addr, memory_bus_id, MachineInfo::POINTER_SIZE);
+					auto src = std::get<MachineInfo::memory_address_t>(pkt.src);
+
+					memory_bus.send_read_request_vec(src, memory_bus_id);
 
 					while (1)
 					{
 						if (auto new_pc_pkt_opt = memory_bus.try_accept_response())
 						{
-							auto new_pc_pkt = *new_pc_pkt_opt;
-							auto value = *(int64_t*)&new_pc_pkt.payload[0];
+							const auto& new_pc_pkt = *new_pc_pkt_opt;
+							const auto& payload = new_pc_pkt.payload;
+							const auto& value = std::get<VectorValue>(payload);
 
-							regs[src] = value;
+
+							regs[dest] = value;
 
 							//std::cerr << "REG[" << MachineInfo::to_string(src) << "] = " << std::to_string(value) << std::endl;
 
+
 							if (is_store_to_pc)
 							{
-								fetch_bus.send(StoreToFetchBus::Packet{ value });
+								auto new_pc = value.get_PC();
+								fetch_bus.send(StoreToFetchBus::Packet{ new_pc });
 							}
 							break;
 						}
@@ -85,7 +88,7 @@ namespace Simulator
 
 				case MachineInfo::StorageStageOpcode::JMP:
 				{
-					auto new_address = pkt.dest;
+					auto new_address = std::get<MachineInfo::memory_address_t>(pkt.dest);
 
 					fetch_bus.send(StoreToFetchBus::Packet{ new_address });
 					break;

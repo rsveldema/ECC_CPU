@@ -2,10 +2,17 @@
 
 #include <map>
 #include <string>
+#include <cstdint>
 
 namespace MachineInfo
 {
-	static constexpr unsigned POINTER_SIZE = 8;
+	using instruction_t = uint32_t;
+
+	using memory_address_t = uint64_t;
+
+	static constexpr unsigned POINTER_SIZE = sizeof(memory_address_t);
+	static constexpr auto INSTRUCTION_SIZE = sizeof(instruction_t);
+
 
 	enum class RegisterID
 	{
@@ -29,7 +36,8 @@ namespace MachineInfo
 		MAX_REG_ID
 	};
 
-	static const uint64_t FLAGS_MASK_HALT = (1 << 0);
+	static const uint64_t MACHINE_FLAGS_MASK_HALT = (1 << 0);
+
 	static const uint64_t FLAGS_MASK_EQ = (1 << 1);
 	static const uint64_t FLAGS_MASK_GT = (1 << 2);
 	static const uint64_t FLAGS_MASK_LT = (1 << 3);
@@ -126,11 +134,10 @@ namespace MachineInfo
 		STORE_REG,
 		STORE_MEM,
 		JMP,
-		COND_JMP,		
+		COND_JMP,
 		LOAD_REG
 	};
 
-	static constexpr auto INSTRUCTION_SIZE = 4;
 
 	struct InstructionInfo
 	{
@@ -167,7 +174,7 @@ namespace MachineInfo
 
 	static std::string to_string(RegisterID r)
 	{
-		for (auto it : regnames)
+		for (const auto& it : regnames)
 		{
 			if (it.second == r)
 			{
@@ -179,7 +186,7 @@ namespace MachineInfo
 
 	static std::string to_string(Opcode op)
 	{
-		for (auto it : insnInfo)
+		for (const auto& it : insnInfo)
 		{
 			if (it.second.opcode == op)
 			{
@@ -192,7 +199,7 @@ namespace MachineInfo
 
 	static std::string to_string(ExecuteStageOpcode op)
 	{
-		for (auto it : execInsnInfo)
+		for (const auto& it : execInsnInfo)
 		{
 			if (it.second.opcode == op)
 			{

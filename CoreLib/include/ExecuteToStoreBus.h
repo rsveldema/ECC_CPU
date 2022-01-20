@@ -11,10 +11,13 @@ namespace Simulator
 	public:
 		struct Packet
 		{
-			uint64_t PC;
+			MachineInfo::memory_address_t PC;
 			MachineInfo::StorageStageOpcode opcode;
-			int64_t dest;
-			int64_t value;
+
+			// in case its an address / register:
+			std::variant<MachineInfo::memory_address_t, VectorValue, MachineInfo::RegisterID> dest;
+			std::variant<MachineInfo::memory_address_t, VectorValue, MachineInfo::RegisterID> src;
+
 			bool is_store_to_pc = false;
 		};
 
@@ -30,7 +33,7 @@ namespace Simulator
 			{
 				return std::nullopt;
 			}
-			auto v = queue.front();
+			const Packet v = queue.front();
 			queue.pop();
 			return v;
 		}

@@ -1,39 +1,44 @@
 #pragma once
 
 #include <cassert>
+#include "VectorValue.h"
 
 namespace Simulator
 {
+	static bool isValid(const MachineInfo::RegisterID id)
+	{
+		return
+			(id >= MachineInfo::RegisterID::R0) &&
+			(id < MachineInfo::RegisterID::MAX_REG_ID);
+	}
 
 	class RegisterFile
 	{
 	public:
-		using Register = int64_t;
 
-		Register regs[static_cast<int>(MachineInfo::RegisterID::MAX_REG_ID)];
+		VectorValue regs[static_cast<int>(MachineInfo::RegisterID::MAX_REG_ID)];
+		uint32_t machine_flags = 0;
 
-		Register& operator [](const MachineInfo::RegisterID id)
+		VectorValue& operator [](const MachineInfo::RegisterID id)
 		{
 			assert(isValid(id));
 			return regs[static_cast<int>(id)];
 		}
 
-		Register operator [](const MachineInfo::RegisterID id) const
+		VectorValue operator [](const MachineInfo::RegisterID id) const
 		{
 			assert(isValid(id));
 			return regs[static_cast<int>(id)];
 		}
 
-		bool isValid(const MachineInfo::RegisterID id) const
+		void setMachineFlag(uint32_t flags)
 		{
-			return
-				(id >= MachineInfo::RegisterID::R0) &&
-				(id < MachineInfo::RegisterID::MAX_REG_ID);
+			machine_flags |= flags;
 		}
 
 		bool hasHalted() const
 		{
-			return (*this)[MachineInfo::RegisterID::FLAGS] & MachineInfo::FLAGS_MASK_HALT;
+			return machine_flags & MachineInfo::MACHINE_FLAGS_MASK_HALT;
 		}
 	};
 }

@@ -10,7 +10,7 @@ namespace Simulator
 	public:
 		struct Packet
 		{
-			int64_t newpc;
+			MachineInfo::memory_address_t newpc;
 		};
 
 		void send(const Packet& pkt)
@@ -25,7 +25,7 @@ namespace Simulator
 			{
 				return std::nullopt;
 			}
-			auto v = queue.front();
+			Packet v = queue.front();
 			queue.pop();
 			return v;
 		}

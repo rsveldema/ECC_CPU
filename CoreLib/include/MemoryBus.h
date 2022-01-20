@@ -4,8 +4,11 @@
 #include <queue>
 #include <optional>
 #include <array>
+#include <variant>
 
 #include "MachineInfo.h"
+#include "VectorValue.h"
+
 
 namespace Simulator
 {
@@ -20,26 +23,26 @@ namespace Simulator
 			MachineInfo::CoreComponentID within_core_id;
 		};
 
-		using memory_address_t = uint64_t;
 
 		enum class Type
 		{
-			read,
-			write,
+			read_insn,
+			read_vec,
+			write_vec,
 			read_response,
 			write_response
 		};
 
-		using payload_t = std::array<uint8_t, 16>;
+		using payload_t = std::variant<VectorValue, MachineInfo::memory_address_t, MachineInfo::instruction_t>;
 
 		struct Packet
 		{
 			Type type;
 			BusID source;
-			memory_address_t address;
-			unsigned size;
+			MachineInfo::memory_address_t address;
 			payload_t payload;
 		};
+
 
 		std::queue<Packet> request_queue;
 		std::queue<Packet> response_queue;
@@ -49,25 +52,29 @@ namespace Simulator
 			return { core_id, within_id };
 		}
 
-		void send_read_request(memory_address_t address, const BusID& source, unsigned size)
+		void send_read_request_insn(MachineInfo::memory_address_t address, const BusID& source)
 		{
-			Packet pkt{ Type::read, source, address, size };
+			Packet pkt{ Type::read_insn, source, address };
 			send_request(pkt);
 		}
 
-		void send_write_request(memory_address_t address,
+		void send_read_request_vec(MachineInfo::memory_address_t address, const BusID& source)
+		{
+			Packet pkt{ Type::read_vec, source, address };
+			send_request(pkt);
+		}
+
+		void send_write_request(MachineInfo::memory_address_t address,
 			const BusID& source,
-			unsigned size,
-			uint64_t data)
+			const VectorValue& value)
 		{
-			Packet pkt{ Type::write, source, address, size };
-			*reinterpret_cast<uint64_t*>(&pkt.payload) = data;
+			Packet pkt{ Type::write_vec, source, address, value };
 			send_request(pkt);
 		}
 
-		void send_read_response(const payload_t& value, const BusID& source, unsigned size)
+		void send_read_response(const payload_t& value, const BusID& source)
 		{
-			Packet pkt{ Type::read_response, source, 0, size, value };
+			Packet pkt{ Type::read_response, source, 0, value };
 			send_response(pkt);
 		}
 
@@ -75,7 +82,7 @@ namespace Simulator
 		{
 			if (!request_queue.empty())
 			{
-				auto f = request_queue.front();
+				const Packet f = request_queue.front();
 				request_queue.pop();
 				return f;
 			}
@@ -86,7 +93,7 @@ namespace Simulator
 		{
 			if (!response_queue.empty())
 			{
-				auto f = response_queue.front();
+				const Packet f = response_queue.front();
 				response_queue.pop();
 				return f;
 			}

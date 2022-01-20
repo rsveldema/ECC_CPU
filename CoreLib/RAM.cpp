@@ -8,11 +8,11 @@ namespace Simulator
 		{
 			if (const auto pkt_opt = toCPU.try_accept_request())
 			{
-				const auto &pkt = *pkt_opt;
+				const auto& pkt = *pkt_opt;
 
 				switch (pkt.type)
 				{
-				case MemoryBus::Type::read:
+				case MemoryBus::Type::read_insn:
 				{
 					const auto address = pkt.address;
 					assert(address >= 0);
@@ -20,19 +20,22 @@ namespace Simulator
 
 					MemoryBus::payload_t value;
 
-					std::copy(storage.begin() + address, storage.begin() + address + pkt.size, value.begin());
+					MachineInfo::instruction_t ret;
+					auto* ptr = storage.data() + address;
+					memcpy(&ret, ptr, sizeof(ret));
+
 
 					for (uint64_t i = 0; i < config.read_latency.cycles; i++)
 					{
-						Task &t = *this;
+						Task& t = *this;
 						co_await t;
 					}
 
-					toCPU.send_read_response(value, pkt.source, pkt.size);
+					toCPU.send_read_response(value, pkt.source);
 					break;
 				}
 
-				case MemoryBus::Type::write:
+				case MemoryBus::Type::write_vec:
 				{
 					const auto address = pkt.address;
 					//printf("access to address %ld\n", address);
@@ -41,11 +44,12 @@ namespace Simulator
 
 					for (uint64_t i = 0; i < config.write_latency.cycles; i++)
 					{
-						Task &t = *this;
+						Task& t = *this;
 						co_await t;
 					}
 
-					std::copy(pkt.payload.begin(), pkt.payload.end(), storage.begin() + address);
+					auto* ptr = reinterpret_cast<VectorValue*>(storage.data() + address);
+					*ptr = std::get<VectorValue>(pkt.payload);
 					break;
 				}
 
@@ -54,7 +58,7 @@ namespace Simulator
 				}
 			}
 
-			Task &t = *this;
+			Task& t = *this;
 			co_await t;
 		}
 	}

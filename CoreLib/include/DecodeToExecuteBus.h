@@ -1,7 +1,10 @@
 #pragma once
 
 #include <optional>
+#include <variant>
+
 #include "MachineInfo.h"
+#include "RegisterFile.h"
 
 namespace Simulator
 {
@@ -11,11 +14,12 @@ namespace Simulator
 	public:
 		struct Packet
 		{
-			uint64_t PC;
+			MachineInfo::memory_address_t PC;
 			MachineInfo::ExecuteStageOpcode opcode;
-			int64_t dest;
-			int64_t value1;
-			int64_t value2;
+
+			std::variant<MachineInfo::RegisterID, VectorValue> value0;
+			VectorValue value1;
+			VectorValue value2;
 		};
 
 		void send(const Packet& pkt)
@@ -30,7 +34,7 @@ namespace Simulator
 			{
 				return std::nullopt;
 			}
-			auto v = queue.front();
+			const Packet v = queue.front();
 			queue.pop();
 			return v;
 		}
