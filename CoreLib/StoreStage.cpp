@@ -65,7 +65,6 @@ namespace Simulator
 							const auto& payload = new_pc_pkt.payload;
 							const auto& value = std::get<VectorValue>(payload);
 
-
 							regs[dest] = value;
 
 							//std::cerr << "REG[" << MachineInfo::to_string(src) << "] = " << std::to_string(value) << std::endl;

@@ -35,7 +35,7 @@ namespace Simulator
 					break;
 				}
 
-				case MemoryBus::Type::read_vec:
+				case MemoryBus::Type::read_vec64:
 				{
 					const auto address = pkt.address;
 					assert(address >= 0);
@@ -57,7 +57,7 @@ namespace Simulator
 					break;
 				}
 
-				case MemoryBus::Type::write_vec:
+				case MemoryBus::Type::write_vec64:
 				{
 					const auto address = pkt.address;
 					//printf("access to address %ld\n", address);

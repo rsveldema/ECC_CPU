@@ -27,8 +27,8 @@ namespace Simulator
 		enum class Type
 		{
 			read_insn,
-			read_vec,
-			write_vec,
+			read_vec64,
+			write_vec64,
 			read_response,
 			write_response
 		};
@@ -60,7 +60,7 @@ namespace Simulator
 
 		void send_read_request_vec(MachineInfo::memory_address_t address, const BusID& source)
 		{
-			Packet pkt{ Type::read_vec, source, address };
+			Packet pkt{ Type::read_vec64, source, address };
 			send_request(pkt);
 		}
 
@@ -68,7 +68,7 @@ namespace Simulator
 			const BusID& source,
 			const VectorValue& value)
 		{
-			Packet pkt{ Type::write_vec, source, address, value };
+			Packet pkt{ Type::write_vec64, source, address, value };
 			send_request(pkt);
 		}
 
