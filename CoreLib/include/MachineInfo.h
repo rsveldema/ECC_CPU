@@ -137,7 +137,6 @@ namespace MachineInfo
 	enum class StorageStageOpcode
 	{
 		NOP,
-		STORE_PC,
 		STORE_REG,
 		STORE_MEM,
 		JMP,
@@ -221,7 +220,6 @@ namespace MachineInfo
 		switch (op)
 		{
 		case MachineInfo::StorageStageOpcode::NOP: return "nop";
-		case MachineInfo::StorageStageOpcode::STORE_PC: return "store-pc";
 		case MachineInfo::StorageStageOpcode::STORE_REG: return "store_reg";
 		case MachineInfo::StorageStageOpcode::STORE_MEM: return "store_mem";
 		}

@@ -28,12 +28,6 @@ namespace Simulator
 					break;
 				}
 
-				case MachineInfo::StorageStageOpcode::STORE_PC:
-				{
-					abort();
-					break;
-				}
-
 				case MachineInfo::StorageStageOpcode::STORE_REG:
 				{
 					const auto dest = std::get<MachineInfo::RegisterID>(pkt.dest);
@@ -85,8 +79,6 @@ namespace Simulator
 						Task& t = *this;
 						co_await t;
 					}
-
-
 					break;
 				}
 
