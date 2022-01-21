@@ -124,6 +124,16 @@ namespace Simulator
 			}
 			return true;
 		}
+
+		uint64_t reduce_to_uint64_t() const
+		{
+			uint64_t ret = 0;
+			for (int i = 0; i < data.size(); i++)
+			{
+				ret |= (data[i] != 0) << i;
+			}
+			return ret;
+		}
 	};
 
 	struct VectorValue
@@ -136,6 +146,12 @@ namespace Simulator
 			vec_vector_obj_t<float>,
 			vec_vector_obj_t<double>> data;
 
+
+		uint64_t reduce_int64_to_single_int64_t() const
+		{
+			auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
+			return vec.reduce_to_uint64_t();
+		}
 
 		void load_from_int64(uint8_t* ptr)
 		{

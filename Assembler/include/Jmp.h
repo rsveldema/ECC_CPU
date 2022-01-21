@@ -4,6 +4,8 @@
 
 #include <map>
 
+class Linker;
+
 namespace Insns
 {
 	class Jmp : public Instruction
@@ -43,16 +45,6 @@ namespace Insns
 			return (uint32_t)(((uint32_t)op) | ((uint32_t)dest << 8));
 		}
 
-		void link(const std::map<std::string, Instruction*>& dict) override
-		{
-			auto it = dict.find(label);
-			if (it == dict.end())
-			{
-				pos.error("failed to resolve label: '" + label + "'");
-				return;
-			}
-			auto insn = it->second;
-			dest = insn->address - this->address;
-		}
+		void link(const Linker* linker) override;
 	};
 }

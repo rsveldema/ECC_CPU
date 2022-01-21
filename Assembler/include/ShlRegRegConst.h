@@ -26,7 +26,7 @@ namespace Insns
 		}
 
 
-		void link(const std::map<std::string, Instruction*>& dict) override
+		void link(const Linker* linker) override
 		{ }
 	};
 }

@@ -6,6 +6,7 @@
 #include "Mnemonics.h"
 
 #include "SourcePosition.h"
+#include "DataObject.h"
 
 #include "Instruction.h"
 #include "MemoryAccess.h"
@@ -22,6 +23,7 @@
 #include "MoveRegSymbol.h"
 #include "ShlRegRegConst.h"
 #include "MoveRegBlockIndex.h"
+#include "LoadAddr.h"
 
 class Line
 {
@@ -50,11 +52,18 @@ public:
 		return insns;
 	}
 
+	std::vector<DataObject>& getObjects()
+	{
+		return objects;
+	}
+
 private:
+	std::vector<DataObject> objects;
 	std::vector<Instruction*> insns;
 
 	std::string lastSeenLabel;
-	void parseLine(const Line& line, const SourcePosition& pos);
+	void parseCodeLine(const Line& line, const SourcePosition& pos);
+	void parseDataLine(const Line& line, const SourcePosition& pos);
 
 	void Add(Instruction* insn);
 };

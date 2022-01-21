@@ -1,26 +1,68 @@
 #include "Linker.h"
 
 
-void Linker::link(std::vector<Instruction*>& insns)
+std::optional<Instruction*> Linker::find_insn(const std::string& label) const
 {
-	std::map<std::string, Instruction*> dict;
+	auto it = code_dict.find(label);
+	if (it == code_dict.end())
+	{
+		return std::nullopt;
+	}
+	return it->second;
+}
 
-	int address = 0;
+std::optional<DataObject*> Linker::find_data(const std::string& label) const
+{
+	auto it = data_dict.find(label);
+	if (it == data_dict.end())
+	{
+		return std::nullopt;
+	}
+	return it->second;
+
+}
+
+void Linker::link_insns(uint64_t code_address, std::vector<Instruction*>& insns)
+{
+	int64_t address = code_address;
 	for (auto* insn : insns)
 	{
 		insn->address = address;
 
 		if (insn->label != "")
 		{
-			dict[insn->label] = insn;
+			code_dict[insn->label] = insn;
 		}
 
 		address += 4;
 	}
 
-
 	for (auto* insn : insns)
 	{
-		insn->link(dict);
+		insn->link(this);
 	}
+}
+
+
+void Linker::link_objs(uint64_t data_address, std::vector<DataObject>& objects)
+{
+	uint64_t address = data_address;
+
+	for (auto& obj : objects)
+	{
+		data_dict[obj.name] = &obj;
+
+		for (auto& f : obj.fields)
+		{
+			f.address += address;
+			address += f.size;
+		}
+	}
+}
+
+void Linker::link(std::vector<Instruction*>& insns, std::vector<DataObject>& objects,
+	uint64_t data_address, uint64_t code_address)
+{
+	link_objs(data_address, objects);
+	link_insns(code_address, insns);
 }

@@ -5,6 +5,7 @@
 #include <climits>
 
 #include "Assembler.h"
+#include "DataObject.h"
 
 using namespace Insns;
 
@@ -23,7 +24,8 @@ namespace
 		return false;
 	}
 
-	const std::string LINE_SPLIT_CHARS = ",.\t ";
+	const std::string CODE_LINE_SPLIT_CHARS = ",.\t ";
+	const std::string DATA_LINE_SPLIT_CHARS = ",\t ";
 
 
 	std::vector<std::string> tokenize(const std::string& data, const std::string& splitChars)
@@ -62,6 +64,15 @@ namespace {
 
 	Mnemonic stringToOpcode(const std::string& opcodeName, const SourcePosition& pos)
 	{
+		if (opcodeName == "loadaddress_lo")
+			return Mnemonic::LOAD_ADDR_LO;
+
+		if (opcodeName == "loadaddress_mid")
+			return Mnemonic::LOAD_ADDR_MID;
+
+		if (opcodeName == "loadaddress_hi")
+			return Mnemonic::LOAD_ADDR_HI;
+
 		if (opcodeName == "nop")
 			return Mnemonic::NOP;
 
@@ -201,10 +212,39 @@ MemoryAccess parse_memory_access(const std::string& t1)
 }
 
 
-
-void Program::parseLine(const Line& line, const SourcePosition& pos)
+void Program::parseDataLine(const Line& line, const SourcePosition& pos)
 {
-	std::cerr << "PARSE: " << line.data << std::endl;
+	std::cerr << "PARSE-DATA: " << line.data << std::endl;
+	if (line.EndsWith(":"))
+	{
+		lastSeenLabel = line.data.substr(0, line.data.size() - 1);
+		this->objects.push_back({ lastSeenLabel });
+		return;
+	}
+
+	auto toks = tokenize(line.data, DATA_LINE_SPLIT_CHARS);
+	if (toks[0] == ".long")
+	{
+		int64_t value = std::stol(toks[1]);
+		if (this->objects.size() > 0)
+		{
+			DataField fld{ value };
+			this->objects[this->objects.size() - 1].fields.push_back(fld);
+		}
+		else
+		{
+			pos.error("data field without label" + line.data);
+		}
+	}
+	else
+	{
+		pos.error("unhandled data case: " + line.data);
+	}
+}
+
+void Program::parseCodeLine(const Line& line, const SourcePosition& pos)
+{
+	std::cerr << "PARSE-INSN: " << line.data << std::endl;
 
 	if (line.EndsWith(":"))
 	{
@@ -212,12 +252,28 @@ void Program::parseLine(const Line& line, const SourcePosition& pos)
 		return;
 	}
 
-	auto toks = tokenize(line.data, LINE_SPLIT_CHARS);
+	auto toks = tokenize(line.data, CODE_LINE_SPLIT_CHARS);
 	switch (auto op = stringToOpcode(toks[0], pos))
 	{
 	case Mnemonic::HALT:
 	{
 		Add(new Halt());
+		break;
+	}
+
+	case Mnemonic::LOAD_ADDR_LO:
+	{
+		Add(new LoadAddr(LoadAddr::Type::LO, toks[2], pos));
+		break;
+	}
+	case Mnemonic::LOAD_ADDR_MID:
+	{
+		Add(new LoadAddr(LoadAddr::Type::MID, toks[2], pos));
+		break;
+	}
+	case Mnemonic::LOAD_ADDR_HI:
+	{
+		Add(new LoadAddr(LoadAddr::Type::HI, toks[2], pos));
 		break;
 	}
 
@@ -305,9 +361,7 @@ void Program::parseLine(const Line& line, const SourcePosition& pos)
 	{
 		auto dest_reg = getRegisterID(toks[1]);
 		auto src_memory_access = parse_memory_access(toks[2]);
-
 		//  0(%sp), %r0
-
 		Add(new LoadRegister(dest_reg, src_memory_access.base_reg, src_memory_access.offset));
 		break;
 	}
@@ -341,7 +395,7 @@ void Program::parseLine(const Line& line, const SourcePosition& pos)
 	}
 
 	default:
-		pos.error("unhandled case: " + line.data);
+		pos.error("unhandled insn case: " + line.data);
 	}
 }
 
@@ -426,6 +480,14 @@ void Program::parse(const std::string& filename)
 		}
 
 		SourcePosition pos{ lineNumber, filename };
-		parseLine(line, pos);
+
+		if (data_mode)
+		{
+			parseDataLine(line, pos);
+		}
+		else
+		{
+			parseCodeLine(line, pos);
+		}
 	}
 }

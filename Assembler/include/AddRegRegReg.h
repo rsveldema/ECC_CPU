@@ -25,7 +25,7 @@ namespace Insns
 			return ((uint32_t)MachineInfo::Opcode::ADD_REG_REG_REG) | ((uint32_t)dst << 8) | ((uint32_t)src1 << 16) | ((uint32_t)src2 << 24);
 		}
 
-		void link(const std::map<std::string, Instruction*>& dict) override
-		{ }
+
+		void link(const Linker* linker) override { }
 	};
 }

@@ -45,7 +45,7 @@ namespace Simulator
 					assert(isValid(dest));
 					const auto is_store_to_pc = pkt.is_store_to_pc;
 
-					auto src = std::get<VectorValue>(pkt.src);
+					const auto& src = std::get<VectorValue>(pkt.src);
 
 					assert(src.are_all_adjacent_memory_addresses(8));
 

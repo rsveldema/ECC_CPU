@@ -18,5 +18,10 @@ enum class Mnemonic
 	JGE,
 	JL,
 	JLE,
-	SHL
+	SHL,
+
+
+	LOAD_ADDR_LO,
+	LOAD_ADDR_MID,
+	LOAD_ADDR_HI
 };

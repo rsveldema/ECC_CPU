@@ -13,6 +13,9 @@ namespace MachineInfo
 	static constexpr unsigned POINTER_SIZE = sizeof(memory_address_t);
 	static constexpr auto INSTRUCTION_SIZE = sizeof(instruction_t);
 
+	static constexpr memory_address_t CODE_SEGMENT_START = 0;
+	static constexpr memory_address_t DATA_SEGMENT_START = 1024 * 1024;
+
 
 	enum class RegisterID
 	{
@@ -82,8 +85,8 @@ namespace MachineInfo
 		MOVE_REG_CONST16,  // rX = CONST (16 bit)
 
 		MOVE_R0_CONST24A,  // r0  = CONST (24 bit)
-		OR_R0_CONST_24B,   // r0 |= CONST << 24 bit
-		OR_R0_CONST_24C,   // r0 |= CONST << 48 (64 - 48 = 16 bits)
+		MOVE_R0_CONST24B,   // r0 |= CONST << 24 bit
+		MOVE_R0_CONST24C,   // r0 |= CONST << 48 (64 - 48 = 16 bits)
 
 		LOAD_REG_CONST_REG,       // rX = [rY + offset] 
 		STORE_REG_CONST_REG,  // [rY + offset] = rX

@@ -138,28 +138,10 @@ namespace Simulator
 					const auto& jmp_mask = pkt.value1;
 					const auto& flags = pkt.value2;
 
-					const auto should_jmp = flags.bit_and_int64(jmp_mask);
+					const auto& should_jmp_masks = flags.bit_and_int64(jmp_mask);
+					const uint64_t should_jmp = should_jmp_masks.reduce_int64_to_single_int64_t();
 
-					if (should_jmp.all_equal_int64())
-					{
-						if (should_jmp.get_int64(0))
-						{
-							ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::JMP,
-								new_address, should_jmp };
-							store_bus.send(store_pkt);
-						}
-						else
-						{
-							ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::JMP,
-								next_address, should_jmp };
-							store_bus.send(store_pkt);
-						}
-					}
-					else
-					{
-						// divergence: we should let some jmp and some not.
-						abort();
-					}
+
 					break;
 				}
 

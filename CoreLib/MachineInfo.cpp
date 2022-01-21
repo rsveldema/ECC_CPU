@@ -25,8 +25,8 @@ namespace MachineInfo
 		{"move_reg_c16", { Opcode::MOVE_REG_CONST16}},  // rX = CONST (16 bit)
 
 		{"move_r0_ca", { Opcode::MOVE_R0_CONST24A}},  // r0  = CONST (24 bit)
-		{"move_r0_cb", { Opcode::OR_R0_CONST_24B}},   // r0 |= CONST << 24 bit
-		{"move_r0_cc", { Opcode::OR_R0_CONST_24C}},   // r0 |= CONST << 48 (64 - 48 = 16 bits)
+		{"move_r0_cb", { Opcode::MOVE_R0_CONST24B}},   // r0 |= CONST << 24 bit
+		{"move_r0_cc", { Opcode::MOVE_R0_CONST24C}},   // r0 |= CONST << 48 (64 - 48 = 16 bits)
 
 		{"load_rcr", { Opcode::LOAD_REG_CONST_REG}},        // rX = [rY + offset] 
 		{"store_rcr", { Opcode::STORE_REG_CONST_REG}}, // [rY + offset] = rX

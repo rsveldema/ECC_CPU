@@ -4,6 +4,8 @@
 #include <map>
 #include "Instruction.h"
 
+class Linker;
+
 class Instruction
 {
 public:
@@ -11,5 +13,5 @@ public:
 	uint64_t address = 0;
 
 	virtual uint32_t getEncodedInstruction() = 0;
-	virtual void link(const std::map<std::string, Instruction*>& dict) = 0;
+	virtual void link(const Linker* linker) = 0;
 };
