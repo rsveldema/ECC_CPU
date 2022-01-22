@@ -134,7 +134,10 @@ namespace MachineInfo
 		CMP,
 		COND_JMP,
 		ADD_REG_VALUE_VALUE,
-		SHL_REG_VALUE_VALUE
+		SHL_REG_VALUE_VALUE,
+
+		ORB_REG_VALUE,
+		ORC_REG_VALUE
 	};
 
 	enum class StorageStageOpcode

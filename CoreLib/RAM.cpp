@@ -14,7 +14,7 @@ namespace Simulator
 				{
 				case MemoryBus::Type::read_insn:
 				{
-					const auto address = pkt.address;
+					const auto address = std::get<MachineInfo::memory_address_t>(pkt.address);
 					assert(address >= 0);
 					assert(address < (storage.size() - 8));
 
@@ -37,13 +37,17 @@ namespace Simulator
 
 				case MemoryBus::Type::read_vec64:
 				{
-					const auto address = pkt.address;
-					assert(address >= 0);
-					assert(address < (storage.size() - 8));
+					const auto& addressVec = std::get< vec_vector_obj_t<int64_t>>(pkt.address);
+					assert(addressVec.areAllValidMemoryAddresses());
 
-					VectorValue ret;
-					auto* ptr = storage.data() + address;
-					ret.load_from_int64(ptr);
+					VectorValue ret = VectorValue::create_vec_int64(0);
+					for (unsigned i = 0; i < addressVec.size(); i++)
+					{
+						MachineInfo::memory_address_t address = addressVec.get(i);
+						const auto* src_ptr = reinterpret_cast<int64_t*>(storage.data() + address);
+
+						ret.set_int64(i, *src_ptr);
+					}
 
 					MemoryBus::payload_t value(ret);
 
@@ -59,10 +63,11 @@ namespace Simulator
 
 				case MemoryBus::Type::write_vec64:
 				{
-					const auto address = pkt.address;
-					//printf("access to address %ld\n", address);
-					assert(address >= 0);
-					assert(address < (storage.size() - 8));
+					const auto& addressVec = std::get< vec_vector_obj_t<int64_t>>(pkt.address);
+					assert(addressVec.areAllValidMemoryAddresses());
+
+					const auto& value = std::get<VectorValue>(pkt.payload);
+
 
 					for (uint64_t i = 0; i < config.write_latency.cycles; i++)
 					{
@@ -70,9 +75,14 @@ namespace Simulator
 						co_await t;
 					}
 
-					const auto& vec = std::get<VectorValue>(pkt.payload);
-					uint8_t* ptr = storage.data() + address;
-					vec.store_at(ptr);
+					for (unsigned i = 0; i < addressVec.size(); i++)
+					{
+						MachineInfo::memory_address_t address = addressVec.get(i);
+						auto* dest_ptr = reinterpret_cast<int64_t*>(storage.data() + address);
+
+						auto value64 = value.get_int64(i);
+						*dest_ptr = value64;
+					}
 					break;
 				}
 

@@ -13,11 +13,11 @@ void Usage()
 }
 
 
-void read_memory_dump(CoreClusterGrid& machine, const std::string& filename)
+void read_code_memory_dump(CoreClusterGrid& machine, const std::string& filename)
 {
-	if (! filename.ends_with(".bin"))
+	if (!filename.ends_with(".bin"))
 	{
-		std::cerr << "expected a .bin file"  << std::endl;
+		std::cerr << "expected a .bin file" << std::endl;
 		Usage();
 		return;
 	}
@@ -30,7 +30,7 @@ void read_memory_dump(CoreClusterGrid& machine, const std::string& filename)
 		return;
 	}
 
-	uint64_t address = 0;
+	uint64_t address = MachineInfo::CODE_SEGMENT_START;
 	while (!f.eof())
 	{
 		char insn[4];
@@ -40,6 +40,39 @@ void read_memory_dump(CoreClusterGrid& machine, const std::string& filename)
 	}
 
 	f.close();
+}
+
+void read_data_memory_dump(CoreClusterGrid& machine, const std::string& filename)
+{
+	if (!filename.ends_with(".data"))
+	{
+		std::cerr << "expected a .data file" << std::endl;
+		Usage();
+		return;
+	}
+
+	std::fstream f;
+	f.open(filename, std::ios::binary | std::ios::in);
+	if (!f.is_open())
+	{
+		std::cerr << "failed to open " << filename << std::endl;
+		return;
+	}
+	// get length of file:
+	f.seekg(0, f.end);
+	auto length = f.tellg();
+	f.seekg(0, f.beg);
+
+	// read everything in a vector:
+	std::vector<char> buffer;
+	buffer.resize(length);
+	std::cout << "Read " << length << " bytes";
+	f.read(buffer.data(), length);
+	f.close();
+
+	// store content of vector at the data sector we've assembled it at:
+	uint64_t address = MachineInfo::DATA_SEGMENT_START;
+	machine.dram.write(address, buffer.data(), length);
 }
 
 int main(int argc, char** argv)
@@ -61,7 +94,7 @@ int main(int argc, char** argv)
 
 	MachineConfig config{
 		.grid_mem_config {
-			.size = 1024 * 1024,
+			.size = 1024 * 1024 * 8,
 			.read_latency = Cycles(100),
 			.write_latency = Cycles(100),
 		},
@@ -76,7 +109,8 @@ int main(int argc, char** argv)
 	SimComponentRegistry registry(globalStats);
 	CoreClusterGrid machine(registry, config, globalStats);
 
-	read_memory_dump(machine, filename);
+	read_code_memory_dump(machine, filename);
+	read_data_memory_dump(machine, filename + ".data");
 
 	registry.run(machine);
 

@@ -50,6 +50,7 @@ void Linker::link_objs(uint64_t data_address, std::vector<DataObject>& objects)
 
 	for (auto& obj : objects)
 	{
+		obj.address = address;
 		data_dict[obj.name] = &obj;
 
 		for (auto& f : obj.fields)

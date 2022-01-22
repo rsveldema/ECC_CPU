@@ -18,7 +18,8 @@ namespace Insns
 			pos.error("failed to find " + this->global_var_name);
 			return;
 		}
-
+		auto val = *data;
+		this->address = val->getAddress();
 	}
 
 	void Jmp::link(const Linker* linker)

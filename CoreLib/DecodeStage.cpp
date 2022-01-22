@@ -259,6 +259,52 @@ namespace Simulator
 					break;
 				}
 
+				case MachineInfo::Opcode::MOVE_R0_CONST24A:
+				{
+					const auto dest = MachineInfo::RegisterID::R0;
+					const auto off1_const = static_cast<int32_t>(pkt.insn >> 8);
+					VectorValue off1 = VectorValue::create_vec_int64(off1_const);
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE,
+							dest,
+							off1
+					};
+					execute_bus.send(execute_pkt);
+					break;
+				}
+
+				case MachineInfo::Opcode::MOVE_R0_CONST24B:
+				{
+					const auto dest = MachineInfo::RegisterID::R0;
+					const auto off1_const = static_cast<int32_t>(pkt.insn >> 8);
+					VectorValue off1 = VectorValue::create_vec_int64(off1_const);
+					const auto& off2 = regs[MachineInfo::RegisterID::R0];
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::ORB_REG_VALUE,
+							dest,
+							off1,
+							off2
+					};
+					execute_bus.send(execute_pkt);
+					break;
+				}
+
+				case MachineInfo::Opcode::MOVE_R0_CONST24C:
+				{
+					const auto dest = MachineInfo::RegisterID::R0;
+					const auto off1_const = static_cast<int32_t>(pkt.insn >> 8);
+					VectorValue off1 = VectorValue::create_vec_int64(off1_const);
+					const auto& off2 = regs[MachineInfo::RegisterID::R0];
+
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::ORC_REG_VALUE,
+							dest,
+							off1,
+							off2
+					};
+					execute_bus.send(execute_pkt);
+					break;
+				}
+
 				default:
 					std::cerr << "[DECODE] unimplemented opcode: " << MachineInfo::to_string(opcode) << std::endl;
 					abort();

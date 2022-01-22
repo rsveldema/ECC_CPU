@@ -39,7 +39,7 @@ namespace Simulator
 		{
 			Type type;
 			BusID source;
-			MachineInfo::memory_address_t address;
+			std::variant<vec_vector_obj_t<int64_t>, MachineInfo::memory_address_t> address;
 			payload_t payload;
 		};
 
@@ -58,13 +58,13 @@ namespace Simulator
 			send_request(pkt);
 		}
 
-		void send_read_request_vec(MachineInfo::memory_address_t address, const BusID& source)
+		void send_read_request_vec(const vec_vector_obj_t<int64_t>& address, const BusID& source)
 		{
 			Packet pkt{ Type::read_vec64, source, address };
 			send_request(pkt);
 		}
 
-		void send_write_request(MachineInfo::memory_address_t address,
+		void send_write_request_vec(const vec_vector_obj_t<int64_t>& address,
 			const BusID& source,
 			const VectorValue& value)
 		{
@@ -74,7 +74,8 @@ namespace Simulator
 
 		void send_read_response(const payload_t& value, const BusID& source)
 		{
-			Packet pkt{ Type::read_response, source, 0, value };
+			MachineInfo::memory_address_t addr = 0;
+			Packet pkt{ Type::read_response, source, addr, value };
 			send_response(pkt);
 		}
 

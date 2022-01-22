@@ -14,41 +14,36 @@ struct DataField
 	DataField(int64_t _value)
 		: value(_value)
 	{
-		size = sizeof(value);
+		size = sizeof(_value);
 	}
 
 	void write(std::vector<uint8_t>& values) const
 	{
 		assert(address >= MachineInfo::DATA_SEGMENT_START);
-		auto end = address + size;
-		if (values.size() < end)
-		{
-			values.resize(end);
-		}
 
 		switch (value.index())
 		{
 		case 0:
 		{
-			auto tmp = std::get<int8_t>(value);
+			int8_t tmp = std::get<int8_t>(value);
 			write_value(values, tmp);
 			break;
 		}
 		case 1:
 		{
-			auto tmp = std::get<int16_t>(value);
+			int16_t tmp = std::get<int16_t>(value);
 			write_value(values, tmp);
 			break;
 		}
 		case 2:
 		{
-			auto tmp = std::get<int32_t>(value);
+			int32_t tmp = std::get<int32_t>(value);
 			write_value(values, tmp);
 			break;
 		}
 		case 3:
 		{
-			auto tmp = std::get<int64_t>(value);
+			int64_t tmp = std::get<int64_t>(value);
 			write_value(values, tmp);
 			break;
 		}
@@ -63,7 +58,11 @@ struct DataField
 
 		for (int i = 0; i < sizeof(t); i++)
 		{
-			values[i + address] = begin[i];
+			auto write_ix = (i + address) - MachineInfo::DATA_SEGMENT_START;
+
+			values.resize(write_ix + 1);
+
+			values[write_ix] = begin[i];
 		}
 	}
 };
@@ -72,6 +71,7 @@ struct DataObject
 {
 	std::string name;
 	std::vector<DataField> fields;
+	uint64_t address = 0;
 
 
 	void write(std::vector<uint8_t>& values) const
@@ -81,4 +81,6 @@ struct DataObject
 			obj.write(values);
 		}
 	}
+
+	uint64_t getAddress() const { return address; }
 };

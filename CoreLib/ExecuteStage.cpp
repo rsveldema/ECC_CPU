@@ -48,6 +48,40 @@ namespace Simulator
 					break;
 				}
 
+
+				case MachineInfo::ExecuteStageOpcode::ORB_REG_VALUE:
+				{
+					const auto& dest = std::get<MachineInfo::RegisterID>(pkt.value0);
+					const auto& src1 = pkt.value1;
+					const auto& src2 = pkt.value2;
+
+					auto src = src2.or_shift_left_int64(src1, 24);
+
+					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::STORE_REG,
+						dest, src };
+
+					store_bus.send(store_pkt);
+					break;
+				}
+
+
+				case MachineInfo::ExecuteStageOpcode::ORC_REG_VALUE:
+				{
+					const auto& dest = std::get<MachineInfo::RegisterID>(pkt.value0);
+					const auto& src1 = pkt.value1;
+					const auto& src2 = pkt.value2;
+
+					auto src = src2.or_shift_left_int64(src1, 48);
+
+					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::STORE_REG,
+						dest, src };
+
+					store_bus.send(store_pkt);
+					break;
+				}
+
+
+
 				case MachineInfo::ExecuteStageOpcode::SHL_REG_VALUE_VALUE:
 				{
 					const auto& dest = std::get<MachineInfo::RegisterID>(pkt.value0);
@@ -141,7 +175,8 @@ namespace Simulator
 					const auto& should_jmp_masks = flags.bit_and_int64(jmp_mask);
 					const uint64_t should_jmp = should_jmp_masks.reduce_int64_to_single_int64_t();
 
-
+					fprintf(stderr, "UNIMPLEMTNED!!!\n");
+					abort();
 					break;
 				}
 

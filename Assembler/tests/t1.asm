@@ -40,7 +40,10 @@ MAIN:
 	loadaddress_lo r0, $vecdata
 	loadaddress_mid r0, $vecdata
 	loadaddress_hi r0, $vecdata
-	load %r1, 0(%r1)
+	mov %r1, %block_index
+	shl %r1, %r1, 3
+	add %r0, %r1, %r0
+	load %r1, 0(%r0)
 		
 	cmp %r4, %r1
 

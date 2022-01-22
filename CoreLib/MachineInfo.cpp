@@ -6,11 +6,17 @@ namespace MachineInfo
 	std::map<std::string, ExecuteStageInsnInfo> execInsnInfo{
 		{ "nop", {ExecuteStageOpcode::NOP}},
 		{ "move_reg_value", {ExecuteStageOpcode::MOVE_REG_VALUE}},
+		{ "ORB_reg_value", {ExecuteStageOpcode::ORB_REG_VALUE}},
+		{ "ORC_reg_value", {ExecuteStageOpcode::ORC_REG_VALUE}},
 	};
 
 
 	std::map<std::string, InstructionInfo> insnInfo{
 		{ "nop", { Opcode::NOP}},
+
+		{ "move_LO", { Opcode::MOVE_R0_CONST24A }},
+		{ "move_MID", { Opcode::MOVE_R0_CONST24B }},
+		{ "move_HI", { Opcode::MOVE_R0_CONST24C }},
 
 		{ "halt", { Opcode::HALT}},
 

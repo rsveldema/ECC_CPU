@@ -16,7 +16,7 @@ namespace Insns
 	private:
 		const Type type;
 		const std::string global_var_name;
-		uint32_t address = 0;
+		uint64_t address = 0;
 		const SourcePosition pos;
 
 	public:

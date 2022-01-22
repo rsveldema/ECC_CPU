@@ -17,16 +17,6 @@ namespace Simulator
 				switch (opcode)
 				{
 				case MachineInfo::StorageStageOpcode::NOP: break;
-				case MachineInfo::StorageStageOpcode::STORE_MEM:
-				{
-					const auto& dest = std::get<VectorValue>(pkt.dest);
-					const auto& src = std::get<VectorValue>(pkt.src);
-
-					assert(dest.are_all_adjacent_memory_addresses(8));
-
-					this->memory_bus.send_write_request(dest.get_int64(0), memory_bus_id, src);
-					break;
-				}
 
 				case MachineInfo::StorageStageOpcode::STORE_REG:
 				{
@@ -35,6 +25,17 @@ namespace Simulator
 					const auto& src = std::get<VectorValue>(pkt.src);
 
 					regs[dest] = src;
+					break;
+				}
+
+				case MachineInfo::StorageStageOpcode::STORE_MEM:
+				{
+					const auto& dest = std::get<VectorValue>(pkt.dest);
+					const auto& src = std::get<VectorValue>(pkt.src);
+
+					assert(dest.are_all_adjacent_memory_addresses(8));
+
+					this->memory_bus.send_write_request_vec(dest.get_int64_array(), memory_bus_id, src);
 					break;
 				}
 
@@ -47,9 +48,7 @@ namespace Simulator
 
 					const auto& src = std::get<VectorValue>(pkt.src);
 
-					assert(src.are_all_adjacent_memory_addresses(8));
-
-					memory_bus.send_read_request_vec(src.get_int64(0), memory_bus_id);
+					memory_bus.send_read_request_vec(src.get_int64_array(), memory_bus_id);
 
 					while (1)
 					{

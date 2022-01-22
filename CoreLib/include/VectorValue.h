@@ -15,6 +15,11 @@ namespace Simulator
 
 		elt_vector_t data;
 
+		bool areAllValidMemoryAddresses() const
+		{
+			return true;
+		}
+
 		void replicate(const ElementType v)
 		{
 			for (int i = 0; i < data.size(); i++)
@@ -31,6 +36,13 @@ namespace Simulator
 			}
 		}
 
+		void or_shift_left(const vec_vector_obj_t& other, unsigned shift_count)
+		{
+			for (int i = 0; i < data.size(); i++)
+			{
+				data[i] |= other.data[i] << shift_count;
+			}
+		}
 
 		void shift_left(const vec_vector_obj_t& other)
 		{
@@ -106,7 +118,13 @@ namespace Simulator
 			std::copy(out, out + data.size(), data.begin());
 		}
 
-		int64_t get(unsigned ix) const
+		void set(unsigned ix, ElementType value)
+		{
+			assert(ix < data.size());
+			data[ix] = value;
+		}
+
+		ElementType get(unsigned ix) const
 		{
 			assert(ix < data.size());
 			return data[ix];
@@ -134,6 +152,12 @@ namespace Simulator
 			}
 			return ret;
 		}
+
+		size_t size() const
+		{
+			return data.size();
+		}
+
 	};
 
 	struct VectorValue
@@ -147,6 +171,20 @@ namespace Simulator
 			vec_vector_obj_t<double>> data;
 
 
+		vec_vector_obj_t<int64_t>& get_int64_array()
+		{
+			assert(data.index() == 3);
+			auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
+			return vec;
+		}
+
+		const vec_vector_obj_t<int64_t>& get_int64_array() const
+		{
+			assert(data.index() == 3);
+			auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
+			return vec;
+		}
+
 		uint64_t reduce_int64_to_single_int64_t() const
 		{
 			auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
@@ -156,7 +194,7 @@ namespace Simulator
 		void load_from_int64(uint8_t* ptr)
 		{
 			data = vec_vector_obj_t<int64_t>{ { } };
-			auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
+			auto& vec = get_int64_array();
 			vec.load_from(ptr);
 		}
 
@@ -199,8 +237,14 @@ namespace Simulator
 
 		int64_t get_int64(unsigned ix) const
 		{
-			const auto& me = std::get<vec_vector_obj_t<int64_t> >(data);
-			return me.get(0);
+			const auto& me = get_int64_array();
+			return me.get(ix);
+		}
+
+		void set_int64(unsigned ix, int64_t value)
+		{
+			auto& me = get_int64_array();
+			return me.set(ix, value);
 		}
 
 		static VectorValue create_vec_int64_blockindex()
@@ -229,6 +273,16 @@ namespace Simulator
 			me.shift_left(other);
 			return ret;
 		}
+
+		VectorValue or_shift_left_int64(const VectorValue& v, int shift_count) const
+		{
+			VectorValue ret(*this);
+			auto& me = std::get<vec_vector_obj_t<int64_t> >(ret.data);
+			const auto& other = std::get<vec_vector_obj_t<int64_t> >(v.data);
+			me.or_shift_left(other, shift_count);
+			return ret;
+		}
+
 
 		VectorValue add_int64(const VectorValue& v) const
 		{
@@ -264,7 +318,7 @@ namespace Simulator
 
 		bool all_equal_int64() const
 		{
-			const auto& me = std::get<vec_vector_obj_t<int64_t> >(this->data);
+			const auto& me = get_int64_array();
 			return me.all_equal();
 		}
 	};
