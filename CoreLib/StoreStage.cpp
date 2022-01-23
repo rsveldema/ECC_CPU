@@ -110,8 +110,8 @@ namespace Simulator
 					}
 					else
 					{
-						const auto new_thread_ctxt_opt = divergence_queue.pop_back();
-						const auto new_thread_ctxt = *new_thread_ctxt_opt;
+						const auto& new_thread_ctxt_opt = divergence_queue.pop_back();
+						const auto& new_thread_ctxt = *new_thread_ctxt_opt;
 
 						this->regs = new_thread_ctxt.regs;
 

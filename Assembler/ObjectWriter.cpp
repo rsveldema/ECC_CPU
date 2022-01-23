@@ -26,7 +26,7 @@ namespace ObjectWriter
 		myfile.close();
 	}
 
-	void write(const std::vector<Instruction*>& insns, const std::string& filename)
+	void write(const std::vector<Insns::Instruction*>& insns, const std::string& filename)
 	{
 		std::ofstream myfile;
 		myfile.open(filename, std::ios::binary | std::ios::trunc | std::ios::out);

@@ -3,15 +3,16 @@
 #include <variant>
 #include <array>
 
+#include "MachineInfo.h"
+
+
 namespace Simulator
 {
-	static constexpr size_t VECTOR_MEM_SIZE = 64;
-
 	template <typename ElementType>
 	struct vec_vector_obj_t
 	{
 		using elt_t = ElementType;
-		using elt_vector_t = std::array<ElementType, VECTOR_MEM_SIZE / sizeof(ElementType)>;
+		using elt_vector_t = std::array<ElementType, MachineInfo::VECTOR_MEM_SIZE / sizeof(ElementType)>;
 
 		elt_vector_t data;
 

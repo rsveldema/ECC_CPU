@@ -16,6 +16,13 @@ namespace MachineInfo
 	static constexpr memory_address_t CODE_SEGMENT_START = 0;
 	static constexpr memory_address_t DATA_SEGMENT_START = 1024 * 1024;
 
+	static constexpr unsigned VECTOR_MEM_SIZE = 64;
+
+	static constexpr unsigned NUMBER_OF_VECTOR_THREADS_INT64 = (VECTOR_MEM_SIZE / sizeof(uint64_t));
+
+	static constexpr uint64_t ALL_THREADS_JUMP_MASK_INT64 = (1 << NUMBER_OF_VECTOR_THREADS_INT64) - 1;
+
+
 
 	enum class RegisterID
 	{

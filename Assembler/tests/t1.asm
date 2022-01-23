@@ -37,6 +37,7 @@ MAIN:
 
 	mov %r4, 512
 
+	// load [$vecdata] into r1
 	loadaddress_lo r0, $vecdata
 	loadaddress_mid r0, $vecdata
 	loadaddress_hi r0, $vecdata
@@ -51,14 +52,15 @@ MAIN:
 	load %r4, 8(%sp)
 
 	
-	je retlabel
-	jne retlabel
 	
 	jg retlabel
 	jge retlabel
 	
 	jl retlabel
 	jle retlabel
+	
+	je retlabel
+	jne retlabel
 
 	# call bar
 	add %sp, %sp, -40

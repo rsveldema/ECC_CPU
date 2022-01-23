@@ -47,7 +47,7 @@ class Program
 {
 public:
 	void parse(const std::string& filename);
-	std::vector<Instruction*>& getInsns()
+	std::vector<Insns::Instruction*>& getInsns()
 	{
 		return insns;
 	}
@@ -59,11 +59,11 @@ public:
 
 private:
 	std::vector<DataObject> objects;
-	std::vector<Instruction*> insns;
+	std::vector<Insns::Instruction*> insns;
 
 	std::string lastSeenLabel;
 	void parseCodeLine(const Line& line, const SourcePosition& pos);
 	void parseDataLine(const Line& line, const SourcePosition& pos);
 
-	void Add(Instruction* insn);
+	void Add(Insns::Instruction* insn);
 };

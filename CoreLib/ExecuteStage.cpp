@@ -174,18 +174,37 @@ namespace Simulator
 					const auto& should_jmp_masks = flags.bit_and_int64(jmp_mask);
 					const uint64_t should_jmp = should_jmp_masks.reduce_int64_to_single_int64_t();
 
-					ExecutionMask execution_flags_true(should_jmp);
-					ExecutionMask execution_flags_false(~should_jmp);
-					bool is_store_to_pc = false;
+					if (should_jmp == 0)
+					{
+						// no thread wants to jump to the next-insn
+						ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::JMP,
+							next_address };
+						store_bus.send(store_pkt);
+					}
+					else if (should_jmp == MachineInfo::ALL_THREADS_JUMP_MASK_INT64)
+					{
+						// all threads just want to go to the next-insn
+						ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::JMP,
+							new_address };
+						store_bus.send(store_pkt);
+					}
+					else
+					{
+						// some threads want to jump, some don't.
+						ExecutionMask execution_flags_true(should_jmp);
+						ExecutionMask execution_flags_false(~should_jmp);
+						bool is_store_to_pc = false;
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::CJMP,
-						new_address,
-						next_address,
-						is_store_to_pc,
-						execution_flags_true,
-						execution_flags_false
-					};
-					store_bus.send(store_pkt);
+						ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::CJMP,
+							new_address,
+							next_address,
+							is_store_to_pc,
+							execution_flags_true,
+							execution_flags_false
+						};
+						store_bus.send(store_pkt);
+					}
+
 					break;
 				}
 

@@ -1,7 +1,7 @@
 #include "Linker.h"
 
 
-std::optional<Instruction*> Linker::find_insn(const std::string& label) const
+std::optional<Insns::Instruction*> Linker::find_insn(const std::string& label) const
 {
 	auto it = code_dict.find(label);
 	if (it == code_dict.end())
@@ -22,7 +22,7 @@ std::optional<DataObject*> Linker::find_data(const std::string& label) const
 
 }
 
-void Linker::link_insns(uint64_t code_address, std::vector<Instruction*>& insns)
+void Linker::link_insns(uint64_t code_address, std::vector<Insns::Instruction*>& insns)
 {
 	int64_t address = code_address;
 	for (auto* insn : insns)
@@ -61,7 +61,7 @@ void Linker::link_objs(uint64_t data_address, std::vector<DataObject>& objects)
 	}
 }
 
-void Linker::link(std::vector<Instruction*>& insns, std::vector<DataObject>& objects,
+void Linker::link(std::vector<Insns::Instruction*>& insns, std::vector<DataObject>& objects,
 	uint64_t data_address, uint64_t code_address)
 {
 	link_objs(data_address, objects);
