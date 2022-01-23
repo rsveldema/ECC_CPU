@@ -2,6 +2,7 @@
 
 #include <optional>
 #include "MachineInfo.h"
+#include "ExecutionMask.h"
 
 namespace Simulator
 {
@@ -19,6 +20,9 @@ namespace Simulator
 			std::variant<MachineInfo::memory_address_t, VectorValue, MachineInfo::RegisterID> src;
 
 			bool is_store_to_pc = false;
+
+			ExecutionMask execution_flags_true;
+			ExecutionMask execution_flags_false;
 		};
 
 		void send(const Packet& pkt)

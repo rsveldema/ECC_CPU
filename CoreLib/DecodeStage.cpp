@@ -25,7 +25,9 @@ namespace Simulator
 				}
 				case MachineInfo::Opcode::HALT:
 				{
-					regs.setMachineFlag(MachineInfo::MACHINE_FLAGS_MASK_HALT);
+					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::HALT
+					};
+					execute_bus.send(execute_pkt);
 					break;
 				}
 

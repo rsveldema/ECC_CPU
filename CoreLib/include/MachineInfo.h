@@ -137,7 +137,9 @@ namespace MachineInfo
 		SHL_REG_VALUE_VALUE,
 
 		ORB_REG_VALUE,
-		ORC_REG_VALUE
+		ORC_REG_VALUE,
+
+		HALT
 	};
 
 	enum class StorageStageOpcode
@@ -147,7 +149,9 @@ namespace MachineInfo
 		STORE_MEM,
 		JMP,
 		COND_JMP,
-		LOAD_REG
+		LOAD_REG,
+		CJMP,
+		HALT
 	};
 
 
@@ -169,6 +173,7 @@ namespace MachineInfo
 	{
 		switch (op)
 		{
+		case Opcode::HALT:
 		case Opcode::JMP_ALWAYS:
 		case Opcode::JMP_EQUAL:
 		case Opcode::JMP_NOT_EQUAL:

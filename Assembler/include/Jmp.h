@@ -1,10 +1,8 @@
 #pragma once
 
-#include "Instruction.h"
-
 #include <map>
 
-class Linker;
+#include "Instruction.h"
 
 namespace Insns
 {

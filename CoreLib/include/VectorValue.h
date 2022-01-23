@@ -146,9 +146,10 @@ namespace Simulator
 		uint64_t reduce_to_uint64_t() const
 		{
 			uint64_t ret = 0;
-			for (int i = 0; i < data.size(); i++)
+			for (unsigned i = 0; i < data.size(); i++)
 			{
-				ret |= (data[i] != 0) << i;
+				uint64_t v = (data[i] != 0);
+				ret |= v << i;
 			}
 			return ret;
 		}

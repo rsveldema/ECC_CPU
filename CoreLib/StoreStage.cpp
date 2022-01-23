@@ -10,9 +10,8 @@ namespace Simulator
 			if (const auto pkt_opt = this->execute_bus.try_recv())
 			{
 				const auto& pkt = *pkt_opt;
-
-				auto PC = pkt.PC;
-				auto opcode = pkt.opcode;
+				const auto PC = pkt.PC;
+				const auto opcode = pkt.opcode;
 
 				switch (opcode)
 				{
@@ -89,6 +88,38 @@ namespace Simulator
 					break;
 				}
 
+				case MachineInfo::StorageStageOpcode::CJMP:
+				{
+					const auto new_address = std::get<MachineInfo::memory_address_t>(pkt.dest);
+					const auto next_address = std::get<MachineInfo::memory_address_t>(pkt.src);
+					const auto& exec_mask_new_address = pkt.execution_flags_true;
+					const auto& exec_mask_next_address = pkt.execution_flags_false;
+
+					push_thread_context(new_address, exec_mask_new_address);
+
+					regs.exec_mask = exec_mask_next_address;
+					fetch_bus.send(StoreToFetchBus::Packet{ next_address });
+					break;
+				}
+
+				case MachineInfo::StorageStageOpcode::HALT:
+				{
+					if (divergence_queue.is_empty())
+					{
+						regs.setHasHalted();
+					}
+					else
+					{
+						const auto new_thread_ctxt_opt = divergence_queue.pop_back();
+						const auto new_thread_ctxt = *new_thread_ctxt_opt;
+
+						this->regs = new_thread_ctxt.regs;
+
+						fetch_bus.send(StoreToFetchBus::Packet{ new_thread_ctxt.PC });
+					}
+					break;
+				}
+
 				default:
 					std::cerr << "unhandled store insn" << std::endl;
 					abort();
@@ -99,6 +130,17 @@ namespace Simulator
 			Task& t = *this;
 			co_await t;
 		}
+	}
+
+	void StoreStage::push_thread_context(MachineInfo::memory_address_t new_address,
+		const ExecutionMask& exec_mask_new_address)
+	{
+		ThreadContext ctxt{
+			this->regs,
+			new_address
+		};
+		ctxt.regs.exec_mask = exec_mask_new_address;
+		divergence_queue.push_front(ctxt);
 	}
 
 }

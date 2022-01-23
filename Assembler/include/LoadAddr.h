@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Instruction.h"
 #include <map>
+
+#include "Instruction.h"
 
 namespace Insns
 {

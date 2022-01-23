@@ -1,6 +1,5 @@
 #include "CoreLib.h"
 
-
 namespace Simulator
 {
 
@@ -175,8 +174,18 @@ namespace Simulator
 					const auto& should_jmp_masks = flags.bit_and_int64(jmp_mask);
 					const uint64_t should_jmp = should_jmp_masks.reduce_int64_to_single_int64_t();
 
-					fprintf(stderr, "UNIMPLEMTNED!!!\n");
-					abort();
+					ExecutionMask execution_flags_true(should_jmp);
+					ExecutionMask execution_flags_false(~should_jmp);
+					bool is_store_to_pc = false;
+
+					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::CJMP,
+						new_address,
+						next_address,
+						is_store_to_pc,
+						execution_flags_true,
+						execution_flags_false
+					};
+					store_bus.send(store_pkt);
 					break;
 				}
 
@@ -195,6 +204,14 @@ namespace Simulator
 					break;
 				}
 
+				case MachineInfo::ExecuteStageOpcode::HALT:
+				{
+					ExecuteToStoreBus::Packet store_pkt{ pkt.PC, MachineInfo::StorageStageOpcode::HALT };
+					store_bus.send(store_pkt);
+					break;
+				}
+
+
 				default:
 					std::cerr << "[EXECUTE] unhandled opcode in execute stage: " << MachineInfo::to_string(pkt.opcode) << std::endl;
 					abort();
@@ -206,5 +223,4 @@ namespace Simulator
 			co_await t;
 		}
 	}
-
 }

@@ -4,6 +4,7 @@
 #include "ExecuteToStoreBus.h"
 #include "MemoryBus.h"
 #include "StoreToFetchBus.h"
+#include "DivergenceQueue.h"
 
 namespace Simulator
 {
@@ -19,6 +20,7 @@ namespace Simulator
 		StoreToFetchBus& fetch_bus;
 		Logger& logger;
 		GlobalStats& stats;
+		DivergenceQueue& divergence_queue;
 
 	public:
 		StoreStage(SimComponentRegistry& registry,
@@ -28,7 +30,8 @@ namespace Simulator
 			MemoryBus::BusID bus_id,
 			StoreToFetchBus& _fetch_bus,
 			Logger& _logger,
-			GlobalStats& _stats)
+			GlobalStats& _stats,
+			DivergenceQueue& _divergence_queue)
 
 			: SimComponent(registry, "storer"),
 			execute_bus(_execute_bus),
@@ -37,9 +40,12 @@ namespace Simulator
 			memory_bus_id(bus_id),
 			fetch_bus(_fetch_bus),
 			logger(_logger),
-			stats(_stats)
+			stats(_stats),
+			divergence_queue(_divergence_queue)
 		{}
 
 		coro::ReturnObject run() override;
+
+		void push_thread_context(MachineInfo::memory_address_t new_address, const ExecutionMask& exec_mask_new_address);
 	};
 }
