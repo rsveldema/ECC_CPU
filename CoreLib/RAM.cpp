@@ -1,4 +1,5 @@
 #include "RAM.h"
+#include <cstring>
 
 namespace Simulator
 {
