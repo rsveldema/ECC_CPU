@@ -45,7 +45,5 @@ namespace Simulator
 		{}
 
 		coro::ReturnObject run() override;
-
-		void push_thread_context(MachineInfo::memory_address_t new_address, const ExecutionMask& exec_mask_new_address);
 	};
 }

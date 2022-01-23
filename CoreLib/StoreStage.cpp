@@ -95,7 +95,12 @@ namespace Simulator
 					const auto& exec_mask_new_address = pkt.execution_flags_true;
 					const auto& exec_mask_next_address = pkt.execution_flags_false;
 
-					push_thread_context(new_address, exec_mask_new_address);
+					ThreadContext ctxt{
+						this->regs,
+						new_address
+					};
+					ctxt.regs.exec_mask = exec_mask_new_address;
+					divergence_queue.push_front(ctxt);
 
 					regs.exec_mask = exec_mask_next_address;
 					fetch_bus.send(StoreToFetchBus::Packet{ next_address });
@@ -131,16 +136,4 @@ namespace Simulator
 			co_await t;
 		}
 	}
-
-	void StoreStage::push_thread_context(MachineInfo::memory_address_t new_address,
-		const ExecutionMask& exec_mask_new_address)
-	{
-		ThreadContext ctxt{
-			this->regs,
-			new_address
-		};
-		ctxt.regs.exec_mask = exec_mask_new_address;
-		divergence_queue.push_front(ctxt);
-	}
-
 }
