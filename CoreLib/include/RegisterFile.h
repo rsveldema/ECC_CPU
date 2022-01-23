@@ -4,7 +4,6 @@
 
 #include "MachineInfo.h"
 #include "VectorValue.h"
-#include "ExecutionMask.h"
 
 namespace Simulator
 {
@@ -18,8 +17,6 @@ namespace Simulator
 	class RegisterFile
 	{
 	public:
-		ExecutionMask exec_mask;
-
 		VectorValue regs[static_cast<int>(MachineInfo::RegisterID::MAX_REG_ID)];
 		uint32_t machine_flags = 0;
 

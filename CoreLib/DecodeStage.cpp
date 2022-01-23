@@ -25,8 +25,7 @@ namespace Simulator
 				}
 				case MachineInfo::Opcode::HALT:
 				{
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::HALT
-					};
+					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, MachineInfo::ExecuteStageOpcode::HALT };
 					execute_bus.send(execute_pkt);
 					break;
 				}
@@ -40,7 +39,7 @@ namespace Simulator
 
 					VectorValue vec = VectorValue::create_vec_int64(value);
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE,
+					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE,
 									reg,
 									vec,
 					};
@@ -59,7 +58,7 @@ namespace Simulator
 
 					VectorValue addr1 = VectorValue::create_vec_int64(addr_offset_value);
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::STORE_ADDR_VALUE,
+					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, MachineInfo::ExecuteStageOpcode::STORE_ADDR_VALUE,
 						value, addr1, addr2 };
 					execute_bus.send(execute_pkt);
 					break;
@@ -72,7 +71,7 @@ namespace Simulator
 
 					VectorValue value = VectorValue::create_vec_int64_blockindex();
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE,
+					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE,
 						reg, value };
 					execute_bus.send(execute_pkt);
 					break;
@@ -85,7 +84,7 @@ namespace Simulator
 
 					VectorValue value = VectorValue::create_vec_int64(const_value);
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE,
+					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask,  PC, MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE,
 						reg, value };
 					execute_bus.send(execute_pkt);
 					break;
@@ -98,7 +97,7 @@ namespace Simulator
 
 					const auto& value = regs[src_reg];
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE,
+					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE,
 						reg, value };
 					execute_bus.send(execute_pkt);
 					break;
@@ -114,7 +113,7 @@ namespace Simulator
 
 					const auto& value1 = regs[src1_reg];
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::SHL_REG_VALUE_VALUE,
+					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, MachineInfo::ExecuteStageOpcode::SHL_REG_VALUE_VALUE,
 						dst_reg, value1, value2 };
 					execute_bus.send(execute_pkt);
 					break;
@@ -130,7 +129,7 @@ namespace Simulator
 					const auto& value1 = regs[src1_reg];
 					const auto& value2 = regs[src2_reg];
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::ADD_REG_VALUE_VALUE,
+					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, MachineInfo::ExecuteStageOpcode::ADD_REG_VALUE_VALUE,
 						dst_reg, value1, value2 };
 					execute_bus.send(execute_pkt);
 					break;
@@ -148,7 +147,7 @@ namespace Simulator
 
 					const auto& value1 = regs[src1_reg];
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::ADD_REG_VALUE_VALUE,
+					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, MachineInfo::ExecuteStageOpcode::ADD_REG_VALUE_VALUE,
 						dst_reg, value1, value2 };
 					execute_bus.send(execute_pkt);
 					break;
@@ -161,7 +160,7 @@ namespace Simulator
 					VectorValue v;
 					v.setPC(off);
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::JMP,
+					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, MachineInfo::ExecuteStageOpcode::JMP,
 						v };
 					execute_bus.send(execute_pkt);
 					break;
@@ -177,7 +176,7 @@ namespace Simulator
 
 					//std::cerr << "[DECODE] CMP: " << value1 << " -- " << value2 << std::endl;
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::CMP,
+					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, MachineInfo::ExecuteStageOpcode::CMP,
 						value1,
 						value2,
 					};
@@ -233,7 +232,7 @@ namespace Simulator
 
 					const auto& off2 = regs[base];
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::LOAD_RESTORE_PC,
+					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, MachineInfo::ExecuteStageOpcode::LOAD_RESTORE_PC,
 							off1,
 							off2,
 					};
@@ -252,7 +251,7 @@ namespace Simulator
 
 					const auto& off2 = regs[base];
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::LOAD_REG,
+					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, MachineInfo::ExecuteStageOpcode::LOAD_REG,
 							dest,
 							off1,
 							off2,
@@ -267,7 +266,7 @@ namespace Simulator
 					const auto off1_const = static_cast<int32_t>(pkt.insn >> 8);
 					VectorValue off1 = VectorValue::create_vec_int64(off1_const);
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE,
+					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE,
 							dest,
 							off1
 					};
@@ -282,7 +281,7 @@ namespace Simulator
 					VectorValue off1 = VectorValue::create_vec_int64(off1_const);
 					const auto& off2 = regs[MachineInfo::RegisterID::R0];
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::ORB_REG_VALUE,
+					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, MachineInfo::ExecuteStageOpcode::ORB_REG_VALUE,
 							dest,
 							off1,
 							off2
@@ -298,7 +297,7 @@ namespace Simulator
 					VectorValue off1 = VectorValue::create_vec_int64(off1_const);
 					const auto& off2 = regs[MachineInfo::RegisterID::R0];
 
-					DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::ORC_REG_VALUE,
+					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, MachineInfo::ExecuteStageOpcode::ORC_REG_VALUE,
 							dest,
 							off1,
 							off2
@@ -331,7 +330,7 @@ namespace Simulator
 
 		const auto& flags = regs[MachineInfo::RegisterID::FLAGS];
 
-		const DecodeToExecuteBus::Packet execute_pkt{ PC, MachineInfo::ExecuteStageOpcode::COND_JMP,
+		const DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, MachineInfo::ExecuteStageOpcode::COND_JMP,
 			off, jmp_mask, flags };
 		execute_bus.send(execute_pkt);
 	}

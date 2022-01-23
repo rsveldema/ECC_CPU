@@ -1,7 +1,9 @@
 #pragma once
 
 #include <optional>
+
 #include "MachineInfo.h"
+#include "ExecutionMask.h"
 
 namespace Simulator
 {
@@ -10,6 +12,7 @@ namespace Simulator
 	public:
 		struct Packet
 		{
+			ExecutionMask exec_mask;
 			MachineInfo::memory_address_t newpc;
 		};
 

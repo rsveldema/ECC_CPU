@@ -5,6 +5,7 @@ namespace Simulator
 	coro::ReturnObject FetchStage::run()
 	{
 		bool have_outstanding_jmp = false;
+		ExecutionMask exec_mask(MachineInfo::ALL_THREADS_EXEC_MASK_INT64);
 
 		while (1)
 		{
@@ -14,6 +15,7 @@ namespace Simulator
 				{
 					have_outstanding_jmp = false;
 					fetch_PC = jmp_retarget->newpc;
+					exec_mask = jmp_retarget->exec_mask;
 					break;
 				}
 				Task& t = *this;
@@ -45,7 +47,7 @@ namespace Simulator
 
 					fetch_PC += MachineInfo::INSTRUCTION_SIZE;
 
-					FetchToDecodeBus::Packet pkt{ PC, insn };
+					FetchToDecodeBus::Packet pkt{ exec_mask, PC, insn };
 
 					this->decode_bus.send(pkt);
 					break;

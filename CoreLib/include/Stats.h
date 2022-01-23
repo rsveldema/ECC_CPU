@@ -12,6 +12,7 @@ struct GlobalStats
 
 	Cycles waitForOperandFetch;
 
+	uint64_t numVectorLocalDivergences = 0;
 
 	void dump()
 	{
@@ -19,5 +20,6 @@ struct GlobalStats
 		std::cout << "Total #cycles                   : " << std::to_string(numCyclesUsed.cycles) << std::endl;
 		std::cout << "wait #wait cycles in fetch-insn : " << std::to_string(waitForInsnFetch.cycles) << std::endl;
 		std::cout << "wait #wait cycles in fetch-op   : " << std::to_string(waitForOperandFetch.cycles) << std::endl;
+		std::cout << "numVectorLocalDivergences       : " << std::to_string(numVectorLocalDivergences) << std::endl;
 	}
 };

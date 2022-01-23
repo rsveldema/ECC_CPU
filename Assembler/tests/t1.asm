@@ -35,7 +35,7 @@ MAIN:
 	mov %r1, 43
 	add %r2, %r3, %r1
 
-	mov %r4, 512
+	mov %r4, 3
 
 	// load [$vecdata] into r1
 	loadaddress_lo r0, $vecdata

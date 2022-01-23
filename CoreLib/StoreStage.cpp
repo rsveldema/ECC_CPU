@@ -65,7 +65,7 @@ namespace Simulator
 							if (is_store_to_pc)
 							{
 								auto new_pc = value.get_PC();
-								fetch_bus.send(StoreToFetchBus::Packet{ new_pc });
+								fetch_bus.send(StoreToFetchBus::Packet{ pkt.exec_mask, new_pc });
 							}
 							break;
 						}
@@ -84,12 +84,15 @@ namespace Simulator
 				{
 					auto new_address = std::get<MachineInfo::memory_address_t>(pkt.dest);
 
-					fetch_bus.send(StoreToFetchBus::Packet{ new_address });
+					fetch_bus.send(StoreToFetchBus::Packet{ pkt.exec_mask, new_address });
 					break;
 				}
 
 				case MachineInfo::StorageStageOpcode::CJMP:
 				{
+					std::cerr << "splitting cond-jump" << std::endl;
+					stats.numVectorLocalDivergences++;
+
 					const auto new_address = std::get<MachineInfo::memory_address_t>(pkt.dest);
 					const auto next_address = std::get<MachineInfo::memory_address_t>(pkt.src);
 					const auto& exec_mask_new_address = pkt.execution_flags_true;
@@ -97,13 +100,12 @@ namespace Simulator
 
 					ThreadContext ctxt{
 						this->regs,
-						new_address
+						new_address,
+						exec_mask_new_address
 					};
-					ctxt.regs.exec_mask = exec_mask_new_address;
 					divergence_queue.push_front(ctxt);
 
-					regs.exec_mask = exec_mask_next_address;
-					fetch_bus.send(StoreToFetchBus::Packet{ next_address });
+					fetch_bus.send(StoreToFetchBus::Packet{ exec_mask_next_address, next_address });
 					break;
 				}
 
@@ -120,7 +122,7 @@ namespace Simulator
 
 						this->regs = new_thread_ctxt.regs;
 
-						fetch_bus.send(StoreToFetchBus::Packet{ new_thread_ctxt.PC });
+						fetch_bus.send(StoreToFetchBus::Packet{ new_thread_ctxt.exec_mask, new_thread_ctxt.PC });
 					}
 					break;
 				}

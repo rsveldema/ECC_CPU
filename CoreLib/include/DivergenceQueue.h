@@ -10,7 +10,8 @@ namespace Simulator
 	struct ThreadContext
 	{
 		RegisterFile regs;
-		MachineInfo::memory_address_t PC;
+		MachineInfo::memory_address_t PC{ 0 };
+		ExecutionMask exec_mask;
 	};
 
 

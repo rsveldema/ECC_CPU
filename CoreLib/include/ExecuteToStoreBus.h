@@ -12,6 +12,7 @@ namespace Simulator
 	public:
 		struct Packet
 		{
+			ExecutionMask exec_mask;
 			MachineInfo::memory_address_t PC;
 			MachineInfo::StorageStageOpcode opcode;
 
