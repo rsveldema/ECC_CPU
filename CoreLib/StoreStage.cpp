@@ -90,13 +90,15 @@ namespace Simulator
 
 				case MachineInfo::StorageStageOpcode::CJMP:
 				{
-					std::cerr << "splitting cond-jump" << std::endl;
 					stats.numVectorLocalDivergences++;
 
 					const auto new_address = std::get<MachineInfo::memory_address_t>(pkt.dest);
 					const auto next_address = std::get<MachineInfo::memory_address_t>(pkt.src);
 					const auto& exec_mask_new_address = pkt.execution_flags_true;
 					const auto& exec_mask_next_address = pkt.execution_flags_false;
+
+					std::cerr << "splitting cond-jump into " << exec_mask_new_address.count() << " and " << exec_mask_next_address.count() << std::endl;
+
 
 					ThreadContext ctxt{
 						this->regs,

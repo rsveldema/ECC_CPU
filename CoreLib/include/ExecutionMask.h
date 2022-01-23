@@ -17,6 +17,21 @@ namespace Simulator
 			return flags & f;
 		}
 
+		uint32_t count() const
+		{
+			uint32_t c = 0;
+			uint64_t f = flags;
+			for (unsigned i = 0; i < 64; i++)
+			{
+				if (f & 1)
+				{
+					c++;
+				}
+				f >>= 1;
+			}
+			return c;
+		}
+
 	private:
 		uint64_t flags;
 	};

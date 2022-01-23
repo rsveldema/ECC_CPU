@@ -79,8 +79,6 @@ namespace Simulator
 					break;
 				}
 
-
-
 				case MachineInfo::ExecuteStageOpcode::SHL_REG_VALUE_VALUE:
 				{
 					const auto& dest = std::get<MachineInfo::RegisterID>(pkt.value0);
@@ -206,11 +204,8 @@ namespace Simulator
 						};
 						store_bus.send(store_pkt);
 					}
-
 					break;
 				}
-
-
 
 				case MachineInfo::ExecuteStageOpcode::JMP:
 				{
