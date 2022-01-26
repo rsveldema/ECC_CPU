@@ -1,9 +1,10 @@
 #pragma once
 
 #include "SimComponent.h"
-#include "MemoryBus.h"
+#include "InsnCacheMemoryBus.h"
 #include "FetchDecodeBus.h"
 #include "Stats.h"
+#include "InsnCacheMemoryBus.h"
 
 namespace Simulator
 {
@@ -11,14 +12,14 @@ namespace Simulator
 	{
 	private:
 		FetchToDecodeBus& decode_bus;
-		MemoryBus& memory_bus;
-		uint64_t fetch_PC = 0;
-		MemoryBus::BusID memory_bus_id;
+		InsnCacheMemoryBus& memory_bus;
+		MachineInfo::memory_address_t fetch_PC = 0;
+		MachineInfo::BusID memory_bus_id;
 		StoreToFetchBus& store_bus;
 		GlobalStats& stats;
 
 	public:
-		FetchStage(SimComponentRegistry& registry, FetchToDecodeBus& _decode_bus, MemoryBus& _memory_bus, MemoryBus::BusID id,
+		FetchStage(SimComponentRegistry& registry, FetchToDecodeBus& _decode_bus, InsnCacheMemoryBus& _memory_bus, MachineInfo::BusID id,
 			StoreToFetchBus& _store_bus, GlobalStats& _stats)
 			: SimComponent(registry, "fetch"), decode_bus(_decode_bus),
 			memory_bus(_memory_bus), memory_bus_id(id),

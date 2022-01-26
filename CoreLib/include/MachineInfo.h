@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include <cstdint>
@@ -171,6 +172,19 @@ namespace MachineInfo
 	{
 		ExecuteStageOpcode opcode;
 	};
+
+
+	struct BusID
+	{
+		CoreID core_id;
+		CoreComponentID within_core_id;
+	};
+
+
+	static BusID createBusID(CoreID core_id, CoreComponentID within_id)
+	{
+		return { core_id, within_id };
+	}
 
 	extern std::map<std::string, InstructionInfo> insnInfo;
 	extern std::map<std::string, RegisterID> regnames;

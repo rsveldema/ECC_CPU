@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "Task.h"
 
 #include "SimComponentRegistry.h"
@@ -13,7 +15,7 @@ namespace Simulator
 
 	public:
 		SimComponent(SimComponentRegistry& registry, const std::string& _name)
-			: coro::Task(_name), 
+			: coro::Task(_name),
 			registry(registry)
 		{
 			registry.registerComponent(this);

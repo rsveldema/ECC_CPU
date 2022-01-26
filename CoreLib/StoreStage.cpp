@@ -55,7 +55,7 @@ namespace Simulator
 						{
 							const auto& new_pc_pkt = *new_pc_pkt_opt;
 							const auto& payload = new_pc_pkt.payload;
-							const auto& value = std::get<VectorValue>(payload);
+							const auto& value = payload;
 
 							regs[dest] = value;
 

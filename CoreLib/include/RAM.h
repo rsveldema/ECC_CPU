@@ -2,7 +2,7 @@
 
 #include <vector>
 #include "SimComponent.h"
-#include "MemoryBus.h"
+#include "RawMemoryBus.h"
 #include "RAM_Config.h"
 
 namespace Simulator
@@ -10,13 +10,13 @@ namespace Simulator
 	class RAM : public SimComponent
 	{
 	public:
-		MemoryBus& toCPU;
+		RawMemoryBus& toCPU;
 		std::vector<uint8_t> storage;
 		RAM_Config config;
 
 
 		RAM(SimComponentRegistry& registry,
-			MemoryBus& _toCPU,
+			RawMemoryBus& _toCPU,
 			const RAM_Config& _config)
 
 			: SimComponent(registry, "RAM"),

@@ -2,6 +2,15 @@
 
 #include "DivergenceQueue.h"
 
+#include "L1InsnCache.h"
+#include "L1DataCache.h"
+
+#include "L2InsnCache.h"
+#include "L2DataCache.h"
+
+
+#include "VectorMemoryController.h"
+
 namespace Simulator
 {
 	class Core
@@ -22,47 +31,44 @@ namespace Simulator
 		StoreStage store;
 
 		// data cache
-		Cache L1d;
-		MemoryBus core_L1d;
+		L1DataCache L1d;
+		RawMemoryBus core_L1d;
 
 		// instruction cache
-		Cache L1i;
-		MemoryBus core_L1i;
+		L1InsnCache L1i;
+		InsnCacheMemoryBus core_L1i;
 
-		Multiplexer multiplexer;
 
-		MemoryBus L1i_multiplexer;
-		MemoryBus L1d_multiplexer;
+		InsnCacheMemoryBus L1i_to_L2i;
+		RawMemoryBus L1d_to_l2d;
 
-		MemoryBus external_memory_bus;
-		MemoryBus idle_core_memory_bus;
+		//RawMemoryBus idle_core_memory_bus;
+
+		VecMemoryBus store_to_vec_controller_bus;
+		VectorMemoryController vecMemController;
 
 	public:
 		Core(SimComponentRegistry& registry, MachineInfo::CoreID core_id, GlobalStats& stats)
 			: core_logger(MachineInfo::to_string(core_id)),
 			regs{},
-			fetch(registry, fetch_decode_bus, core_L1i, MemoryBus::createBusID(core_id, MachineInfo::CoreComponentID::FETCH), store_fetch_bus, stats),
+			fetch(registry, fetch_decode_bus, core_L1i, MachineInfo::createBusID(core_id, MachineInfo::CoreComponentID::FETCH),
+				store_fetch_bus, stats),
 			decode(registry, fetch_decode_bus, decode_execute_bus, regs, core_logger),
 			execute(registry, decode_execute_bus, execute_store_bus, core_logger),
-			store(registry, execute_store_bus, core_L1d, regs, MemoryBus::createBusID(core_id, MachineInfo::CoreComponentID::STORE), store_fetch_bus, core_logger, stats, divergence_queue),
-			L1i(registry, "L1i", core_L1i, L1i_multiplexer),
-			L1d(registry, "L1d", core_L1d, L1d_multiplexer),
-			multiplexer(registry, external_memory_bus)
+			store(registry, execute_store_bus, store_to_vec_controller_bus, regs, MachineInfo::createBusID(core_id, MachineInfo::CoreComponentID::STORE),
+				store_fetch_bus, core_logger, stats, divergence_queue),
+			L1i(registry, "L1i", core_L1i, L1i_to_L2i),
+			L1d(registry, "L1d", core_L1d, L1d_to_l2d),
+			vecMemController(registry, "vec_mem_controller", store_to_vec_controller_bus, core_L1d)
 		{
-			multiplexer.addInput(&L1i_multiplexer, [](const MemoryBus::Packet& p) {
-				return p.source.within_core_id == MachineInfo::CoreComponentID::FETCH;
-				});
-			multiplexer.addInput(&L1d_multiplexer, [](const MemoryBus::Packet& p) {
-				return p.source.within_core_id == MachineInfo::CoreComponentID::STORE;
-				});
 		}
 
-		MemoryBus& getExternalMemoryBus() {
-			return external_memory_bus;
+		RawMemoryBus& getExternalDataBus() {
+			return L1d_to_l2d;
 		}
 
-		MemoryBus& getIdleCoreMemoryBus() {
-			return idle_core_memory_bus;
+		InsnCacheMemoryBus& getExternalInsnBus() {
+			return L1i_to_L2i;
 		}
 
 		bool hasHalted()

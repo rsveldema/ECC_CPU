@@ -2,9 +2,10 @@
 
 #include "SimComponent.h"
 #include "ExecuteToStoreBus.h"
-#include "MemoryBus.h"
+#include "VecMemoryBus.h"
 #include "StoreToFetchBus.h"
 #include "DivergenceQueue.h"
+#include "MachineInfo.h"
 
 namespace Simulator
 {
@@ -12,11 +13,11 @@ namespace Simulator
 	class StoreStage : public SimComponent
 	{
 	private:
-		MemoryBus& memory_bus;
+		VecMemoryBus& memory_bus;
 
 		RegisterFile& regs;
 		ExecuteToStoreBus& execute_bus;
-		MemoryBus::BusID memory_bus_id;
+		MachineInfo::BusID memory_bus_id;
 		StoreToFetchBus& fetch_bus;
 		Logger& logger;
 		GlobalStats& stats;
@@ -25,9 +26,9 @@ namespace Simulator
 	public:
 		StoreStage(SimComponentRegistry& registry,
 			ExecuteToStoreBus& _execute_bus,
-			MemoryBus& _memory_bus,
+			VecMemoryBus& _memory_bus,
 			RegisterFile& _regs,
-			MemoryBus::BusID bus_id,
+			MachineInfo::BusID bus_id,
 			StoreToFetchBus& _fetch_bus,
 			Logger& _logger,
 			GlobalStats& _stats,
