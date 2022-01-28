@@ -9,7 +9,7 @@ namespace ecc
 		ExecutionMask exec_mask(ALL_THREADS_EXEC_MASK_INT64);
 
 		memory_address_t address_cached = 0xffffffff;
-		fetched_instruction_data_t fetched_cached;
+		fetched_instruction_data_t fetched_cached{};
 
 		while (1)
 		{
@@ -26,36 +26,37 @@ namespace ecc
 				CONTEXT_SWITCH();
 			}
 
-
-
 			if (address_cached == fetch_PC)
 			{
 				// nothing to do
 			}
-			else if ((address_cached + sizeof(instruction_t)) == fetch_PC)
-			{
-				// nothing to do.
-			}
 			else
 			{
-				const auto address_fetched = fetch_PC & ~7;
-
-				memory_bus.send_read_request_insn(address_fetched, memory_bus_id);
-
-				while (1)
+				if ((address_cached + sizeof(instruction_t)) == fetch_PC)
 				{
-					auto response = memory_bus.try_accept_response();
-					if (response)
+					// nothing to do.
+				}
+				else
+				{
+					const auto address_fetched = fetch_PC & ~7;
+
+					memory_bus.send_read_request_insn(address_fetched, memory_bus_id);
+
+					while (1)
 					{
-						assert(response->type == InsnCacheMemoryBus::Type::read_response);
+						auto response = memory_bus.try_accept_response();
+						if (response)
+						{
+							assert(response->type == InsnCacheMemoryBus::Type::read_response);
 
-						address_cached = address_fetched;
-						fetched_cached = response->getInsnData();
-						break;
+							address_cached = address_fetched;
+							fetched_cached = response->getInsnData();
+							break;
+						}
+
+						stats.incFetchedInsns();
+						CONTEXT_SWITCH();
 					}
-
-					stats.incFetchedInsns();
-					CONTEXT_SWITCH();
 				}
 			}
 
@@ -64,14 +65,17 @@ namespace ecc
 			{
 				insn = fetched_cached[0];
 			}
-			else if ((address_cached + INSTRUCTION_SIZE) == fetch_PC)
-			{
-				insn = fetched_cached[1];
-			}
 			else
 			{
-				logger.error("failed to get insn from local fetcher cache");
-				abort();
+				if ((address_cached + INSTRUCTION_SIZE) == fetch_PC)
+				{
+					insn = fetched_cached[1];
+				}
+				else
+				{
+					logger.error("failed to get insn from local fetcher cache");
+					abort();
+				}
 			}
 
 			//logger.debug("[FETCH] received response for address " + std::to_string(fetch_PC));
@@ -89,7 +93,7 @@ namespace ecc
 
 			const auto PC = fetch_PC;
 			fetch_PC += INSTRUCTION_SIZE;
-			FetchToDecodeBus::Packet pkt{ exec_mask, PC, insn };
+			FetchToDecodeBus::Packet pkt{exec_mask, PC, insn};
 			decode_bus.send(pkt);
 
 			CONTEXT_SWITCH();

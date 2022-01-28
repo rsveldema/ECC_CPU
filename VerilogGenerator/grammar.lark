@@ -1,10 +1,8 @@
-start: include*  global_decl*
- 
+start: include* namespace
+
 include: "#" "include"  (string | "<" IDENT "." IDENT ">")
 
-global_decl: "namespace" IDENT "{" global_decl "}"
-|     method
-
+namespace:  "namespace" IDENT "{" method "}"
 
 
 method: type IDENT "::" IDENT "(" ")" block
@@ -14,56 +12,97 @@ block: "{" stmt* "}"
 
 
 stmt: local_decl
+|     object_init
 |     while_stmt
 |     block
 |     if_stmt
 |     call_stmt
-|     "break" ";"
-|     "continue" ";"
+|     break_stmt
+|     continue_stmt
+|     assign_stmt
 
-call_stmt: IDENT ("." IDENT)? "(" args? ")" ";"
+break_stmt: "break" ";"
 
-if_stmt: "if" "(" expr ")" block ("else" stmt)?
+continue_stmt: "continue" ";"
+
+call_stmt: access "(" args ")" ";"
+
+access: qual_ident ("." IDENT)? ("->" IDENT)?
+
+
+if_stmt: "if" "(" expr ")" block ("else" block)?
 
 while_stmt: "while" "(" expr ")" block
 
+assign_stmt:   access some_assign_op expr ";"
 
-local_decl: type IDENT ("=" expr)? ";"
-|           type IDENT "(" args? ")" ";"
-|           type IDENT "{" args? "}" ";"
-|            IDENT (assign_op expr)? ";"
+local_decl: type IDENT "=" expr ";"
 
-assign_op: "=" | "+="
+object_init: type IDENT "(" args ")" ";"
+|            type IDENT "{" args "}" ";"
 
-args: expr ("," expr)*
+some_assign_op: assign_op | assign_add
+
+assign_op: "="
+
+assign_add: "+="
+
+args: (expr ("," expr)*)?
 
 
-expr: term ( "==" term
-        | "+" term
-        | "-" term
-        | "&" term
-        | "|" term )?
+expr: term (binary_op term)?
 
+binary_op: cmp_eq | plus | cmp_neq | bit_and | bit_or
+
+cmp_eq: "=="
+cmp_neq: "!="
+plus: "+"
+bit_and: "&"
+bit_or: "|"
 
 term: "(" expr ")"
-|     NUMBER
+| number_expr
 | string
-| "false"
-| "true"
-| qual_ident  "[" expr "]"
-| qual_ident  ("." IDENT)? ("(" args? ")")?
-| qual_ident  ("->" IDENT)? ("(" args? ")")?
-| HEX_NUMBER
-| "sizeof" "(" expr ")"
-| "~" term
-| "static_cast" "<" type ">" "(" expr ")"
+| false_expr
+| true_expr
+| array_access
+| access_expr
+| hex_number_expr
+| sizeof_term
+| bit_not_expr
+| static_cast
+
+
+bit_not_expr: "~" term
+
+hex_number_expr: HEX_NUMBER
+
+access_expr: access ("(" args ")")?
+
+static_cast: "static_cast" "<" type ">" "(" expr ")"
+
+true_expr: "true"
+
+false_expr: "false"
+
+number_expr: NUMBER
+
+array_access: qual_ident  "[" expr "]"
+
+
+sizeof_term: "sizeof" "(" expr ")"
 
 qual_ident: IDENT ("::" IDENT)*
 
-type: ("const")? ( "bool" 
-|                   qual_ident 
-|                   "auto" )
+type: ("const")? ( booltype
+|                   qual_ident_type
+|                   autotype)
 
+qual_ident_type: qual_ident
+
+booltype: "bool" 
+
+autotype: "auto" 
 
 
 string : ESCAPED_STRING
