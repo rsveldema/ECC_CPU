@@ -1,6 +1,8 @@
 from ast import Assign
 from lark import Lark, Transformer
 
+output_path = "test/"
+
 class PrintStream:
     def __init__(self, fp) -> None:
         self.fp = fp
@@ -13,15 +15,18 @@ class Method:
         self.type = type
         self.ns = ns
         self.funcname = funcname
-        self.block = block
+        self.block = block 
 
     def pretty(self):
         print("method " + self.funcname)
         self.block.pretty()
         
-    def generate(self, ps):
-        ps.print("module " + self.ns + "{")
-        ps.print("}")
+    def generate(self):
+        with open(output_path + self.ns + ".v", "w") as fp: 
+            ps = PrintStream(fp)
+            ps.print("module " + self.ns + ";")
+            ps.print("initial begin $display(\"Hello World\"); $finish; end")
+            ps.print("endmodule")
 
 class Namespace:
     def __init__(self, method):
@@ -31,8 +36,8 @@ class Namespace:
         print("namespace ")
         self.method.pretty()
 
-    def generate(self, ps):
-        self.method.generate(ps)
+    def generate(self):
+        self.method.generate()
 
 class Block:
     def __init__(self) -> None:
@@ -361,9 +366,7 @@ def main():
             print(f"AST = ")
             ast.pretty()
 
-            with open("generated_verilog.v", "w") as fp: 
-                ps = PrintStream(fp)
-                ast.generate(ps)
+            ast.generate()
             
 
 main()
