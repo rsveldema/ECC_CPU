@@ -6,13 +6,13 @@
 #include "MachineInfo.h"
 
 
-namespace Simulator
+namespace ecc
 {
 	template <typename ElementType>
 	struct vec_vector_obj_t
 	{
 		using elt_t = ElementType;
-		using elt_vector_t = std::array<ElementType, MachineInfo::VECTOR_MEM_SIZE / sizeof(ElementType)>;
+		using elt_vector_t = std::array<ElementType, ecc::VECTOR_MEM_SIZE / sizeof(ElementType)>;
 
 		elt_vector_t data;
 
@@ -109,13 +109,13 @@ namespace Simulator
 				const auto value2 = other.data[i];
 
 				if (value1 == value2)
-					result |= MachineInfo::FLAGS_MASK_EQ;
+					result |= ecc::FLAGS_MASK_EQ;
 
 				if (value1 > value2)
-					result |= MachineInfo::FLAGS_MASK_GT;
+					result |= ecc::FLAGS_MASK_GT;
 
 				if (value1 < value2)
-					result |= MachineInfo::FLAGS_MASK_LT;
+					result |= ecc::FLAGS_MASK_LT;
 
 				ret.data[i] = result;
 			}
@@ -384,12 +384,12 @@ namespace Simulator
 			return vec.are_all_adjacent_memory_addresses(elt_size);
 		}
 
-		MachineInfo::memory_address_t get_PC() const
+		ecc::memory_address_t get_PC() const
 		{
 			return get_int64(0);
 		}
 
-		void setPC(MachineInfo::memory_address_t value)
+		void setPC(ecc::memory_address_t value)
 		{
 			data = vec_vector_obj_t<int64_t>{ { static_cast<int64_t>(value) } };
 		}
@@ -486,9 +486,9 @@ namespace Simulator
 }
 
 
-namespace MachineInfo
+namespace ecc
 {
-	static std::string to_string(const Simulator::VectorValue& v)
+	static std::string to_string(const ecc::VectorValue& v)
 	{
 		return v.to_string();
 	}

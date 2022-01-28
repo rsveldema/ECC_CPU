@@ -22,17 +22,17 @@ namespace Insns
 
 		uint32_t getEncodedInstruction() override
 		{
-			auto op = MachineInfo::Opcode::JMP_ALWAYS;
+			auto op = ecc::Opcode::JMP_ALWAYS;
 
 			switch (mnemonic)
 			{
-			case Mnemonic::JMP: op = MachineInfo::Opcode::JMP_ALWAYS; break;
-			case Mnemonic::JE: op = MachineInfo::Opcode::JMP_EQUAL; break;
-			case Mnemonic::JNE: op = MachineInfo::Opcode::JMP_NOT_EQUAL; break;
-			case Mnemonic::JL: op = MachineInfo::Opcode::JMP_LOWER; break;
-			case Mnemonic::JLE: op = MachineInfo::Opcode::JMP_LOWER_EQUAL; break;
-			case Mnemonic::JG: op = MachineInfo::Opcode::JMP_GREATER; break;
-			case Mnemonic::JGE: op = MachineInfo::Opcode::JMP_GREATER_EQUAL; break;
+			case Mnemonic::JMP: op = ecc::Opcode::JMP_ALWAYS; break;
+			case Mnemonic::JE: op = ecc::Opcode::JMP_EQUAL; break;
+			case Mnemonic::JNE: op = ecc::Opcode::JMP_NOT_EQUAL; break;
+			case Mnemonic::JL: op = ecc::Opcode::JMP_LOWER; break;
+			case Mnemonic::JLE: op = ecc::Opcode::JMP_LOWER_EQUAL; break;
+			case Mnemonic::JG: op = ecc::Opcode::JMP_GREATER; break;
+			case Mnemonic::JGE: op = ecc::Opcode::JMP_GREATER_EQUAL; break;
 			default:
 			{
 				abort();

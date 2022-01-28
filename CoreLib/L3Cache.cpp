@@ -1,9 +1,9 @@
 #include "CoreLib.h"
 
 
-namespace Simulator
+namespace ecc
 {
-	coro::ReturnObject L3Cache::run()
+	ecc::ReturnObject L3Cache::run()
 	{
 		running = true;
 		while (1)

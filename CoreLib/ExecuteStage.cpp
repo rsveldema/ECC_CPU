@@ -1,9 +1,9 @@
 #include "CoreLib.h"
 
-namespace Simulator
+namespace ecc
 {
 
-	coro::ReturnObject ExecuteStage::run()
+	ecc::ReturnObject ExecuteStage::run()
 	{
 		while (1)
 		{
@@ -13,23 +13,23 @@ namespace Simulator
 				const auto opcode = pkt.opcode;
 				const auto PC = pkt.PC;
 
-				logger.debug("EXECUTE[" + std::to_string(PC) + "] exec: " + MachineInfo::to_string(opcode));
+				logger.debug("EXECUTE[" + std::to_string(PC) + "] exec: " + ecc::to_string(opcode));
 
 				switch (pkt.opcode)
 				{
-				case MachineInfo::ExecuteStageOpcode::NOP:
+				case ecc::ExecuteStageOpcode::NOP:
 				{
 					break;
 				}
 
-				case MachineInfo::ExecuteStageOpcode::CMP:
+				case ecc::ExecuteStageOpcode::CMP:
 				{
 					const auto& value1 = std::get<VectorValue>(pkt.value0);
 					const auto& value2 = pkt.value1;
 
 					const VectorValue src = value1.compare_int64(value2);
 
-					const auto dest = MachineInfo::RegisterID::FLAGS;
+					const auto dest = ecc::RegisterID::FLAGS;
 
 					//std::cerr << "[EXECUTE] CMP: " << value1 << " -- " << value2 << "-----" << result << std::endl;
 
@@ -42,16 +42,16 @@ namespace Simulator
 					regs.mark_invalid(dest);
 
 					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
-							MachineInfo::StorageStageOpcode::STORE_VALUE_INTO_REG,
+							ecc::StorageStageOpcode::STORE_VALUE_INTO_REG,
 							dest,
 							src };
 					store_bus.send(store_pkt);
 					break;
 				}
 
-				case MachineInfo::ExecuteStageOpcode::MOVE_REG_VALUE:
+				case ecc::ExecuteStageOpcode::MOVE_REG_VALUE:
 				{
-					const auto& dest = std::get<MachineInfo::RegisterID>(pkt.value0);
+					const auto& dest = std::get<ecc::RegisterID>(pkt.value0);
 					const auto& src = pkt.value1;
 
 					while (store_bus.is_busy())
@@ -63,16 +63,16 @@ namespace Simulator
 					regs.mark_invalid(dest);
 
 					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
-						MachineInfo::StorageStageOpcode::STORE_VALUE_INTO_REG,
+						ecc::StorageStageOpcode::STORE_VALUE_INTO_REG,
 						dest, src };
 					store_bus.send(store_pkt);
 					break;
 				}
 
 
-				case MachineInfo::ExecuteStageOpcode::ORB_REG_VALUE:
+				case ecc::ExecuteStageOpcode::ORB_REG_VALUE:
 				{
-					const auto& dest = std::get<MachineInfo::RegisterID>(pkt.value0);
+					const auto& dest = std::get<ecc::RegisterID>(pkt.value0);
 					const auto& src1 = pkt.value1;
 					const auto& src2 = pkt.value2;
 
@@ -87,16 +87,16 @@ namespace Simulator
 					regs.mark_invalid(dest);
 
 					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
-						MachineInfo::StorageStageOpcode::STORE_VALUE_INTO_REG,
+						ecc::StorageStageOpcode::STORE_VALUE_INTO_REG,
 						dest, src };
 					store_bus.send(store_pkt);
 					break;
 				}
 
 
-				case MachineInfo::ExecuteStageOpcode::ORC_REG_VALUE:
+				case ecc::ExecuteStageOpcode::ORC_REG_VALUE:
 				{
-					const auto& dest = std::get<MachineInfo::RegisterID>(pkt.value0);
+					const auto& dest = std::get<ecc::RegisterID>(pkt.value0);
 					const auto& src1 = pkt.value1;
 					const auto& src2 = pkt.value2;
 
@@ -110,15 +110,15 @@ namespace Simulator
 					regs.mark_invalid(dest);
 
 					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
-						MachineInfo::StorageStageOpcode::STORE_VALUE_INTO_REG,
+						ecc::StorageStageOpcode::STORE_VALUE_INTO_REG,
 						dest, src };
 					store_bus.send(store_pkt);
 					break;
 				}
 
-				case MachineInfo::ExecuteStageOpcode::SHL_REG_VALUE_VALUE:
+				case ecc::ExecuteStageOpcode::SHL_REG_VALUE_VALUE:
 				{
-					const auto& dest = std::get<MachineInfo::RegisterID>(pkt.value0);
+					const auto& dest = std::get<ecc::RegisterID>(pkt.value0);
 					const auto& src1 = pkt.value1;
 					const auto& src2 = pkt.value2;
 
@@ -132,15 +132,15 @@ namespace Simulator
 					regs.mark_invalid(dest);
 
 					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
-						MachineInfo::StorageStageOpcode::STORE_VALUE_INTO_REG,
+						ecc::StorageStageOpcode::STORE_VALUE_INTO_REG,
 						dest, src };
 					store_bus.send(store_pkt);
 					break;
 				}
 
-				case MachineInfo::ExecuteStageOpcode::ADD_REG_VALUE_VALUE:
+				case ecc::ExecuteStageOpcode::ADD_REG_VALUE_VALUE:
 				{
-					const auto& dest = std::get<MachineInfo::RegisterID>(pkt.value0);
+					const auto& dest = std::get<ecc::RegisterID>(pkt.value0);
 					const auto& src1 = pkt.value1;
 					const auto& src2 = pkt.value2;
 
@@ -155,16 +155,16 @@ namespace Simulator
 					regs.mark_invalid(dest);
 
 					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
-						MachineInfo::StorageStageOpcode::STORE_VALUE_INTO_REG,
+						ecc::StorageStageOpcode::STORE_VALUE_INTO_REG,
 						dest, src };
 					store_bus.send(store_pkt);
 					break;
 				}
 
 				// reg = [value + value]
-				case MachineInfo::ExecuteStageOpcode::LOAD_REG:
+				case ecc::ExecuteStageOpcode::LOAD_REG:
 				{
-					auto dest = std::get<MachineInfo::RegisterID>(pkt.value0);
+					auto dest = std::get<ecc::RegisterID>(pkt.value0);
 					auto off1 = pkt.value1;
 					auto off2 = pkt.value2;
 
@@ -178,13 +178,13 @@ namespace Simulator
 
 					regs.mark_invalid(dest);
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::LOAD_MEM_INTO_REG,
+					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, ecc::StorageStageOpcode::LOAD_MEM_INTO_REG,
 						dest, offset };
 					store_bus.send(store_pkt);
 					break;
 				}
 
-				case MachineInfo::ExecuteStageOpcode::STORE_ADDR_VALUE:
+				case ecc::ExecuteStageOpcode::STORE_ADDR_VALUE:
 				{
 					const auto& value = std::get<VectorValue>(pkt.value0);
 					const auto& addr1 = pkt.value1;
@@ -199,27 +199,27 @@ namespace Simulator
 					}
 
 					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
-						MachineInfo::StorageStageOpcode::STORE_REG_INTO_MEM,
+						ecc::StorageStageOpcode::STORE_REG_INTO_MEM,
 						addr, value };
 					store_bus.send(store_pkt);
 					break;
 				}
 
-				case MachineInfo::ExecuteStageOpcode::LOAD_RESTORE_PC:
+				case ecc::ExecuteStageOpcode::LOAD_RESTORE_PC:
 				{
 					const auto& off1 = std::get<VectorValue>(pkt.value0);
 					const auto& off2 = pkt.value1;
 
 					auto offset = off1.add_int64(off2);
 
-					auto dest = MachineInfo::RegisterID::PC;
+					auto dest = ecc::RegisterID::PC;
 					while (store_bus.is_busy())
 					{
 						Task& t = *this;
 						co_await t;
 					}
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::LOAD_MEM_INTO_REG,
+					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, ecc::StorageStageOpcode::LOAD_MEM_INTO_REG,
 						dest, offset, 0 };
 					store_pkt.is_store_to_pc = true;
 					store_bus.send(store_pkt);
@@ -227,7 +227,7 @@ namespace Simulator
 				}
 
 
-				case MachineInfo::ExecuteStageOpcode::COND_JMP:
+				case ecc::ExecuteStageOpcode::COND_JMP:
 				{
 					const auto& offset = std::get<VectorValue>(pkt.value0);
 					const auto PC = pkt.PC;
@@ -237,16 +237,16 @@ namespace Simulator
 					const auto& jmp_mask = pkt.value1;
 					const auto& exec_mask = pkt.exec_mask;
 
-					while (!regs.is_valid(MachineInfo::RegisterID::FLAGS))
+					while (!regs.is_valid(ecc::RegisterID::FLAGS))
 					{
 						Task& t = *this;
 						co_await t;
 					}
 
-					const VectorValue flags = regs[MachineInfo::RegisterID::FLAGS];
+					const VectorValue flags = regs[ecc::RegisterID::FLAGS];
 					const auto& should_jmp_masks = flags.bit_and_int64(jmp_mask);
 					const uint64_t should_jmp = exec_mask.get_masked_flags(should_jmp_masks.reduce_int64_to_single_int64_t());
-					const uint64_t all_threads_mask = exec_mask.get_masked_flags(MachineInfo::ALL_THREADS_EXEC_MASK_INT64);
+					const uint64_t all_threads_mask = exec_mask.get_masked_flags(ecc::ALL_THREADS_EXEC_MASK_INT64);
 
 
 					assert(flags.getType() == VectorValue::Type::INT64);
@@ -262,14 +262,14 @@ namespace Simulator
 					if (should_jmp == 0)
 					{
 						// no thread wants to jump to the next-insn
-						ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::JMP,
+						ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, ecc::StorageStageOpcode::JMP,
 							next_address };
 						store_bus.send(store_pkt);
 					}
 					else if (should_jmp == all_threads_mask)
 					{
 						// all threads just want to go to the next-insn
-						ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::JMP,
+						ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, ecc::StorageStageOpcode::JMP,
 							new_address };
 						store_bus.send(store_pkt);
 					}
@@ -280,7 +280,7 @@ namespace Simulator
 						ExecutionMask execution_flags_false(exec_mask.get_masked_flags(~should_jmp));
 						bool is_store_to_pc = false;
 
-						ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::CJMP,
+						ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, ecc::StorageStageOpcode::CJMP,
 							new_address,
 							next_address,
 							is_store_to_pc,
@@ -292,7 +292,7 @@ namespace Simulator
 					break;
 				}
 
-				case MachineInfo::ExecuteStageOpcode::JMP:
+				case ecc::ExecuteStageOpcode::JMP:
 				{
 					const auto& offset = std::get<VectorValue>(pkt.value0);
 
@@ -305,26 +305,26 @@ namespace Simulator
 						Task& t = *this;
 						co_await t;
 					}
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::JMP, new_address };
+					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, ecc::StorageStageOpcode::JMP, new_address };
 					store_bus.send(store_pkt);
 					break;
 				}
 
-				case MachineInfo::ExecuteStageOpcode::HALT:
+				case ecc::ExecuteStageOpcode::HALT:
 				{
 					while (store_bus.is_busy())
 					{
 						Task& t = *this;
 						co_await t;
 					}
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::HALT };
+					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, ecc::StorageStageOpcode::HALT };
 					store_bus.send(store_pkt);
 					break;
 				}
 
 
 				default:
-					std::cerr << "[EXECUTE] unhandled opcode in execute stage: " << MachineInfo::to_string(pkt.opcode) << std::endl;
+					std::cerr << "[EXECUTE] unhandled opcode in execute stage: " << ecc::to_string(pkt.opcode) << std::endl;
 					abort();
 				}
 			}

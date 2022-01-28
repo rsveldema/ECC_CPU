@@ -1,9 +1,9 @@
 #include "RAM.h"
 #include <cstring>
 
-namespace Simulator
+namespace ecc
 {
-	coro::ReturnObject RAM::run()
+	ecc::ReturnObject RAM::run()
 	{
 		while (1)
 		{

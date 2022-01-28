@@ -6,7 +6,7 @@
 #include "RawMemoryBus.h"
 #include "VecMemoryBus.h"
 
-namespace Simulator
+namespace ecc
 {
 	class VectorMemoryController : public SimComponent
 	{
@@ -22,6 +22,6 @@ namespace Simulator
 			std::cerr << "allocated: " << name << std::endl;
 		}
 
-		coro::ReturnObject run() override;
+		ecc::ReturnObject run() override;
 	};
 }

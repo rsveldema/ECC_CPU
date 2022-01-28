@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace Simulator
+namespace ecc
 {
 	class ExecutionMask
 	{

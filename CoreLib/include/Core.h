@@ -11,7 +11,7 @@
 
 #include "VectorMemoryController.h"
 
-namespace Simulator
+namespace ecc
 {
 	class Core
 	{
@@ -48,14 +48,14 @@ namespace Simulator
 		VectorMemoryController vecMemController;
 
 	public:
-		Core(SimComponentRegistry& registry, MachineInfo::CoreID core_id, GlobalStats& stats)
-			: core_logger(MachineInfo::to_string(core_id)),
+		Core(SimComponentRegistry& registry, ecc::CoreID core_id, GlobalStats& stats)
+			: core_logger(ecc::to_string(core_id)),
 			regs{},
-			fetch(registry, fetch_decode_bus, core_L1i, MachineInfo::createBusID(core_id, MachineInfo::CoreComponentID::FETCH),
+			fetch(registry, fetch_decode_bus, core_L1i, ecc::createBusID(core_id, ecc::CoreComponentID::FETCH),
 				store_fetch_bus, stats, core_logger),
 			decode(registry, fetch_decode_bus, decode_execute_bus, regs, core_logger),
 			execute(registry, decode_execute_bus, execute_store_bus, core_logger, regs),
-			store(registry, execute_store_bus, store_to_vec_controller_bus, regs, MachineInfo::createBusID(core_id, MachineInfo::CoreComponentID::STORE),
+			store(registry, execute_store_bus, store_to_vec_controller_bus, regs, ecc::createBusID(core_id, ecc::CoreComponentID::STORE),
 				store_fetch_bus, core_logger, stats, divergence_queue),
 			L1i(registry, "L1i", core_L1i, L1i_to_L2i),
 			L1d(registry, "L1d", core_L1d, L1d_to_l2d),

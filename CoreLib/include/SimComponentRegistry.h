@@ -3,7 +3,7 @@
 #include <vector>
 #include "Stats.h"
 
-namespace Simulator
+namespace ecc
 {
 	class SimComponent;
 	class CoreClusterGrid;

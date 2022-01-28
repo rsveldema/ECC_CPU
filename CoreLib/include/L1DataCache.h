@@ -7,7 +7,7 @@
 #include "SimComponent.h"
 #include "RawMemoryBus.h"
 
-namespace Simulator
+namespace ecc
 {
 	class L1DataCache : public SimComponent
 	{
@@ -23,6 +23,6 @@ namespace Simulator
 			std::cerr << "allocated: " << name << std::endl;
 		}
 
-		coro::ReturnObject run() override;
+		ecc::ReturnObject run() override;
 	};
 }

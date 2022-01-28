@@ -14,6 +14,11 @@ struct GlobalStats
 
 	uint64_t numVectorLocalDivergences = 0;
 
+	void incFetchedInsns()
+	{
+		waitForInsnFetch++;
+	}
+
 	void dump()
 	{
 		std::cout << "-----------------<<[  Stats ]>>------------------" << std::endl;

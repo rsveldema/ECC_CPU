@@ -1,9 +1,9 @@
 #include "CoreLib.h"
 
 
-namespace Simulator
+namespace ecc
 {
-	coro::ReturnObject VectorMemoryController::run()
+	ecc::ReturnObject VectorMemoryController::run()
 	{
 		while (1)
 		{

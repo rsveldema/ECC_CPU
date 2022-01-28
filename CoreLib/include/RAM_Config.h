@@ -2,7 +2,7 @@
 
 #include "Stats.h"
 
-namespace Simulator
+namespace ecc
 {
 	struct RAM_Config
 	{

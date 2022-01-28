@@ -6,20 +6,20 @@
 #include "Stats.h"
 #include "InsnCacheMemoryBus.h"
 
-namespace Simulator
+namespace ecc
 {
 	class FetchStage : public SimComponent
 	{
 	private:
 		FetchToDecodeBus& decode_bus;
 		InsnCacheMemoryBus& memory_bus;
-		MachineInfo::BusID memory_bus_id;
+		ecc::BusID memory_bus_id;
 		StoreToFetchBus& store_bus;
 		GlobalStats& stats;
 		Logger& logger;
 
 	public:
-		FetchStage(SimComponentRegistry& registry, FetchToDecodeBus& _decode_bus, InsnCacheMemoryBus& _memory_bus, MachineInfo::BusID id,
+		FetchStage(SimComponentRegistry& registry, FetchToDecodeBus& _decode_bus, InsnCacheMemoryBus& _memory_bus, ecc::BusID id,
 			StoreToFetchBus& _store_bus, GlobalStats& _stats,
 			Logger& _logger)
 			: SimComponent(registry, "fetch"), decode_bus(_decode_bus),
@@ -29,7 +29,7 @@ namespace Simulator
 			logger(_logger)
 		{}
 
-		coro::ReturnObject run() override;
+		ecc::ReturnObject run() override;
 	};
 
 }

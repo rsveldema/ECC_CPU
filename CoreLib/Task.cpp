@@ -1,7 +1,7 @@
 #include "Task.h"
 
 
-namespace coro
+namespace ecc
 {
 	void Task::await_suspend(std::coroutine_handle<ReturnObject::promise_type> h)
 	{

@@ -17,5 +17,10 @@ public:
 	{
 		std::cerr << prefix << ": " << str << std::endl;
 	}
+	
+	void error(const std::string& str)
+	{
+		std::cerr << prefix << ": " << str << std::endl;
+	}
 };
 

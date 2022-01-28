@@ -3,7 +3,7 @@
 #include "DecodeToExecuteBus.h"
 #include "ExecuteToStoreBus.h"
 
-namespace Simulator
+namespace ecc
 {
 
 	class ExecuteStage : public SimComponent
@@ -25,6 +25,6 @@ namespace Simulator
 			regs(_regs)
 		{}
 
-		coro::ReturnObject run() override;
+		ecc::ReturnObject run() override;
 	};
 }

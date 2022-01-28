@@ -4,10 +4,10 @@
 
 struct MemoryAccess
 {
-	MachineInfo::RegisterID base_reg;
+	ecc::RegisterID base_reg;
 	int32_t offset;
 
-	MemoryAccess(MachineInfo::RegisterID reg, int32_t off)
+	MemoryAccess(ecc::RegisterID reg, int32_t off)
 	{
 		base_reg = reg;
 		offset = off;

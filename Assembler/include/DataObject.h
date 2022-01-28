@@ -9,7 +9,7 @@ struct DataField
 {
 	std::variant<int8_t, int16_t, int32_t, int64_t> value;
 	uint64_t size;
-	MachineInfo::memory_address_t address = 0;
+	ecc::memory_address_t address = 0;
 
 	DataField(int64_t _value)
 		: value(_value)
@@ -19,7 +19,7 @@ struct DataField
 
 	void write(std::vector<uint8_t>& values) const
 	{
-		assert(address >= MachineInfo::DATA_SEGMENT_START);
+		assert(address >= ecc::DATA_SEGMENT_START);
 
 		switch (value.index())
 		{
@@ -58,7 +58,7 @@ struct DataField
 
 		for (int i = 0; i < sizeof(t); i++)
 		{
-			auto write_ix = (i + address) - MachineInfo::DATA_SEGMENT_START;
+			auto write_ix = (i + address) - ecc::DATA_SEGMENT_START;
 
 			values.resize(write_ix + 1);
 

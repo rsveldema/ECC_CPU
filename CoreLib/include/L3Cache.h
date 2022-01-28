@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 
-namespace Simulator
+namespace ecc
 {
 	class L3Cache : public SimComponent
 	{
@@ -19,6 +19,6 @@ namespace Simulator
 			std::cerr << "allocated: " << name << std::endl;
 		}
 
-		coro::ReturnObject run() override;
+		ecc::ReturnObject run() override;
 	};
 }

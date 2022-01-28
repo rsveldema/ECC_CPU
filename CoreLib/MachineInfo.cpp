@@ -1,6 +1,6 @@
 #include "MachineInfo.h"
 
-namespace MachineInfo
+namespace ecc
 {
 
 	std::map<std::string, ExecuteStageInsnInfo> execInsnInfo{

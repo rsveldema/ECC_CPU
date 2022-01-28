@@ -5,12 +5,12 @@
 
 #include "RegisterFile.h"
 
-namespace Simulator
+namespace ecc
 {
 	struct ThreadContext
 	{
 		RegisterFile regs;
-		MachineInfo::memory_address_t PC{ 0 };
+		ecc::memory_address_t PC{ 0 };
 		ExecutionMask exec_mask;
 	};
 

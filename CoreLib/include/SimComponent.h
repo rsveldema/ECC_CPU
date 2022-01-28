@@ -6,22 +6,22 @@
 
 #include "SimComponentRegistry.h"
 
-namespace Simulator
+namespace ecc
 {
-	class SimComponent : public coro::Task
+	class SimComponent : public ecc::Task
 	{
 	private:
 		SimComponentRegistry& registry;
 
 	public:
 		SimComponent(SimComponentRegistry& registry, const std::string& _name)
-			: coro::Task(_name),
+			: ecc::Task(_name),
 			registry(registry)
 		{
 			registry.registerComponent(this);
 		}
 
-		virtual coro::ReturnObject run() = 0;
+		virtual ecc::ReturnObject run() = 0;
 
 	};
 

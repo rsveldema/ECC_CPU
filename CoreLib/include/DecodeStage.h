@@ -5,7 +5,7 @@
 #include "DecodeToExecuteBus.h"
 #include "Logger.h"
 
-namespace Simulator
+namespace ecc
 {
 	class DecodeStage : public SimComponent
 	{
@@ -24,11 +24,11 @@ namespace Simulator
 			logger(_logger)
 		{}
 
-		coro::ReturnObject run() override;
+		ecc::ReturnObject run() override;
 
 	private:
 
-		coro::ReturnObject handle_conditional_jump(uint32_t jmp_mask_const, const FetchToDecodeBus::Packet& pkt);
+		ecc::ReturnObject handle_conditional_jump(uint32_t jmp_mask_const, const FetchToDecodeBus::Packet& pkt);
 	};
 
 }

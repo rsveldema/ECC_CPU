@@ -1,0 +1,88 @@
+start: include*  global_decl*
+ 
+include: "#" "include"  (string | "<" IDENT "." IDENT ">")
+
+global_decl: "namespace" IDENT "{" global_decl "}"
+|     method
+
+
+
+method: type IDENT "::" IDENT "(" ")" block
+
+
+block: "{" stmt* "}"
+
+
+stmt: local_decl
+|     while_stmt
+|     block
+|     if_stmt
+|     call_stmt
+|     "break" ";"
+|     "continue" ";"
+
+call_stmt: IDENT ("." IDENT)? "(" args? ")" ";"
+
+if_stmt: "if" "(" expr ")" block ("else" stmt)?
+
+while_stmt: "while" "(" expr ")" block
+
+
+local_decl: type IDENT ("=" expr)? ";"
+|           type IDENT "(" args? ")" ";"
+|           type IDENT "{" args? "}" ";"
+|            IDENT (assign_op expr)? ";"
+
+assign_op: "=" | "+="
+
+args: expr ("," expr)*
+
+
+expr: term ( "==" term
+        | "+" term
+        | "-" term
+        | "&" term
+        | "|" term )?
+
+
+term: "(" expr ")"
+|     NUMBER
+| string
+| "false"
+| "true"
+| qual_ident  "[" expr "]"
+| qual_ident  ("." IDENT)? ("(" args? ")")?
+| qual_ident  ("->" IDENT)? ("(" args? ")")?
+| HEX_NUMBER
+| "sizeof" "(" expr ")"
+| "~" term
+| "static_cast" "<" type ">" "(" expr ")"
+
+qual_ident: IDENT ("::" IDENT)*
+
+type: ("const")? ( "bool" 
+|                   qual_ident 
+|                   "auto" )
+
+
+
+string : ESCAPED_STRING
+
+IDENT: ("a".."z"|"A".."Z"|"_")("a".."z"|"A".."Z"|"_"|"0".."9")*
+
+NUMBER: ("0".."9")+
+
+HEX_NUMBER: "0" "x" ("a".."z"|"A".."Z"|"0".."9")+
+
+
+_NEWLINE: "\n"
+
+COMMENT: "//" /[^\n]*/ _NEWLINE
+
+%import common.ESCAPED_STRING
+%import common.SIGNED_NUMBER
+%import common.WS
+
+
+%ignore COMMENT
+%ignore WS

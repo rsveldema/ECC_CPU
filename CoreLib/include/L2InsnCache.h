@@ -7,7 +7,7 @@
 #include "RawMemoryBus.h"
 #include "InsnCacheMemoryBus.h"
 
-namespace Simulator
+namespace ecc
 {
 	class L2InsnCache : public SimComponent
 	{
@@ -23,6 +23,6 @@ namespace Simulator
 			std::cerr << "allocated: " << name << std::endl;
 		}
 
-		coro::ReturnObject run() override;
+		ecc::ReturnObject run() override;
 	};
 }

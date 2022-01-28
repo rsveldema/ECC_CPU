@@ -128,16 +128,16 @@ namespace {
 
 bool isRegister(const std::string& str)
 {
-	if (MachineInfo::regnames.find(str) != MachineInfo::regnames.end())
+	if (ecc::regnames.find(str) != ecc::regnames.end())
 	{
 		return true;
 	}
 	return false;
 }
 
-MachineInfo::RegisterID getRegisterID(const std::string& str)
+ecc::RegisterID getRegisterID(const std::string& str)
 {
-	return MachineInfo::regnames[str];
+	return ecc::regnames[str];
 }
 
 bool isInt16Constant(const std::string& str)
@@ -326,7 +326,7 @@ void Program::parseCodeLine(const Line& line, const SourcePosition& pos)
 		else if (isRegister(toks[1]) && isRegister(toks[2]))
 		{
 			auto src = getRegisterID(toks[2]);
-			if (src == MachineInfo::RegisterID::BLOCK_INDEX)
+			if (src == ecc::RegisterID::BLOCK_INDEX)
 			{
 				Add(new MoveRegBlockIndex(getRegisterID(toks[1]), getRegisterID(toks[2])));
 			}

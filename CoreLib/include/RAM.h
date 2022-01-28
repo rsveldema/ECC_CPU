@@ -5,7 +5,7 @@
 #include "RawMemoryBus.h"
 #include "RAM_Config.h"
 
-namespace Simulator
+namespace ecc
 {
 	class RAM : public SimComponent
 	{
@@ -26,7 +26,7 @@ namespace Simulator
 			storage.resize(config.size);
 		}
 
-		coro::ReturnObject run() override;
+		ecc::ReturnObject run() override;
 
 		void write(uint64_t address, char* data, size_t len)
 		{

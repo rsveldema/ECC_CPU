@@ -5,7 +5,7 @@
 #include "MachineInfo.h"
 #include "ExecutionMask.h"
 
-namespace Simulator
+namespace ecc
 {
 	class StoreToFetchBus
 	{
@@ -13,7 +13,7 @@ namespace Simulator
 		struct Packet
 		{
 			ExecutionMask exec_mask;
-			MachineInfo::memory_address_t newpc;
+			ecc::memory_address_t newpc;
 		};
 
 		void send(const Packet& pkt)

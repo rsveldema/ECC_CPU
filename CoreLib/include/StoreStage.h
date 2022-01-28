@@ -7,7 +7,7 @@
 #include "DivergenceQueue.h"
 #include "MachineInfo.h"
 
-namespace Simulator
+namespace ecc
 {
 
 	class StoreStage : public SimComponent
@@ -17,7 +17,7 @@ namespace Simulator
 
 		RegisterFile& regs;
 		ExecuteToStoreBus& execute_bus;
-		MachineInfo::BusID memory_bus_id;
+		ecc::BusID memory_bus_id;
 		StoreToFetchBus& fetch_bus;
 		Logger& logger;
 		GlobalStats& stats;
@@ -28,7 +28,7 @@ namespace Simulator
 			ExecuteToStoreBus& _execute_bus,
 			VecMemoryBus& _memory_bus,
 			RegisterFile& _regs,
-			MachineInfo::BusID bus_id,
+			ecc::BusID bus_id,
 			StoreToFetchBus& _fetch_bus,
 			Logger& _logger,
 			GlobalStats& _stats,
@@ -45,6 +45,6 @@ namespace Simulator
 			divergence_queue(_divergence_queue)
 		{}
 
-		coro::ReturnObject run() override;
+		ecc::ReturnObject run() override;
 	};
 }

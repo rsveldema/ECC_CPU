@@ -2,9 +2,9 @@
 
 #include "CoreLib.h"
 
-namespace Simulator
+namespace ecc
 {
-	coro::ReturnObject L2InsnCache::run()
+	ecc::ReturnObject L2InsnCache::run()
 	{
 		running = true;
 		while (1)
@@ -12,7 +12,7 @@ namespace Simulator
 			if (auto pkt = toCPU.try_accept_request())
 			{
 				// translates from an InsnCachePacket to to an RawDataPacket
-				MachineInfo::memory_address_t addr = pkt->address;
+				ecc::memory_address_t addr = pkt->address;
 				RawMemoryBus::Packet rawPkt{
 					.type = RawMemoryBus::Type::read_data,
 					.source = pkt->source,
@@ -25,7 +25,7 @@ namespace Simulator
 
 			if (auto pkt = toMemory.try_accept_response())
 			{
-				MachineInfo::fetched_instruction_data_t ret;
+				ecc::fetched_instruction_data_t ret;
 
 				static_assert(sizeof(ret) == sizeof(pkt->payload));
 				memcpy(ret.data(), &pkt->payload, sizeof(ret));

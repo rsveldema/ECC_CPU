@@ -1,5 +1,5 @@
 #include "CoreLib.h"
 
-namespace Simulator
+namespace ecc
 {
 }

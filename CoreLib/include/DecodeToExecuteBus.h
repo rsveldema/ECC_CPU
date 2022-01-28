@@ -6,7 +6,7 @@
 #include "MachineInfo.h"
 #include "RegisterFile.h"
 
-namespace Simulator
+namespace ecc
 {
 
 	class DecodeToExecuteBus
@@ -16,10 +16,10 @@ namespace Simulator
 		{
 			ExecutionMask exec_mask;
 
-			MachineInfo::memory_address_t PC;
-			MachineInfo::ExecuteStageOpcode opcode;
+			ecc::memory_address_t PC;
+			ecc::ExecuteStageOpcode opcode;
 
-			std::variant<MachineInfo::RegisterID, VectorValue> value0;
+			std::variant<ecc::RegisterID, VectorValue> value0;
 			VectorValue value1;
 			VectorValue value2;
 		};

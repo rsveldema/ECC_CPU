@@ -5,7 +5,7 @@
 
 #include <fstream>
 
-using namespace Simulator;
+using namespace ecc;
 
 void Usage()
 {
@@ -30,7 +30,7 @@ void read_code_memory_dump(CoreClusterGrid& machine, const std::string& filename
 		return;
 	}
 
-	uint64_t address = MachineInfo::CODE_SEGMENT_START;
+	uint64_t address = ecc::CODE_SEGMENT_START;
 	while (!f.eof())
 	{
 		char insn[4];
@@ -71,7 +71,7 @@ void read_data_memory_dump(CoreClusterGrid& machine, const std::string& filename
 	f.close();
 
 	// store content of vector at the data sector we've assembled it at:
-	uint64_t address = MachineInfo::DATA_SEGMENT_START;
+	uint64_t address = ecc::DATA_SEGMENT_START;
 	machine.dram.write(address, buffer.data(), length);
 }
 

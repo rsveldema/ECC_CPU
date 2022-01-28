@@ -2,7 +2,7 @@
 
 #include "MachineConfig.h"
 
-namespace Simulator
+namespace ecc
 {
 	class CoreCluster
 	{
@@ -21,7 +21,7 @@ namespace Simulator
 		{
 			for (unsigned i = 0; i < config.num_cores; i++)
 			{
-				const auto core_id = static_cast<MachineInfo::CoreID>(i);
+				const auto core_id = static_cast<ecc::CoreID>(i);
 				cores.emplace_back(std::make_unique<Core>(registry, core_id, globalStats));
 
 				main_memory_data_access_multiplexer.addInput(&cores[i]->getExternalDataBus(),

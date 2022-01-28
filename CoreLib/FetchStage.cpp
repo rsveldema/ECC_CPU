@@ -1,29 +1,29 @@
 #include "CoreLib.h"
 
-namespace Simulator
+namespace ecc
 {
-	coro::ReturnObject FetchStage::run()
+	ReturnObject FetchStage::run()
 	{
 		bool have_outstanding_jmp = false;
-		MachineInfo::memory_address_t fetch_PC = 0;
-		ExecutionMask exec_mask(MachineInfo::ALL_THREADS_EXEC_MASK_INT64);
+		memory_address_t fetch_PC = 0;
+		ExecutionMask exec_mask(ALL_THREADS_EXEC_MASK_INT64);
 
-		MachineInfo::memory_address_t address_cached = 0xffffffff;
-		MachineInfo::fetched_instruction_data_t fetched_cached;
+		memory_address_t address_cached = 0xffffffff;
+		fetched_instruction_data_t fetched_cached;
 
 		while (1)
 		{
 			while (have_outstanding_jmp)
 			{
-				if (auto jmp_retarget = store_bus.try_recv())
+				auto jmp_retarget = store_bus.try_recv();
+				if (jmp_retarget)
 				{
 					have_outstanding_jmp = false;
 					fetch_PC = jmp_retarget->newpc;
 					exec_mask = jmp_retarget->exec_mask;
 					break;
 				}
-				Task& t = *this;
-				co_await t;
+				CONTEXT_SWITCH();
 			}
 
 
@@ -32,7 +32,7 @@ namespace Simulator
 			{
 				// nothing to do
 			}
-			else if ((address_cached + sizeof(MachineInfo::instruction_t)) == fetch_PC)
+			else if ((address_cached + sizeof(instruction_t)) == fetch_PC)
 			{
 				// nothing to do.
 			}
@@ -44,58 +44,55 @@ namespace Simulator
 
 				while (1)
 				{
-					if (auto response = memory_bus.try_accept_response())
+					auto response = memory_bus.try_accept_response();
+					if (response)
 					{
 						assert(response->type == InsnCacheMemoryBus::Type::read_response);
 
 						address_cached = address_fetched;
-						fetched_cached = std::get<MachineInfo::fetched_instruction_data_t>(response->payload);
+						fetched_cached = response->getInsnData();
 						break;
 					}
 
-					stats.waitForInsnFetch++;
-					Task& t = *this;
-					co_await t;
+					stats.incFetchedInsns();
+					CONTEXT_SWITCH();
 				}
 			}
 
-			MachineInfo::instruction_t insn = 0;
+			instruction_t insn = 0;
 			if (address_cached == fetch_PC)
 			{
 				insn = fetched_cached[0];
 			}
-			else if ((address_cached + MachineInfo::INSTRUCTION_SIZE) == fetch_PC)
+			else if ((address_cached + INSTRUCTION_SIZE) == fetch_PC)
 			{
 				insn = fetched_cached[1];
 			}
 			else
 			{
-				std::cerr << "failed to get insn from local fetcher cache" << std::endl;
+				logger.error("failed to get insn from local fetcher cache");
 				abort();
 			}
 
 			//logger.debug("[FETCH] received response for address " + std::to_string(fetch_PC));
 
-			auto opcode = static_cast<MachineInfo::Opcode>(insn & 0xff);
-			if (MachineInfo::changesControlFlow(opcode))
+			auto opcode = static_cast<Opcode>(insn & 0xff);
+			if (changesControlFlow(opcode))
 			{
 				have_outstanding_jmp = true;
 			}
 
 			while (decode_bus.is_busy())
 			{
-				Task& t = *this;
-				co_await t;
+				CONTEXT_SWITCH();
 			}
 
-			auto PC = fetch_PC;
-			fetch_PC += MachineInfo::INSTRUCTION_SIZE;
+			const auto PC = fetch_PC;
+			fetch_PC += INSTRUCTION_SIZE;
 			FetchToDecodeBus::Packet pkt{ exec_mask, PC, insn };
-			this->decode_bus.send(pkt);
+			decode_bus.send(pkt);
 
-
-			Task& t = *this;
-			co_await t;
+			CONTEXT_SWITCH();
 		}
 	}
 }

@@ -75,7 +75,7 @@ int main(int argc, char** argv)
 	program.parse(infile);
 
 	Linker linker;
-	linker.link(program.getInsns(), program.getObjects(), MachineInfo::DATA_SEGMENT_START, MachineInfo::CODE_SEGMENT_START);
+	linker.link(program.getInsns(), program.getObjects(), ecc::DATA_SEGMENT_START, ecc::CODE_SEGMENT_START);
 
 	ObjectWriter::write(program.getInsns(), outfile);
 

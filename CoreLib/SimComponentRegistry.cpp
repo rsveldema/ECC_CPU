@@ -1,7 +1,7 @@
 #include "SimComponent.h"
 #include "CoreLib.h"
 
-namespace Simulator
+namespace ecc
 {
 	const int NUM_SIM_STEPS = 1000000;
 

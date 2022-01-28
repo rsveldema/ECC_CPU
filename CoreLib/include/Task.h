@@ -7,8 +7,10 @@
 #include <string>
 
 
-namespace coro
+namespace ecc
 {
+
+	#define CONTEXT_SWITCH() { Task& t = *this; co_await t; }
 
 	/** C++ coroutines require the return type to hold a nested promise_type.
 	*/

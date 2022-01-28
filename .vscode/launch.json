@@ -4,13 +4,23 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
+        {
+            "name": "Python: parser",
+            "type": "python",
+            "request": "launch",
+            "program": "parser.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/VerilogGenerator"
+        },
         {
             "name": "(gdb) Launch-Simulator",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/Simulator/Simulator",
-            "args": ["${workspaceFolder}/Assembler/tests/t1.bin", "1"],
+            "args": [
+                "${workspaceFolder}/Assembler/tests/t1.bin",
+                "1"
+            ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
@@ -29,7 +39,10 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/Assembler/Assembler",
-            "args": ["${workspaceFolder}/Assembler/tests/t1.asm", "${workspaceFolder}/Assembler/tests/t1.bin"],
+            "args": [
+                "${workspaceFolder}/Assembler/tests/t1.asm",
+                "${workspaceFolder}/Assembler/tests/t1.bin"
+            ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

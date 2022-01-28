@@ -10,7 +10,7 @@
 #include "VectorValue.h"
 
 
-namespace Simulator
+namespace ecc
 {
 	/** simple memory bus that allows sending requests and receiving replies.
 	*/
@@ -30,7 +30,7 @@ namespace Simulator
 		struct Packet
 		{
 			Type type;
-			MachineInfo::BusID source;
+			ecc::BusID source;
 			vec_vector_obj_t<int64_t> address;
 			payload_t payload;
 		};
@@ -39,14 +39,14 @@ namespace Simulator
 		std::queue<Packet> request_queue;
 		std::queue<Packet> response_queue;
 
-		void send_read_request_vec(const vec_vector_obj_t<int64_t>& address, const MachineInfo::BusID& source)
+		void send_read_request_vec(const vec_vector_obj_t<int64_t>& address, const ecc::BusID& source)
 		{
 			Packet pkt{ Type::read_vec64, source, address };
 			send_request(pkt);
 		}
 
 		void send_write_request_vec(const vec_vector_obj_t<int64_t>& address,
-			const MachineInfo::BusID& source,
+			const ecc::BusID& source,
 			const VectorValue& value)
 		{
 			Packet pkt{ Type::write_vec64, source, address, value };

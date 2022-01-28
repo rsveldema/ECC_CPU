@@ -4,7 +4,7 @@
 
 #include "ExecutionMask.h"
 
-namespace Simulator
+namespace ecc
 {
 
 	class FetchToDecodeBus
@@ -13,7 +13,7 @@ namespace Simulator
 		struct Packet
 		{
 			ExecutionMask exec_mask;
-			MachineInfo::memory_address_t PC;
+			ecc::memory_address_t PC;
 			uint32_t insn;
 		};
 

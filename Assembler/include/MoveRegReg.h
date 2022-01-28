@@ -8,11 +8,11 @@ namespace Insns
 	class MoveRegReg : public Instruction
 	{
 	private:
-		MachineInfo::RegisterID dst;
-		MachineInfo::RegisterID src;
+		ecc::RegisterID dst;
+		ecc::RegisterID src;
 
 	public:
-		MoveRegReg(MachineInfo::RegisterID dst, MachineInfo::RegisterID src)
+		MoveRegReg(ecc::RegisterID dst, ecc::RegisterID src)
 		{
 			this->dst = dst;
 			this->src = src;
@@ -20,7 +20,7 @@ namespace Insns
 
 		uint32_t getEncodedInstruction() override
 		{
-			return ((uint32_t)MachineInfo::Opcode::MOVE_REG_REG) | ((uint32_t)dst << 8) | ((uint32_t)src << 16);
+			return ((uint32_t)ecc::Opcode::MOVE_REG_REG) | ((uint32_t)dst << 8) | ((uint32_t)src << 16);
 		}
 
 

@@ -4,7 +4,7 @@
 
 
 
-namespace Simulator
+namespace ecc
 {
 	/** @brief N-inputs and 1-output.
 	* When some data comes back up (a reponse), the multiplexer also de-multiplexes to send the reply to
@@ -42,7 +42,7 @@ namespace Simulator
 			inputs.push_back(Input{ input, func });
 		}
 
-		coro::ReturnObject run()
+		ecc::ReturnObject run()
 		{
 			while (1)
 			{

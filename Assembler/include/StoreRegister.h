@@ -10,11 +10,11 @@ namespace Insns
 	{
 	private:
 		int offset;
-		MachineInfo::RegisterID base_reg;
-		MachineInfo::RegisterID src_reg;
+		ecc::RegisterID base_reg;
+		ecc::RegisterID src_reg;
 
 	public:
-		StoreRegister(MachineInfo::RegisterID base_reg, int offset, MachineInfo::RegisterID src_reg)
+		StoreRegister(ecc::RegisterID base_reg, int offset, ecc::RegisterID src_reg)
 		{
 			this->base_reg = base_reg;
 			this->src_reg = src_reg;
@@ -23,7 +23,7 @@ namespace Insns
 
 		uint32_t getEncodedInstruction() override
 		{
-			return (uint32_t)(((uint32_t)MachineInfo::Opcode::STORE_REG_CONST_REG) | ((uint32_t)src_reg << 8) | ((uint32_t)base_reg << 16) | ((uint32_t)offset << 24));
+			return (uint32_t)(((uint32_t)ecc::Opcode::STORE_REG_CONST_REG) | ((uint32_t)src_reg << 8) | ((uint32_t)base_reg << 16) | ((uint32_t)offset << 24));
 		}
 
 

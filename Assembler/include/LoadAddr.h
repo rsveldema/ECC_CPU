@@ -36,18 +36,18 @@ namespace Insns
 			{
 				address >>= 0;
 				address &= mask;
-				return ((uint32_t)MachineInfo::Opcode::MOVE_R0_CONST24A) | ((uint32_t)address << 8);
+				return ((uint32_t)ecc::Opcode::MOVE_R0_CONST24A) | ((uint32_t)address << 8);
 			}
 			case Type::MID: {
 				address >>= 24;
 				address &= mask;
-				return ((uint32_t)MachineInfo::Opcode::MOVE_R0_CONST24B) | ((uint32_t)address << 8);
+				return ((uint32_t)ecc::Opcode::MOVE_R0_CONST24B) | ((uint32_t)address << 8);
 			}
 
 			case Type::HI: {
 				address >>= 48;
 				address &= mask;
-				return ((uint32_t)MachineInfo::Opcode::MOVE_R0_CONST24C) | ((uint32_t)address << 8);
+				return ((uint32_t)ecc::Opcode::MOVE_R0_CONST24C) | ((uint32_t)address << 8);
 			}
 			}
 			return 0;

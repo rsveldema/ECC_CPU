@@ -10,7 +10,7 @@
 
 #include "Multiplexer.h"
 
-namespace Simulator
+namespace ecc
 {
 	class CoreClusterGrid
 	{
@@ -43,10 +43,10 @@ namespace Simulator
 			coreCluster(registry, core_to_L2d, core_to_L2i, stats, config)
 		{
 			l2di_multiplexer.addInput(&L2d_multiplexer_bus, [](const RawMemoryBus::Packet& p) {
-				return p.source.within_core_id != MachineInfo::CoreComponentID::FETCH;
+				return p.source.within_core_id != ecc::CoreComponentID::FETCH;
 				});
 			l2di_multiplexer.addInput(&L2i_multiplexer_bus, [](const RawMemoryBus::Packet& p) {
-				return p.source.within_core_id == MachineInfo::CoreComponentID::FETCH;
+				return p.source.within_core_id == ecc::CoreComponentID::FETCH;
 				});
 		}
 

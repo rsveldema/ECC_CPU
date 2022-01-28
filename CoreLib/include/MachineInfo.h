@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <array>
 
-namespace MachineInfo
+namespace ecc
 {
 	using instruction_t = uint32_t;
 
@@ -252,19 +252,19 @@ namespace MachineInfo
 	{
 		switch (op)
 		{
-		case MachineInfo::StorageStageOpcode::NOP: return "nop";
-		case MachineInfo::StorageStageOpcode::STORE_VALUE_INTO_REG: return "value_to_reg";
-		case MachineInfo::StorageStageOpcode::STORE_REG_INTO_MEM: return "store_mem";
-		case MachineInfo::StorageStageOpcode::CJMP: return "cjmp";
-		case MachineInfo::StorageStageOpcode::HALT: return "halt";
-		case MachineInfo::StorageStageOpcode::JMP: return "jmp";
-		case MachineInfo::StorageStageOpcode::LOAD_MEM_INTO_REG: return "load_reg";
+		case ecc::StorageStageOpcode::NOP: return "nop";
+		case ecc::StorageStageOpcode::STORE_VALUE_INTO_REG: return "value_to_reg";
+		case ecc::StorageStageOpcode::STORE_REG_INTO_MEM: return "store_mem";
+		case ecc::StorageStageOpcode::CJMP: return "cjmp";
+		case ecc::StorageStageOpcode::HALT: return "halt";
+		case ecc::StorageStageOpcode::JMP: return "jmp";
+		case ecc::StorageStageOpcode::LOAD_MEM_INTO_REG: return "load_reg";
 
 		}
 		return "unknown store type";
 	}
 
-	static std::string to_string(MachineInfo::CoreID core_id)
+	static std::string to_string(ecc::CoreID core_id)
 	{
 		return "core[" + std::to_string((int)core_id) + "]";
 	}

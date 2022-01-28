@@ -8,11 +8,11 @@ namespace Insns
 	class CmpRegReg : public Instruction
 	{
 	private:
-		MachineInfo::RegisterID dst;
-		MachineInfo::RegisterID src;
+		ecc::RegisterID dst;
+		ecc::RegisterID src;
 
 	public:
-		CmpRegReg(MachineInfo::RegisterID _dst, MachineInfo::RegisterID _src)
+		CmpRegReg(ecc::RegisterID _dst, ecc::RegisterID _src)
 		{
 			this->dst = _dst;
 			this->src = _src;
@@ -20,7 +20,7 @@ namespace Insns
 
 		uint32_t getEncodedInstruction() override
 		{
-			return ((uint32_t)MachineInfo::Opcode::CMP_REG_REG) | ((uint32_t)dst << 8) | ((uint32_t)src << 16);
+			return ((uint32_t)ecc::Opcode::CMP_REG_REG) | ((uint32_t)dst << 8) | ((uint32_t)src << 16);
 		}
 
 

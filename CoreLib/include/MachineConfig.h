@@ -4,7 +4,7 @@
 #include "RAM_Config.h"
 
 
-namespace Simulator
+namespace ecc
 {
 	struct MachineConfig
 	{

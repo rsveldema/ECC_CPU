@@ -10,7 +10,7 @@
 #include "VectorValue.h"
 
 
-namespace Simulator
+namespace ecc
 {
 	/** simple memory bus that allows sending requests and receiving replies.
 	*/
@@ -25,30 +25,35 @@ namespace Simulator
 		};
 
 		// memory-address on the request, instruction-t on the response
-		using payload_t = std::variant<MachineInfo::memory_address_t, MachineInfo::fetched_instruction_data_t>;
+		using payload_t = std::variant<ecc::memory_address_t, ecc::fetched_instruction_data_t>;
 
 		struct Packet
 		{
 			Type type;
-			MachineInfo::BusID source;
-			MachineInfo::memory_address_t address;
+			ecc::BusID source;
+			ecc::memory_address_t address;
 			payload_t payload;
+
+			const fetched_instruction_data_t& getInsnData() const
+			{
+				return std::get<fetched_instruction_data_t>(payload);
+			}
 		};
 
 
 		std::queue<Packet> request_queue;
 		std::queue<Packet> response_queue;
 
-		void send_read_request_insn(MachineInfo::memory_address_t address, const MachineInfo::BusID& source)
+		void send_read_request_insn(ecc::memory_address_t address, const ecc::BusID& source)
 		{
 			Packet pkt{ Type::read_insn, source, address };
 			send_request(pkt);
 		}
 
 
-		void send_read_response(const payload_t& value, const MachineInfo::BusID& source)
+		void send_read_response(const payload_t& value, const ecc::BusID& source)
 		{
-			MachineInfo::memory_address_t addr = 0;
+			ecc::memory_address_t addr = 0;
 			Packet pkt{ Type::read_response, source, addr, value };
 			send_response(pkt);
 		}

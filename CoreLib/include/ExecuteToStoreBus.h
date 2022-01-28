@@ -4,7 +4,7 @@
 #include "MachineInfo.h"
 #include "ExecutionMask.h"
 
-namespace Simulator
+namespace ecc
 {
 
 	class ExecuteToStoreBus
@@ -13,12 +13,12 @@ namespace Simulator
 		struct Packet
 		{
 			ExecutionMask exec_mask;
-			MachineInfo::memory_address_t PC;
-			MachineInfo::StorageStageOpcode opcode;
+			ecc::memory_address_t PC;
+			ecc::StorageStageOpcode opcode;
 
 			// in case its an address / register:
-			std::variant<MachineInfo::memory_address_t, VectorValue, MachineInfo::RegisterID> dest;
-			std::variant<MachineInfo::memory_address_t, VectorValue, MachineInfo::RegisterID> src;
+			std::variant<ecc::memory_address_t, VectorValue, ecc::RegisterID> dest;
+			std::variant<ecc::memory_address_t, VectorValue, ecc::RegisterID> src;
 
 			bool is_store_to_pc = false;
 

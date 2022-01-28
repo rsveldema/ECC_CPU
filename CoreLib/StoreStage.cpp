@@ -1,9 +1,9 @@
 #include "CoreLib.h"
 
 
-namespace Simulator
+namespace ecc
 {
-	coro::ReturnObject StoreStage::run()
+	ecc::ReturnObject StoreStage::run()
 	{
 		while (1)
 		{
@@ -15,44 +15,44 @@ namespace Simulator
 
 				switch (opcode)
 				{
-				case MachineInfo::StorageStageOpcode::NOP: break;
+				case ecc::StorageStageOpcode::NOP: break;
 
-				case MachineInfo::StorageStageOpcode::STORE_VALUE_INTO_REG:
+				case ecc::StorageStageOpcode::STORE_VALUE_INTO_REG:
 				{
-					const auto dest = std::get<MachineInfo::RegisterID>(pkt.dest);
+					const auto dest = std::get<ecc::RegisterID>(pkt.dest);
 					assert(isValidIndex(dest));
 					const auto& src = std::get<VectorValue>(pkt.src);
 
-					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + MachineInfo::to_string(opcode) + " " + MachineInfo::to_string(dest) + " = " + MachineInfo::to_string(src));
+					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + ecc::to_string(opcode) + " " + ecc::to_string(dest) + " = " + ecc::to_string(src));
 
 					regs.mark_valid(dest);
 					regs[dest] = src;
 					break;
 				}
 
-				case MachineInfo::StorageStageOpcode::STORE_REG_INTO_MEM:
+				case ecc::StorageStageOpcode::STORE_REG_INTO_MEM:
 				{
 					const auto& dest = std::get<VectorValue>(pkt.dest);
 					const auto& src = std::get<VectorValue>(pkt.src);
 
 					assert(dest.are_all_adjacent_memory_addresses(8));
 
-					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + MachineInfo::to_string(opcode) + " " + MachineInfo::to_string(dest) + " = " + MachineInfo::to_string(src));
+					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + ecc::to_string(opcode) + " " + ecc::to_string(dest) + " = " + ecc::to_string(src));
 
 					this->memory_bus.send_write_request_vec(dest.get_int64_array(), memory_bus_id, src);
 					break;
 				}
 
 				// reg = memory[src]
-				case MachineInfo::StorageStageOpcode::LOAD_MEM_INTO_REG:
+				case ecc::StorageStageOpcode::LOAD_MEM_INTO_REG:
 				{
-					auto dest = std::get<MachineInfo::RegisterID>(pkt.dest);
+					auto dest = std::get<ecc::RegisterID>(pkt.dest);
 					assert(isValidIndex(dest));
 					const auto is_store_to_pc = pkt.is_store_to_pc;
 
 					const auto& src = std::get<VectorValue>(pkt.src);
 
-					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + MachineInfo::to_string(opcode) + " " + MachineInfo::to_string(dest) + " = " + MachineInfo::to_string(src));
+					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + ecc::to_string(opcode) + " " + ecc::to_string(dest) + " = " + ecc::to_string(src));
 
 					memory_bus.send_read_request_vec(src.get_int64_array(), memory_bus_id);
 
@@ -86,20 +86,20 @@ namespace Simulator
 					break;
 				}
 
-				case MachineInfo::StorageStageOpcode::JMP:
+				case ecc::StorageStageOpcode::JMP:
 				{
-					auto new_address = std::get<MachineInfo::memory_address_t>(pkt.dest);
+					auto new_address = std::get<ecc::memory_address_t>(pkt.dest);
 
 					fetch_bus.send(StoreToFetchBus::Packet{ pkt.exec_mask, new_address });
 					break;
 				}
 
-				case MachineInfo::StorageStageOpcode::CJMP:
+				case ecc::StorageStageOpcode::CJMP:
 				{
 					stats.numVectorLocalDivergences++;
 
-					const auto new_address = std::get<MachineInfo::memory_address_t>(pkt.dest);
-					const auto next_address = std::get<MachineInfo::memory_address_t>(pkt.src);
+					const auto new_address = std::get<ecc::memory_address_t>(pkt.dest);
+					const auto next_address = std::get<ecc::memory_address_t>(pkt.src);
 					const auto& exec_mask_new_address = pkt.execution_flags_true;
 					const auto& exec_mask_next_address = pkt.execution_flags_false;
 
@@ -117,7 +117,7 @@ namespace Simulator
 					break;
 				}
 
-				case MachineInfo::StorageStageOpcode::HALT:
+				case ecc::StorageStageOpcode::HALT:
 				{
 					if (divergence_queue.is_empty())
 					{
