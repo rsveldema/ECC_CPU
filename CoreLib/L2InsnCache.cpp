@@ -1,5 +1,6 @@
-#include "CoreLib.h"
+#include <cstring>
 
+#include "CoreLib.h"
 
 namespace Simulator
 {
@@ -10,6 +11,7 @@ namespace Simulator
 		{
 			if (auto pkt = toCPU.try_accept_request())
 			{
+				// translates from an InsnCachePacket to to an RawDataPacket
 				MachineInfo::memory_address_t addr = pkt->address;
 				RawMemoryBus::Packet rawPkt{
 					.type = RawMemoryBus::Type::read_data,
