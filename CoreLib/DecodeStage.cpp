@@ -9,12 +9,14 @@ namespace Simulator
 	{
 		switch (opcode)
 		{
-		case MachineInfo::Opcode::JMP_LOWER:		return MachineInfo::FLAGS_MASK_LT;
-		case MachineInfo::Opcode::JMP_LOWER_EQUAL:	return MachineInfo::FLAGS_MASK_LT | MachineInfo::FLAGS_MASK_EQ;
 		case MachineInfo::Opcode::JMP_EQUAL:		return MachineInfo::FLAGS_MASK_EQ;
 		case MachineInfo::Opcode::JMP_NOT_EQUAL:	return MachineInfo::FLAGS_MASK_LT | MachineInfo::FLAGS_MASK_GT;
-		case MachineInfo::Opcode::JMP_GREATER:		return MachineInfo::FLAGS_MASK_GT | MachineInfo::FLAGS_MASK_EQ;
-		case MachineInfo::Opcode::JMP_GREATER_EQUAL:return MachineInfo::FLAGS_MASK_GT;
+
+		case MachineInfo::Opcode::JMP_GREATER:		return MachineInfo::FLAGS_MASK_GT;
+		case MachineInfo::Opcode::JMP_LOWER:		return MachineInfo::FLAGS_MASK_LT;
+
+		case MachineInfo::Opcode::JMP_GREATER_EQUAL:return MachineInfo::FLAGS_MASK_GT | MachineInfo::FLAGS_MASK_EQ;
+		case MachineInfo::Opcode::JMP_LOWER_EQUAL:	return MachineInfo::FLAGS_MASK_LT | MachineInfo::FLAGS_MASK_EQ;
 		}
 		assert(false);
 		return MachineInfo::FLAGS_MASK_GT;
