@@ -218,19 +218,10 @@ namespace Simulator
 					const auto off_const = static_cast<int32_t>(pkt.insn >> 8);
 					const VectorValue off = VectorValue::create_vec_int64(off_const);
 
-					while (!regs.is_valid(MachineInfo::RegisterID::FLAGS))
-					{
-						Task& t = *this;
-						co_await t;
-					}
-
-					const VectorValue flags = regs[MachineInfo::RegisterID::FLAGS];
-
-					assert(flags.getType() == VectorValue::Type::INT64);
 
 					const DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC,
 						MachineInfo::ExecuteStageOpcode::COND_JMP,
-						off, jmp_mask, flags };
+						off, jmp_mask };
 					while (execute_bus.is_busy())
 					{
 						Task& t = *this;

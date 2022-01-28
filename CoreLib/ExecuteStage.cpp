@@ -235,12 +235,22 @@ namespace Simulator
 					const auto next_address = PC + 4;
 
 					const auto& jmp_mask = pkt.value1;
-					const auto& flags = pkt.value2;
 					const auto& exec_mask = pkt.exec_mask;
 
+					while (!regs.is_valid(MachineInfo::RegisterID::FLAGS))
+					{
+						Task& t = *this;
+						co_await t;
+					}
+
+					const VectorValue flags = regs[MachineInfo::RegisterID::FLAGS];
 					const auto& should_jmp_masks = flags.bit_and_int64(jmp_mask);
 					const uint64_t should_jmp = exec_mask.get_masked_flags(should_jmp_masks.reduce_int64_to_single_int64_t());
 					const uint64_t all_threads_mask = exec_mask.get_masked_flags(MachineInfo::ALL_THREADS_EXEC_MASK_INT64);
+
+
+					assert(flags.getType() == VectorValue::Type::INT64);
+
 
 					std::cerr << "store-bus busy" << std::endl;
 					while (store_bus.is_busy())
