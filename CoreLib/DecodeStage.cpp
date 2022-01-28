@@ -1,9 +1,25 @@
 #include "CoreLib.h"
 #include "MachineInfo.h"
-
+#include <cassert>
 
 namespace Simulator
 {
+
+	uint64_t get_expected_cond_jump_flags_mask(MachineInfo::Opcode opcode)
+	{
+		switch (opcode)
+		{
+		case MachineInfo::Opcode::JMP_LOWER:		return MachineInfo::FLAGS_MASK_LT;
+		case MachineInfo::Opcode::JMP_LOWER_EQUAL:	return MachineInfo::FLAGS_MASK_LT | MachineInfo::FLAGS_MASK_EQ;
+		case MachineInfo::Opcode::JMP_EQUAL:		return MachineInfo::FLAGS_MASK_EQ;
+		case MachineInfo::Opcode::JMP_NOT_EQUAL:	return MachineInfo::FLAGS_MASK_LT | MachineInfo::FLAGS_MASK_GT;
+		case MachineInfo::Opcode::JMP_GREATER:		return MachineInfo::FLAGS_MASK_GT | MachineInfo::FLAGS_MASK_EQ;
+		case MachineInfo::Opcode::JMP_GREATER_EQUAL:return MachineInfo::FLAGS_MASK_GT;
+		}
+		assert(false);
+		return MachineInfo::FLAGS_MASK_GT;
+	}
+
 	coro::ReturnObject DecodeStage::run()
 	{
 		while (1)
@@ -184,44 +200,44 @@ namespace Simulator
 					break;
 				}
 
-
+				case MachineInfo::Opcode::JMP_LOWER:
+				case MachineInfo::Opcode::JMP_LOWER_EQUAL:
 				case MachineInfo::Opcode::JMP_EQUAL:
-				{
-					handle_conditional_jump(MachineInfo::FLAGS_MASK_EQ, pkt);
-					break;
-				}
-
-
 				case MachineInfo::Opcode::JMP_NOT_EQUAL:
-				{
-					handle_conditional_jump(MachineInfo::FLAGS_MASK_GT | MachineInfo::FLAGS_MASK_LT, pkt);
-					break;
-				}
-
-
 				case MachineInfo::Opcode::JMP_GREATER:
-				{
-					handle_conditional_jump(MachineInfo::FLAGS_MASK_GT, pkt);
-					break;
-				}
-
 				case MachineInfo::Opcode::JMP_GREATER_EQUAL:
 				{
-					handle_conditional_jump(MachineInfo::FLAGS_MASK_GT | MachineInfo::FLAGS_MASK_EQ, pkt);
+					const auto PC = pkt.PC;
+
+					const auto expected_mask = get_expected_cond_jump_flags_mask(opcode);
+
+					const VectorValue jmp_mask = VectorValue::create_vec_int64(expected_mask);
+
+					const auto off_const = static_cast<int32_t>(pkt.insn >> 8);
+					const VectorValue off = VectorValue::create_vec_int64(off_const);
+
+					while (!regs.is_valid(MachineInfo::RegisterID::FLAGS))
+					{
+						Task& t = *this;
+						co_await t;
+					}
+
+					const VectorValue flags = regs[MachineInfo::RegisterID::FLAGS];
+
+					assert(flags.getType() == VectorValue::Type::INT64);
+
+					const DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC,
+						MachineInfo::ExecuteStageOpcode::COND_JMP,
+						off, jmp_mask, flags };
+					while (execute_bus.is_busy())
+					{
+						Task& t = *this;
+						co_await t;
+					}
+					execute_bus.send(execute_pkt);
 					break;
 				}
 
-				case MachineInfo::Opcode::JMP_LOWER:
-				{
-					handle_conditional_jump(MachineInfo::FLAGS_MASK_LT, pkt);
-					break;
-				}
-
-				case MachineInfo::Opcode::JMP_LOWER_EQUAL:
-				{
-					handle_conditional_jump(MachineInfo::FLAGS_MASK_LT | MachineInfo::FLAGS_MASK_EQ, pkt);
-					break;
-				}
 
 				case MachineInfo::Opcode::LOAD_RESTORE_PC:
 				{
@@ -318,20 +334,4 @@ namespace Simulator
 		}
 	}
 
-
-	void DecodeStage::handle_conditional_jump(uint32_t jmp_mask_const, const FetchToDecodeBus::Packet& pkt)
-	{
-		const auto PC = pkt.PC;
-
-		const VectorValue jmp_mask = VectorValue::create_vec_int64(jmp_mask_const);
-
-		const auto off_const = static_cast<int32_t>(pkt.insn >> 8);
-		const VectorValue off = VectorValue::create_vec_int64(off_const);
-
-		const auto& flags = regs[MachineInfo::RegisterID::FLAGS];
-
-		const DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, MachineInfo::ExecuteStageOpcode::COND_JMP,
-			off, jmp_mask, flags };
-		execute_bus.send(execute_pkt);
-	}
 }

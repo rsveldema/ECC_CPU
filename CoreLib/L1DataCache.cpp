@@ -8,14 +8,20 @@ namespace Simulator
 		running = true;
 		while (1)
 		{
-			if (auto pkt = toCPU.try_accept_request())
+			if (! toMemory.is_busy())
 			{
-				toMemory.send_request(*pkt);
+				if (auto pkt = toCPU.try_accept_request())
+				{
+					toMemory.send_request(*pkt);
+				}
 			}
 
-			if (auto pkt = toMemory.try_accept_response())
+			if (!toCPU.is_reponse_busy())
 			{
-				toCPU.send_response(*pkt);
+				if (auto pkt = toMemory.try_accept_response())
+				{
+					toCPU.send_response(*pkt);
+				}
 			}
 
 			Task& t = *this;

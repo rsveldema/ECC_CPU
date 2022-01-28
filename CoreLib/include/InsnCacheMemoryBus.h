@@ -24,8 +24,8 @@ namespace Simulator
 			read_response
 		};
 
-		// memory-address on the reqest, instruction-t on the response
-		using payload_t = std::variant<MachineInfo::memory_address_t, MachineInfo::instruction_t>;
+		// memory-address on the request, instruction-t on the response
+		using payload_t = std::variant<MachineInfo::memory_address_t, MachineInfo::fetched_instruction_data_t>;
 
 		struct Packet
 		{

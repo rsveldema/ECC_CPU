@@ -8,6 +8,16 @@ namespace MachineInfo
 		{ "move_reg_value", {ExecuteStageOpcode::MOVE_REG_VALUE}},
 		{ "ORB_reg_value", {ExecuteStageOpcode::ORB_REG_VALUE}},
 		{ "ORC_reg_value", {ExecuteStageOpcode::ORC_REG_VALUE}},
+
+		{ "store", {ExecuteStageOpcode::STORE_ADDR_VALUE}},
+		{ "jmp", {ExecuteStageOpcode::JMP}},
+		{ "load_restore_pc", {ExecuteStageOpcode::LOAD_RESTORE_PC}},
+		{ "load_reg", {ExecuteStageOpcode::LOAD_REG}},
+		{ "cmp", {ExecuteStageOpcode::CMP}},
+		{ "cjmp", {ExecuteStageOpcode::COND_JMP}},
+		{ "add_reg_val_val", {ExecuteStageOpcode::ADD_REG_VALUE_VALUE}},
+		{ "shl_reg_val_val", {ExecuteStageOpcode::SHL_REG_VALUE_VALUE}},
+		{ "halt", {ExecuteStageOpcode::HALT}},
 	};
 
 

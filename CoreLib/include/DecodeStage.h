@@ -27,7 +27,8 @@ namespace Simulator
 		coro::ReturnObject run() override;
 
 	private:
-		void handle_conditional_jump(uint32_t jmp_mask_const, const FetchToDecodeBus::Packet& pkt);
+
+		coro::ReturnObject handle_conditional_jump(uint32_t jmp_mask_const, const FetchToDecodeBus::Packet& pkt);
 	};
 
 }

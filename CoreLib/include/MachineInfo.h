@@ -4,12 +4,15 @@
 #include <map>
 #include <string>
 #include <cstdint>
+#include <array>
 
 namespace MachineInfo
 {
 	using instruction_t = uint32_t;
 
 	using memory_address_t = uint64_t;
+
+	using fetched_instruction_data_t = std::array<instruction_t, 2>;
 
 	static constexpr unsigned POINTER_SIZE = sizeof(memory_address_t);
 	static constexpr auto INSTRUCTION_SIZE = sizeof(instruction_t);
@@ -22,7 +25,6 @@ namespace MachineInfo
 	static constexpr unsigned NUMBER_OF_VECTOR_THREADS_INT64 = (VECTOR_MEM_SIZE / sizeof(uint64_t));
 
 	static constexpr uint64_t ALL_THREADS_EXEC_MASK_INT64 = (1 << NUMBER_OF_VECTOR_THREADS_INT64) - 1;
-
 
 
 	enum class RegisterID
@@ -153,11 +155,10 @@ namespace MachineInfo
 	enum class StorageStageOpcode
 	{
 		NOP,
-		STORE_REG,
-		STORE_MEM,
+		STORE_VALUE_INTO_REG,
+		STORE_REG_INTO_MEM,
 		JMP,
-		COND_JMP,
-		LOAD_REG,
+		LOAD_MEM_INTO_REG,
 		CJMP,
 		HALT
 	};
@@ -252,8 +253,13 @@ namespace MachineInfo
 		switch (op)
 		{
 		case MachineInfo::StorageStageOpcode::NOP: return "nop";
-		case MachineInfo::StorageStageOpcode::STORE_REG: return "store_reg";
-		case MachineInfo::StorageStageOpcode::STORE_MEM: return "store_mem";
+		case MachineInfo::StorageStageOpcode::STORE_VALUE_INTO_REG: return "value_to_reg";
+		case MachineInfo::StorageStageOpcode::STORE_REG_INTO_MEM: return "store_mem";
+		case MachineInfo::StorageStageOpcode::CJMP: return "cjmp";
+		case MachineInfo::StorageStageOpcode::HALT: return "halt";
+		case MachineInfo::StorageStageOpcode::JMP: return "jmp";
+		case MachineInfo::StorageStageOpcode::LOAD_MEM_INTO_REG: return "load_reg";
+
 		}
 		return "unknown store type";
 	}

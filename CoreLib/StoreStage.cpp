@@ -17,35 +17,42 @@ namespace Simulator
 				{
 				case MachineInfo::StorageStageOpcode::NOP: break;
 
-				case MachineInfo::StorageStageOpcode::STORE_REG:
+				case MachineInfo::StorageStageOpcode::STORE_VALUE_INTO_REG:
 				{
 					const auto dest = std::get<MachineInfo::RegisterID>(pkt.dest);
-					assert(isValid(dest));
+					assert(isValidIndex(dest));
 					const auto& src = std::get<VectorValue>(pkt.src);
 
+					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + MachineInfo::to_string(opcode) + " " + MachineInfo::to_string(dest) + " = " + MachineInfo::to_string(src));
+
+					regs.mark_valid(dest);
 					regs[dest] = src;
 					break;
 				}
 
-				case MachineInfo::StorageStageOpcode::STORE_MEM:
+				case MachineInfo::StorageStageOpcode::STORE_REG_INTO_MEM:
 				{
 					const auto& dest = std::get<VectorValue>(pkt.dest);
 					const auto& src = std::get<VectorValue>(pkt.src);
 
 					assert(dest.are_all_adjacent_memory_addresses(8));
 
+					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + MachineInfo::to_string(opcode) + " " + MachineInfo::to_string(dest) + " = " + MachineInfo::to_string(src));
+
 					this->memory_bus.send_write_request_vec(dest.get_int64_array(), memory_bus_id, src);
 					break;
 				}
 
 				// reg = memory[src]
-				case MachineInfo::StorageStageOpcode::LOAD_REG:
+				case MachineInfo::StorageStageOpcode::LOAD_MEM_INTO_REG:
 				{
 					auto dest = std::get<MachineInfo::RegisterID>(pkt.dest);
-					assert(isValid(dest));
+					assert(isValidIndex(dest));
 					const auto is_store_to_pc = pkt.is_store_to_pc;
 
 					const auto& src = std::get<VectorValue>(pkt.src);
+
+					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + MachineInfo::to_string(opcode) + " " + MachineInfo::to_string(dest) + " = " + MachineInfo::to_string(src));
 
 					memory_bus.send_read_request_vec(src.get_int64_array(), memory_bus_id);
 
@@ -57,11 +64,10 @@ namespace Simulator
 							const auto& payload = new_pc_pkt.payload;
 							const auto& value = payload;
 
+							regs.mark_valid(dest);
 							regs[dest] = value;
 
 							//std::cerr << "REG[" << MachineInfo::to_string(src) << "] = " << std::to_string(value) << std::endl;
-
-
 							if (is_store_to_pc)
 							{
 								auto new_pc = value.get_PC();
@@ -97,8 +103,8 @@ namespace Simulator
 					const auto& exec_mask_new_address = pkt.execution_flags_true;
 					const auto& exec_mask_next_address = pkt.execution_flags_false;
 
-					std::cerr << "splitting cond-jump into " << exec_mask_new_address.count() << " and " << exec_mask_next_address.count() << std::endl;
-
+					logger.debug("[STORE] splitting cond-jump into " + std::to_string(exec_mask_new_address.count())
+						+ " and " + std::to_string(exec_mask_next_address.count()));
 
 					ThreadContext ctxt{
 						this->regs,

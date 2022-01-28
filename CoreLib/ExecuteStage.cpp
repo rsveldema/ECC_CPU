@@ -10,6 +10,11 @@ namespace Simulator
 			if (const auto pkt_opt = this->decode_bus.try_recv())
 			{
 				const DecodeToExecuteBus::Packet& pkt = *pkt_opt;
+				const auto opcode = pkt.opcode;
+				const auto PC = pkt.PC;
+
+				logger.debug("EXECUTE[" + std::to_string(PC) + "] exec: " + MachineInfo::to_string(opcode));
+
 				switch (pkt.opcode)
 				{
 				case MachineInfo::ExecuteStageOpcode::NOP:
@@ -22,15 +27,24 @@ namespace Simulator
 					const auto& value1 = std::get<VectorValue>(pkt.value0);
 					const auto& value2 = pkt.value1;
 
-					VectorValue src = value1.compare_int64(value2);
+					const VectorValue src = value1.compare_int64(value2);
 
-					auto dest = MachineInfo::RegisterID::FLAGS;
+					const auto dest = MachineInfo::RegisterID::FLAGS;
 
 					//std::cerr << "[EXECUTE] CMP: " << value1 << " -- " << value2 << "-----" << result << std::endl;
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::STORE_REG,
-						dest,
-						src };
+					while (store_bus.is_busy())
+					{
+						Task& t = *this;
+						co_await t;
+					}
+
+					regs.mark_invalid(dest);
+
+					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
+							MachineInfo::StorageStageOpcode::STORE_VALUE_INTO_REG,
+							dest,
+							src };
 					store_bus.send(store_pkt);
 					break;
 				}
@@ -40,9 +54,17 @@ namespace Simulator
 					const auto& dest = std::get<MachineInfo::RegisterID>(pkt.value0);
 					const auto& src = pkt.value1;
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::STORE_REG,
-						dest, src };
+					while (store_bus.is_busy())
+					{
+						Task& t = *this;
+						co_await t;
+					}
 
+					regs.mark_invalid(dest);
+
+					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
+						MachineInfo::StorageStageOpcode::STORE_VALUE_INTO_REG,
+						dest, src };
 					store_bus.send(store_pkt);
 					break;
 				}
@@ -56,9 +78,17 @@ namespace Simulator
 
 					auto src = src2.or_shift_left_int64(src1, 24);
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::STORE_REG,
-						dest, src };
+					while (store_bus.is_busy())
+					{
+						Task& t = *this;
+						co_await t;
+					}
 
+					regs.mark_invalid(dest);
+
+					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
+						MachineInfo::StorageStageOpcode::STORE_VALUE_INTO_REG,
+						dest, src };
 					store_bus.send(store_pkt);
 					break;
 				}
@@ -71,10 +101,17 @@ namespace Simulator
 					const auto& src2 = pkt.value2;
 
 					auto src = src2.or_shift_left_int64(src1, 48);
+					while (store_bus.is_busy())
+					{
+						Task& t = *this;
+						co_await t;
+					}
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::STORE_REG,
+					regs.mark_invalid(dest);
+
+					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
+						MachineInfo::StorageStageOpcode::STORE_VALUE_INTO_REG,
 						dest, src };
-
 					store_bus.send(store_pkt);
 					break;
 				}
@@ -86,10 +123,17 @@ namespace Simulator
 					const auto& src2 = pkt.value2;
 
 					auto src = src1.shift_left_int64(src2);
+					while (store_bus.is_busy())
+					{
+						Task& t = *this;
+						co_await t;
+					}
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::STORE_REG,
+					regs.mark_invalid(dest);
+
+					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
+						MachineInfo::StorageStageOpcode::STORE_VALUE_INTO_REG,
 						dest, src };
-
 					store_bus.send(store_pkt);
 					break;
 				}
@@ -102,9 +146,17 @@ namespace Simulator
 
 					auto src = src1.add_int64(src2);
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::STORE_REG,
-						dest, src };
+					while (store_bus.is_busy())
+					{
+						Task& t = *this;
+						co_await t;
+					}
 
+					regs.mark_invalid(dest);
+
+					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
+						MachineInfo::StorageStageOpcode::STORE_VALUE_INTO_REG,
+						dest, src };
 					store_bus.send(store_pkt);
 					break;
 				}
@@ -118,9 +170,16 @@ namespace Simulator
 
 					auto offset = off1.add_int64(off2);
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::LOAD_REG,
-						dest, offset };
+					while (store_bus.is_busy())
+					{
+						Task& t = *this;
+						co_await t;
+					}
 
+					regs.mark_invalid(dest);
+
+					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::LOAD_MEM_INTO_REG,
+						dest, offset };
 					store_bus.send(store_pkt);
 					break;
 				}
@@ -133,9 +192,15 @@ namespace Simulator
 
 					auto addr = addr1.add_int64(addr2);
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::STORE_MEM,
-						addr, value };
+					while (store_bus.is_busy())
+					{
+						Task& t = *this;
+						co_await t;
+					}
 
+					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
+						MachineInfo::StorageStageOpcode::STORE_REG_INTO_MEM,
+						addr, value };
 					store_bus.send(store_pkt);
 					break;
 				}
@@ -148,15 +213,18 @@ namespace Simulator
 					auto offset = off1.add_int64(off2);
 
 					auto dest = MachineInfo::RegisterID::PC;
+					while (store_bus.is_busy())
+					{
+						Task& t = *this;
+						co_await t;
+					}
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::LOAD_REG,
+					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::LOAD_MEM_INTO_REG,
 						dest, offset, 0 };
 					store_pkt.is_store_to_pc = true;
-
 					store_bus.send(store_pkt);
 					break;
 				}
-
 
 
 				case MachineInfo::ExecuteStageOpcode::COND_JMP:
@@ -174,6 +242,13 @@ namespace Simulator
 					const uint64_t should_jmp = exec_mask.get_masked_flags(should_jmp_masks.reduce_int64_to_single_int64_t());
 					const uint64_t all_threads_mask = exec_mask.get_masked_flags(MachineInfo::ALL_THREADS_EXEC_MASK_INT64);
 
+					std::cerr << "store-bus busy" << std::endl;
+					while (store_bus.is_busy())
+					{
+						Task& t = *this;
+						co_await t;
+					}
+					std::cerr << "store-bus done" << std::endl;
 					if (should_jmp == 0)
 					{
 						// no thread wants to jump to the next-insn
@@ -215,6 +290,11 @@ namespace Simulator
 
 					const auto new_address = PC + offset.get_PC();
 
+					while (store_bus.is_busy())
+					{
+						Task& t = *this;
+						co_await t;
+					}
 					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::JMP, new_address };
 					store_bus.send(store_pkt);
 					break;
@@ -222,6 +302,11 @@ namespace Simulator
 
 				case MachineInfo::ExecuteStageOpcode::HALT:
 				{
+					while (store_bus.is_busy())
+					{
+						Task& t = *this;
+						co_await t;
+					}
 					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, MachineInfo::StorageStageOpcode::HALT };
 					store_bus.send(store_pkt);
 					break;

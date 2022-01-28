@@ -19,7 +19,6 @@ namespace Simulator
 	public:
 		enum class Type
 		{
-			read_insn,
 			read_vec64,
 			write_vec64,
 			read_response,

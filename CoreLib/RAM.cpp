@@ -19,12 +19,8 @@ namespace Simulator
 					assert(address >= 0);
 					assert(address < (storage.size() - 8));
 
-
-					MachineInfo::instruction_t ret;
-					auto* ptr = storage.data() + address;
-					memcpy(&ret, ptr, sizeof(ret));
-
-					RawMemoryBus::payload_t value(ret);
+					auto* ptr = reinterpret_cast<RawMemoryBus::payload_t*>(storage.data() + address);
+					RawMemoryBus::payload_t ret = *ptr;
 
 					for (uint64_t i = 0; i < config.read_latency.cycles; i++)
 					{
@@ -32,7 +28,7 @@ namespace Simulator
 						co_await t;
 					}
 
-					toCPU.send_read_response(value, pkt.source);
+					toCPU.send_read_response(ret, pkt.source);
 					break;
 				}
 
@@ -48,7 +44,7 @@ namespace Simulator
 						co_await t;
 					}
 
-					auto* dest_ptr = reinterpret_cast<int64_t*>(storage.data() + address);
+					auto* dest_ptr = reinterpret_cast<RawMemoryBus::payload_t*>(storage.data() + address);
 
 					*dest_ptr = value;
 					break;

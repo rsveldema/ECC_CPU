@@ -100,6 +100,11 @@ namespace Simulator
 		{
 			return request_queue.size() > 0;
 		}
+
+		bool is_reponse_busy() const
+		{
+			return response_queue.size() > 0;
+		}
 	};
 
 }

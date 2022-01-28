@@ -16,6 +16,22 @@ namespace Simulator
 
 		elt_vector_t data;
 
+		std::string to_string() const
+		{
+			std::string s = "<";
+			const char* comma = "";
+			for (auto& v : data)
+			{
+				s += comma;
+				s += std::to_string(v);
+				comma = ", ";
+			}
+
+			s += ">";
+			return s;
+		}
+
+
 		bool areAllValidMemoryAddresses() const
 		{
 			return true;
@@ -131,7 +147,7 @@ namespace Simulator
 			return data[ix];
 		}
 
-		bool are_all_adjacent_memory_addresses(unsigned elt_size) const
+		bool are_all_adjacent_memory_addresses(int64_t elt_size) const
 		{
 			elt_t first = data[0];
 			for (int i = 1; i < data.size(); i++)
@@ -159,8 +175,8 @@ namespace Simulator
 		{
 			return data.size();
 		}
-
 	};
+
 
 	struct VectorValue
 	{
@@ -172,23 +188,163 @@ namespace Simulator
 			vec_vector_obj_t<float>,
 			vec_vector_obj_t<double>> data;
 
+		enum class Type
+		{
+			INT8,
+			INT16,
+			INT32,
+			INT64,
+			FLT,
+			DBL
+		};
+
+		std::string to_string() const
+		{
+			std::string s;
+			s += "<";
+			switch (getType())
+			{
+			case Type::INT8: s += get_int8_array().to_string(); break;
+			case Type::INT16: s += get_int16_array().to_string(); break;
+			case Type::INT32: s += get_int32_array().to_string(); break;
+			case Type::INT64: s += get_int64_array().to_string(); break;
+			case Type::FLT: s += get_float_array().to_string(); break;
+			case Type::DBL: s += get_double_array().to_string(); break;
+				break;
+			}
+			s += ">";
+			return s;
+		}
+
+		void set(unsigned ix, int8_t value)
+		{
+			assert(getType() == Type::INT8);
+			get_int8_array().set(ix, value);
+		}
+
+		void set(unsigned ix, int16_t value)
+		{
+			assert(getType() == Type::INT16);
+			get_int16_array().set(ix, value);
+		}
+
+		void set(unsigned ix, int32_t value)
+		{
+			assert(getType() == Type::INT32);
+			get_int32_array().set(ix, value);
+		}
+
+		void set(unsigned ix, int64_t value)
+		{
+			assert(getType() == Type::INT64);
+			get_int64_array().set(ix, value);
+		}
+
+		void set(unsigned ix, float value)
+		{
+			assert(getType() == Type::FLT);
+			get_float_array().set(ix, value);
+		}
+
+		void set(unsigned ix, double value)
+		{
+			assert(getType() == Type::DBL);
+			get_double_array().set(ix, value);
+		}
+
+
+		Type getType() const
+		{
+			return static_cast<Type>(data.index());
+		}
+
+		vec_vector_obj_t<int8_t>& get_int8_array()
+		{
+			assert(getType() == Type::INT8);
+			auto& vec = std::get< vec_vector_obj_t<int8_t> >(data);
+			return vec;
+		}
+
+		const vec_vector_obj_t<int8_t>& get_int8_array() const
+		{
+			assert(getType() == Type::INT8);
+			const auto& vec = std::get< vec_vector_obj_t<int8_t> >(data);
+			return vec;
+		}
+
+		vec_vector_obj_t<int16_t>& get_int16_array()
+		{
+			assert(getType() == Type::INT16);
+			auto& vec = std::get< vec_vector_obj_t<int16_t> >(data);
+			return vec;
+		}
+
+		const vec_vector_obj_t<int16_t>& get_int16_array() const
+		{
+			assert(getType() == Type::INT16);
+			const auto& vec = std::get< vec_vector_obj_t<int16_t> >(data);
+			return vec;
+		}
+
+		vec_vector_obj_t<int32_t>& get_int32_array()
+		{
+			assert(getType() == Type::INT32);
+			auto& vec = std::get< vec_vector_obj_t<int32_t> >(data);
+			return vec;
+		}
+
+		const vec_vector_obj_t<int32_t>& get_int32_array() const
+		{
+			assert(getType() == Type::INT32);
+			const auto& vec = std::get< vec_vector_obj_t<int32_t> >(data);
+			return vec;
+		}
 
 		vec_vector_obj_t<int64_t>& get_int64_array()
 		{
-			assert(data.index() == 3);
+			assert(getType() == Type::INT64);
 			auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
+			return vec;
+		}
+		const vec_vector_obj_t<int64_t>& get_int64_array() const
+		{
+			assert(getType() == Type::INT64);
+			const auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
 			return vec;
 		}
 
-		const vec_vector_obj_t<int64_t>& get_int64_array() const
+		vec_vector_obj_t<float>& get_float_array()
 		{
-			assert(data.index() == 3);
-			auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
+			assert(getType() == Type::INT64);
+			auto& vec = std::get< vec_vector_obj_t<float> >(data);
 			return vec;
 		}
+
+		const vec_vector_obj_t<float>& get_float_array() const
+		{
+			assert(getType() == Type::INT64);
+			const auto& vec = std::get< vec_vector_obj_t<float> >(data);
+			return vec;
+		}
+
+		vec_vector_obj_t<double>& get_double_array()
+		{
+			assert(getType() == Type::INT64);
+			auto& vec = std::get< vec_vector_obj_t<double> >(data);
+			return vec;
+		}
+
+		const vec_vector_obj_t<double>& get_double_array() const
+		{
+			assert(getType() == Type::INT64);
+			auto& vec = std::get< vec_vector_obj_t<double> >(data);
+			return vec;
+		}
+
 
 		uint64_t reduce_int64_to_single_int64_t() const
 		{
+			assert(getType() == Type::INT64);
 			auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
 			return vec.reduce_to_uint64_t();
 		}
@@ -223,8 +379,9 @@ namespace Simulator
 
 		bool are_all_adjacent_memory_addresses(unsigned elt_size) const
 		{
-			const auto& me = std::get<vec_vector_obj_t<int64_t> >(data);
-			return me.are_all_adjacent_memory_addresses(elt_size);
+			assert(getType() == Type::INT64);
+			auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
+			return vec.are_all_adjacent_memory_addresses(elt_size);
 		}
 
 		MachineInfo::memory_address_t get_PC() const
@@ -239,8 +396,9 @@ namespace Simulator
 
 		int64_t get_int64(unsigned ix) const
 		{
-			const auto& me = get_int64_array();
-			return me.get(ix);
+			assert(getType() == Type::INT64);
+			auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
+			return vec.get(ix);
 		}
 
 		void set_int64(unsigned ix, int64_t value)
@@ -320,8 +478,19 @@ namespace Simulator
 
 		bool all_equal_int64() const
 		{
-			const auto& me = get_int64_array();
-			return me.all_equal();
+			assert(getType() == Type::INT64);
+			auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
+			return vec.all_equal();
 		}
 	};
+}
+
+
+namespace MachineInfo
+{
+	static std::string to_string(const Simulator::VectorValue& v)
+	{
+		return v.to_string();
+	}
+
 }

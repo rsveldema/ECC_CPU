@@ -11,11 +11,6 @@ namespace Simulator
 			if (auto pkt = toCPU.try_accept_request())
 			{
 				MachineInfo::memory_address_t addr = pkt->address;
-				if ((addr & 7) == 4)
-				{
-					addr -= 4;
-				}
-
 				RawMemoryBus::Packet rawPkt{
 					.type = RawMemoryBus::Type::read_data,
 					.source = pkt->source,
@@ -28,11 +23,16 @@ namespace Simulator
 
 			if (auto pkt = toMemory.try_accept_response())
 			{
+				MachineInfo::fetched_instruction_data_t ret;
+
+				static_assert(sizeof(ret) == sizeof(pkt->payload));
+				memcpy(ret.data(), &pkt->payload, sizeof(ret));
+
 				InsnCacheMemoryBus::Packet insn_cache_pkt{
 					.type = InsnCacheMemoryBus::Type::read_response,
 					.source = pkt->source,
 					.address = pkt->address,
-					.payload = pkt->payload
+					.payload = ret
 				};
 
 				toCPU.send_response(insn_cache_pkt);

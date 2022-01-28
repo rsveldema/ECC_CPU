@@ -3,14 +3,17 @@
 
 namespace Simulator
 {
-	coro::ReturnObject L3Cache::run()
+	coro::ReturnObject L2DataCache::run()
 	{
 		running = true;
 		while (1)
 		{
-			if (auto pkt = toCPU.try_accept_request())
+			if (!toMemory.is_busy())
 			{
-				toMemory.send_request(*pkt);
+				if (auto pkt = toCPU.try_accept_request())
+				{
+					toMemory.send_request(*pkt);
+				}
 			}
 
 			if (auto pkt = toMemory.try_accept_response())

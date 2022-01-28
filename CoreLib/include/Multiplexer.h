@@ -14,7 +14,7 @@ namespace Simulator
 	class Multiplexer : public SimComponent
 	{
 	public:
-		using PacketType = BusType::Packet;
+		using PacketType = typename BusType::Packet;
 		using demultiplexer_func_t = std::function<bool(PacketType&)>;
 
 	private:
@@ -50,6 +50,11 @@ namespace Simulator
 				{
 					if (auto pkt = in.bus->try_accept_request())
 					{
+						while (out.is_busy())
+						{
+							Task& t = *this;
+							co_await t;
+						}
 						out.send_request(*pkt);
 					}
 					// sending one packet will cost us a cycle (as will testing if an input has a pkt for us to send.
