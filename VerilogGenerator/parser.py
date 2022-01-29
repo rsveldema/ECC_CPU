@@ -83,8 +83,8 @@ class Block:
     def generate(self, ps: PrintStream):
         ps.print("begin")
         ps.up()
-        #for insn in self.insns:
-        #    insn.generate(ps)
+        for insn in self.insns:
+            insn.generate(ps)
         ps.down()
         ps.print("end")
 
@@ -95,9 +95,18 @@ class ObjectDecl:
         self.args = args
         
     def lower(self):
-        return self
+        new_args = []
+        for p in self.args:
+            new_args.append(p.lower())
+        return ObjectDecl(self.type.lower(), self.var, new_args)
     
+    def generate(self, ps: PrintStream):
+        ps.print("// " + self.str())
+        
     def pretty(self):
+        print(f"{self.str()}")
+        
+    def str(self):
         s = ""
         comma = ""
         for k in self.args:
@@ -105,7 +114,7 @@ class ObjectDecl:
             s += k.str()
             comma = ", "
 
-        print(f"local_obj {self.type.str()} {self.var}({s})")
+        return f"local_obj {self.type.str()} {self.var}({s})"
 
 class LocalDecl:
     def __init__(self, type, var, init_expr) -> None:
@@ -113,11 +122,17 @@ class LocalDecl:
         self.var = var
         self.init_expr = init_expr
 
+    def generate(self, ps: PrintStream):
+        ps.print("// " + self.str())
+        
     def lower(self):
-        return self
+        return LocalDecl(self.type.lower(), self.var.lower(), self.init_expr.lower())
     
     def pretty(self):
-        print(f"local {self.type.str()} {self.var} {self.init_expr.str()}")
+        print(f"{self.str()}")
+        
+    def str(self):
+        return f"local {self.type.str()} {self.var} {self.init_expr.str()}"
         
 class WhileStmt:
     def __init__(self, expr, code) -> None:
@@ -125,12 +140,15 @@ class WhileStmt:
         self.code = code
 
     def lower(self):
-        return self
+        return WhileStmt(self.expr.lower(), self.code.lower())
     
     def pretty(self):
         print(f"while ({self.expr.str()})")
         self.code.pretty()
 
+    def generate(self, ps: PrintStream):
+        ps.print(f"while ({self.expr.str()})")
+        self.code.generate(ps)
 
 class IfStmt:
     def __init__(self, expr, if_code, else_code) -> None:
@@ -138,8 +156,19 @@ class IfStmt:
         self.if_code = if_code
         self.else_code = else_code
 
+    def generate(self, ps: PrintStream):
+        ps.print(f"if ({self.expr.str()})")
+        self.if_code.generate(ps)
+        if self.else_code:
+            ps.print("else")
+            self.else_code.generate(ps)
+
+        
     def lower(self):
-        return self
+        ec = None
+        if self.else_code:
+            ec = self.else_code.lower()
+        return IfStmt(self.expr.lower(), self.if_code.lower(), ec)
     
     def pretty(self):
         print(f"if ({self.expr.str()})")
@@ -153,23 +182,37 @@ class CallStmt:
         self.func = func
         self.args = args
     
+        
     def lower(self):
-        return self
+        new_args = []
+        for p in self.args:
+            new_args.append(p.lower())
+        return CallStmt(self.func, new_args)
     
+    def generate(self, ps: PrintStream):
+        ps.print("// " + self.str())
+        
     def pretty(self):
+        print(f"{self.str()};")
+        
+    def str(self):
         s = ""
         comma = ""
         for k in self.args:
             s += comma
             s += k.str()
             comma = ", "
-        print(f"call {self.func.str()}({s})")
+        return f"call {self.func.str()}({s})"
 
 class NumberExpr:
     def __init__(self, value) -> None:
         self.value = value
 
     def lower(self):
+        if self.value == "true":
+            return NumberExpr("1")
+        if self.value == "false":
+            return NumberExpr("0")
         return self
     
     def str(self) -> str:
@@ -182,7 +225,7 @@ class UnaryExpr:
         self.value = value
 
     def lower(self):
-        return self
+        return UnaryExpr(self.op, self.value.lower())
     
     def str(self) -> str:
         return f"{self.op}({self.value})"
@@ -204,11 +247,21 @@ class BinaryExpr:
         self.left = left
         self.right = right
 
+    def generate(self, ps: PrintStream):
+        ps.print(f"{self.str()};")
+        
     def lower(self):
-        return self
+        return BinaryExpr(self.op, self.left.lower(), self.right.lower())
     
     def str(self) -> str:
-        return self.left.str() + self.op + self.right.str()
+        if self.op == "[]":
+            return self.left.str() + "[" + self.right.str() + "]"
+            
+        
+        if self.op == "=" or self.op == "+=" or self.op == "-=" or self.op == "|=" or self.op == "&=":
+            return self.left.str() + self.op + self.right.str() 
+            
+        return "(" + self.left.str() + self.op + self.right.str() + ")"
 
     def pretty(self):
         print(self.str())
@@ -222,6 +275,9 @@ class Break:
     
     def pretty(self):
         print("break")
+        
+    def generate(self, ps: PrintStream):
+        ps.print("break;")
 
 class Continue:
     def __init__(self) -> None:
@@ -232,6 +288,10 @@ class Continue:
     
     def pretty(self):
         print("continue")
+        
+    def generate(self, ps: PrintStream):
+        ps.print("continue;")
+
 
 class Type:
     def __init__(self, name) -> None:
