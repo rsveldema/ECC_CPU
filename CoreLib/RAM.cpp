@@ -24,8 +24,7 @@ namespace ecc
 
 					for (uint64_t i = 0; i < config.read_latency.cycles; i++)
 					{
-						Task& t = *this;
-						co_await t;
+						CONTEXT_SWITCH();
 					}
 
 					toCPU.send_read_response(ret, pkt.source);
@@ -40,8 +39,7 @@ namespace ecc
 
 					for (uint64_t i = 0; i < config.write_latency.cycles; i++)
 					{
-						Task& t = *this;
-						co_await t;
+						CONTEXT_SWITCH();
 					}
 
 					auto* dest_ptr = reinterpret_cast<RawMemoryBus::payload_t*>(storage.data() + address);
@@ -55,8 +53,7 @@ namespace ecc
 				}
 			}
 
-			Task& t = *this;
-			co_await t;
+			CONTEXT_SWITCH();
 		}
 	}
 }

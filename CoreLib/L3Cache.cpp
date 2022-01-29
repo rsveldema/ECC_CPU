@@ -21,8 +21,7 @@ namespace ecc
 				toCPU.send_response(*pkt);
 			}
 
-			Task& t = *this;
-			co_await t;
+			CONTEXT_SWITCH();
 		}
 		running = false;
 	}

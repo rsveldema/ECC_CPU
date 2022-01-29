@@ -7,7 +7,7 @@
             "label": "build",
             "type": "shell",
             "cwd" : "${workspaceFolder}",
-            "command": "cmake --build ${workspaceFolder}/build",
+            "command": "cmake --build ${workspaceFolder}/build -j4",
             "problemMatcher": [],
             "group": {
                 "kind": "build",

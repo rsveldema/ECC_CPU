@@ -316,14 +316,13 @@ namespace ecc
 				}
 
 				default:
-					std::cerr << "[DECODE] unimplemented opcode: " << ecc::to_string(opcode) << std::endl;
+					logger.debug("[DECODE] unimplemented opcode: " + ecc::to_string(opcode));
 					abort();
 				}
 			}
 
 
-			Task& t = *this;
-			co_await t;
+			CONTEXT_SWITCH();
 		}
 	}
 

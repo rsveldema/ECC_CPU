@@ -6,9 +6,18 @@ output_path = "test/"
 class PrintStream:
     def __init__(self, fp) -> None:
         self.fp = fp
+        self.indent = 0
 
     def print(self, str) -> None:
+        for i in range(self.indent):
+            str = "\t" + str
         self.fp.write(str + "\n")
+        
+    def up(self):
+        self.indent += 1
+
+    def down(self):
+        self.indent -= 1
 
 class Method:
     def __init__(self, type, ns, funcname, block):
@@ -21,11 +30,25 @@ class Method:
         print("method " + self.funcname)
         self.block.pretty()
         
+    def lower(self):
+        self.block = self.block.lower()
+        return self
+        
     def generate(self):
         with open(output_path + self.ns + ".v", "w") as fp: 
             ps = PrintStream(fp)
             ps.print("module " + self.ns + ";")
-            ps.print("initial begin $display(\"Hello World\"); $finish; end")
+            ps.print("initial")
+            ps.up()
+            ps.print("begin")
+            ps.up()
+            
+            self.block.generate(ps)
+            
+            ps.print("$finish;")
+            ps.down()
+            ps.print("end")
+            ps.down()
             ps.print("endmodule")
 
 class Namespace:
@@ -36,25 +59,44 @@ class Namespace:
         print("namespace ")
         self.method.pretty()
 
-    def generate(self):
-        self.method.generate()
+    def lower(self):
+        return self.method.lower()
+
 
 class Block:
     def __init__(self) -> None:
         self.insns = []
 
     def pretty(self):
-        print("{")
+        print("{")        
         for insn in self.insns:
             insn.pretty()
         print("}")
+        
+    def lower(self):
+        b = Block()        
+        for insn in self.insns:
+            k = insn.lower()
+            b.insns.append(k)
+        return b
+        
+    def generate(self, ps: PrintStream):
+        ps.print("begin")
+        ps.up()
+        #for insn in self.insns:
+        #    insn.generate(ps)
+        ps.down()
+        ps.print("end")
 
 class ObjectDecl:
     def __init__(self, type, var, args) -> None:
         self.type = type
         self.var = var
         self.args = args
-
+        
+    def lower(self):
+        return self
+    
     def pretty(self):
         s = ""
         comma = ""
@@ -71,14 +113,20 @@ class LocalDecl:
         self.var = var
         self.init_expr = init_expr
 
+    def lower(self):
+        return self
+    
     def pretty(self):
         print(f"local {self.type.str()} {self.var} {self.init_expr.str()}")
-
+        
 class WhileStmt:
     def __init__(self, expr, code) -> None:
         self.expr = expr
         self.code = code
 
+    def lower(self):
+        return self
+    
     def pretty(self):
         print(f"while ({self.expr.str()})")
         self.code.pretty()
@@ -90,6 +138,9 @@ class IfStmt:
         self.if_code = if_code
         self.else_code = else_code
 
+    def lower(self):
+        return self
+    
     def pretty(self):
         print(f"if ({self.expr.str()})")
         self.if_code.pretty()
@@ -101,6 +152,9 @@ class CallStmt:
     def __init__(self, func, args) -> None:
         self.func = func
         self.args = args
+    
+    def lower(self):
+        return self
     
     def pretty(self):
         s = ""
@@ -115,6 +169,9 @@ class NumberExpr:
     def __init__(self, value) -> None:
         self.value = value
 
+    def lower(self):
+        return self
+    
     def str(self) -> str:
         return self.value
 
@@ -124,6 +181,9 @@ class UnaryExpr:
         self.op = op
         self.value = value
 
+    def lower(self):
+        return self
+    
     def str(self) -> str:
         return f"{self.op}({self.value})"
 
@@ -131,6 +191,9 @@ class Ident:
     def __init__(self, value) -> None:
         self.value = value
 
+    def lower(self):
+        return self
+    
     def str(self) -> str:
         return self.value
 
@@ -141,6 +204,9 @@ class BinaryExpr:
         self.left = left
         self.right = right
 
+    def lower(self):
+        return self
+    
     def str(self) -> str:
         return self.left.str() + self.op + self.right.str()
 
@@ -151,6 +217,9 @@ class Break:
     def __init__(self) -> None:
         pass
 
+    def lower(self):
+        return self
+    
     def pretty(self):
         print("break")
 
@@ -158,6 +227,9 @@ class Continue:
     def __init__(self) -> None:
         pass
 
+    def lower(self):
+        return self
+    
     def pretty(self):
         print("continue")
 
@@ -165,6 +237,9 @@ class Type:
     def __init__(self, name) -> None:
         self.name = name
 
+    def lower(self):
+        return self
+    
     def str(self) -> str:
         if isinstance(self.name, str):
             return self.name
@@ -365,6 +440,8 @@ def main():
             ast = createAST(tree)
             print(f"AST = ")
             ast.pretty()
+
+            ast = ast.lower()
 
             ast.generate()
             

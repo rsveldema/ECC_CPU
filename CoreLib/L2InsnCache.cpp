@@ -40,8 +40,7 @@ namespace ecc
 				toCPU.send_response(insn_cache_pkt);
 			}
 
-			Task& t = *this;
-			co_await t;
+			CONTEXT_SWITCH();
 		}
 		running = false;
 	}

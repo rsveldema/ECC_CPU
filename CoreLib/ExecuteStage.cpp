@@ -31,12 +31,11 @@ namespace ecc
 
 					const auto dest = ecc::RegisterID::FLAGS;
 
-					//std::cerr << "[EXECUTE] CMP: " << value1 << " -- " << value2 << "-----" << result << std::endl;
+					// logger.debbug("[EXECUTE] CMP: " + value1 + " -- " + value2 + "-----" + result);
 
 					while (store_bus.is_busy())
 					{
-						Task& t = *this;
-						co_await t;
+						CONTEXT_SWITCH();
 					}
 
 					regs.mark_invalid(dest);
@@ -56,8 +55,7 @@ namespace ecc
 
 					while (store_bus.is_busy())
 					{
-						Task& t = *this;
-						co_await t;
+						CONTEXT_SWITCH();
 					}
 
 					regs.mark_invalid(dest);
@@ -80,8 +78,7 @@ namespace ecc
 
 					while (store_bus.is_busy())
 					{
-						Task& t = *this;
-						co_await t;
+						CONTEXT_SWITCH();
 					}
 
 					regs.mark_invalid(dest);
@@ -103,8 +100,7 @@ namespace ecc
 					auto src = src2.or_shift_left_int64(src1, 48);
 					while (store_bus.is_busy())
 					{
-						Task& t = *this;
-						co_await t;
+						CONTEXT_SWITCH();
 					}
 
 					regs.mark_invalid(dest);
@@ -125,8 +121,7 @@ namespace ecc
 					auto src = src1.shift_left_int64(src2);
 					while (store_bus.is_busy())
 					{
-						Task& t = *this;
-						co_await t;
+						CONTEXT_SWITCH();
 					}
 
 					regs.mark_invalid(dest);
@@ -148,8 +143,7 @@ namespace ecc
 
 					while (store_bus.is_busy())
 					{
-						Task& t = *this;
-						co_await t;
+						CONTEXT_SWITCH();
 					}
 
 					regs.mark_invalid(dest);
@@ -172,8 +166,7 @@ namespace ecc
 
 					while (store_bus.is_busy())
 					{
-						Task& t = *this;
-						co_await t;
+						CONTEXT_SWITCH();
 					}
 
 					regs.mark_invalid(dest);
@@ -194,8 +187,7 @@ namespace ecc
 
 					while (store_bus.is_busy())
 					{
-						Task& t = *this;
-						co_await t;
+						CONTEXT_SWITCH();
 					}
 
 					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
@@ -215,8 +207,7 @@ namespace ecc
 					auto dest = ecc::RegisterID::PC;
 					while (store_bus.is_busy())
 					{
-						Task& t = *this;
-						co_await t;
+						CONTEXT_SWITCH();
 					}
 
 					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, ecc::StorageStageOpcode::LOAD_MEM_INTO_REG,
@@ -239,8 +230,7 @@ namespace ecc
 
 					while (!regs.is_valid(ecc::RegisterID::FLAGS))
 					{
-						Task& t = *this;
-						co_await t;
+						CONTEXT_SWITCH();
 					}
 
 					const VectorValue flags = regs[ecc::RegisterID::FLAGS];
@@ -255,8 +245,7 @@ namespace ecc
 					std::cerr << "store-bus busy" << std::endl;
 					while (store_bus.is_busy())
 					{
-						Task& t = *this;
-						co_await t;
+						CONTEXT_SWITCH();
 					}
 					std::cerr << "store-bus done" << std::endl;
 					if (should_jmp == 0)
@@ -302,8 +291,7 @@ namespace ecc
 
 					while (store_bus.is_busy())
 					{
-						Task& t = *this;
-						co_await t;
+						CONTEXT_SWITCH();
 					}
 					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, ecc::StorageStageOpcode::JMP, new_address };
 					store_bus.send(store_pkt);
@@ -314,8 +302,7 @@ namespace ecc
 				{
 					while (store_bus.is_busy())
 					{
-						Task& t = *this;
-						co_await t;
+						CONTEXT_SWITCH();
 					}
 					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, ecc::StorageStageOpcode::HALT };
 					store_bus.send(store_pkt);
@@ -330,8 +317,7 @@ namespace ecc
 			}
 
 
-			Task& t = *this;
-			co_await t;
+			CONTEXT_SWITCH();
 		}
 	}
 }

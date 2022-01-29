@@ -80,8 +80,7 @@ namespace ecc
 							stats.waitForOperandFetch++;
 						}
 
-						Task& t = *this;
-						co_await t;
+						CONTEXT_SWITCH();
 					}
 					break;
 				}
@@ -142,8 +141,7 @@ namespace ecc
 			}
 
 
-			Task& t = *this;
-			co_await t;
+			CONTEXT_SWITCH();
 		}
 	}
 }

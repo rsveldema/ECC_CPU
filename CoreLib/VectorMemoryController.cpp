@@ -43,8 +43,7 @@ namespace ecc
 						{
 							while (toMemory.is_busy())
 							{
-								Task& t = *this;
-								co_await t;
+								CONTEXT_SWITCH();
 							}
 							const auto address = addresses.data[i];
 							toMemory.send_read_request_data(address, src);
@@ -57,8 +56,7 @@ namespace ecc
 									reply.payload.set(i, value);
 									break;
 								}
-								Task& t = *this;
-								co_await t;
+								CONTEXT_SWITCH();
 							}
 						}
 
@@ -75,8 +73,7 @@ namespace ecc
 						{
 							while (toMemory.is_busy())
 							{
-								Task& t = *this;
-								co_await t;
+								CONTEXT_SWITCH();
 							}
 							RawMemoryBus::payload_t payload = arrayData.get(i);
 							const auto& address = addresses.data[i];
@@ -88,8 +85,7 @@ namespace ecc
 				}
 			}
 
-			Task& t = *this;
-			co_await t;
+			CONTEXT_SWITCH();
 		}
 	}
 }

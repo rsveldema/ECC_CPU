@@ -1,6 +1,5 @@
 #include "Task.h"
 
-
 namespace ecc
 {
 	void Task::await_suspend(std::coroutine_handle<ReturnObject::promise_type> h)

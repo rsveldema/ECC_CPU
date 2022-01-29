@@ -24,8 +24,7 @@ namespace ecc
 				}
 			}
 
-			Task& t = *this;
-			co_await t;
+			CONTEXT_SWITCH();
 		}
 		running = false;
 	}

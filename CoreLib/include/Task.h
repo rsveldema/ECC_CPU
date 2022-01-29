@@ -9,9 +9,9 @@
 
 namespace ecc
 {
-
 	#define CONTEXT_SWITCH() { Task& t = *this; co_await t; }
-
+	#define WAIT(cond) while (! cond) CONTEXT_SWITCH()
+			
 	/** C++ coroutines require the return type to hold a nested promise_type.
 	*/
 	struct ReturnObject {
