@@ -13,17 +13,21 @@ namespace ecc
 
 		while (1)
 		{
-			while (have_outstanding_jmp)
+			if (have_outstanding_jmp)
 			{
-				auto jmp_retarget = store_bus.try_recv();
-				if (jmp_retarget)
+				have_outstanding_jmp = false;
+
+				while (1)
 				{
-					have_outstanding_jmp = false;
-					fetch_PC = jmp_retarget->newpc;
-					exec_mask = jmp_retarget->exec_mask;
-					break;
+					auto jmp_retarget = store_bus.try_recv();
+					if (jmp_retarget)
+					{
+						fetch_PC = jmp_retarget->newpc;
+						exec_mask = jmp_retarget->exec_mask;
+						break;
+					}
+					CONTEXT_SWITCH();
 				}
-				CONTEXT_SWITCH();
 			}
 
 			if (address_cached == fetch_PC)
