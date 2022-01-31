@@ -13,9 +13,10 @@ namespace ecc
 				toMemory.send_request(*pkt);
 			}
 
-			if (auto pkt = toMemory.try_accept_response())
+			if (toMemory.have_response())
 			{
-				toCPU.send_response(*pkt);
+				auto pkt = toMemory.get_response();
+				toCPU.send_response(pkt);
 			}
 
 			CONTEXT_SWITCH();

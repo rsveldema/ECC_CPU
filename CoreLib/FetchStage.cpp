@@ -2,6 +2,29 @@
 
 namespace ecc
 {
+	bool changesControlFlow(Opcode op)
+	{
+		switch (op)
+		{
+		case Opcode::HALT:
+		case Opcode::JMP_ALWAYS:
+		case Opcode::JMP_EQUAL:
+		case Opcode::JMP_NOT_EQUAL:
+		case Opcode::JMP_GREATER:
+		case Opcode::JMP_GREATER_EQUAL:
+		case Opcode::JMP_LOWER:
+		case Opcode::JMP_LOWER_EQUAL:
+		case Opcode::LOAD_RESTORE_PC: {
+			return true;
+		}
+		default: {
+			return false;
+		}
+		}
+		return false;
+	}
+
+
 	ReturnObject FetchStage::run()
 	{
 		bool have_outstanding_jmp = false;
@@ -19,11 +42,11 @@ namespace ecc
 
 				while (1)
 				{
-					auto jmp_retarget = store_bus.try_recv();
-					if (jmp_retarget)
+					if (store_bus.can_recv())
 					{
-						fetch_PC = jmp_retarget->newpc;
-						exec_mask = jmp_retarget->exec_mask;
+						StoreToFetchBus::Packet jmp_retarget = store_bus.recv();
+						fetch_PC = jmp_retarget.newpc;
+						exec_mask = jmp_retarget.exec_mask;
 						break;
 					}
 					CONTEXT_SWITCH();
@@ -42,19 +65,19 @@ namespace ecc
 				}
 				else
 				{
-					const auto address_fetched = fetch_PC & ~7;
+					const memory_address_t address_fetched = fetch_PC & ~7;
 
 					memory_bus.send_read_request_insn(address_fetched, memory_bus_id);
 
 					while (1)
 					{
-						auto response = memory_bus.try_accept_response();
-						if (response)
+						if (memory_bus.have_response())
 						{
-							assert(response->type == InsnCacheMemoryBus::Type::read_response);
+							InsnCacheMemoryBus::Packet response = memory_bus.get_response();
+							assert(response.type == InsnCacheMemoryBus::Type::read_response);
 
 							address_cached = address_fetched;
-							fetched_cached = response->getInsnData();
+							fetched_cached = response.getInsnData();
 							break;
 						}
 
@@ -84,7 +107,7 @@ namespace ecc
 
 			//logger.debug("[FETCH] received response for address " + std::to_string(fetch_PC));
 
-			auto opcode = static_cast<Opcode>(insn & 0xff);
+			Opcode opcode = static_cast<Opcode>(insn & 0xff);
 			if (changesControlFlow(opcode))
 			{
 				have_outstanding_jmp = true;
@@ -95,7 +118,7 @@ namespace ecc
 				CONTEXT_SWITCH();
 			}
 
-			const auto PC = fetch_PC;
+			const memory_address_t PC = fetch_PC;
 			fetch_PC += INSTRUCTION_SIZE;
 			FetchToDecodeBus::Packet pkt{exec_mask, PC, insn};
 			decode_bus.send(pkt);

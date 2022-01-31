@@ -22,7 +22,7 @@
                 "1"
             ],
             "stopAtEntry": false,
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceFolder}/Simulator",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -44,7 +44,7 @@
                 "${workspaceFolder}/Assembler/tests/t1.bin"
             ],
             "stopAtEntry": false,
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceFolder}/Assembler",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",

@@ -75,6 +75,22 @@ void read_data_memory_dump(CoreClusterGrid& machine, const std::string& filename
 	machine.dram.write(address, buffer.data(), length);
 }
 
+void write_config(const std::string& filename)
+{
+	std::ofstream f;
+	f.open(filename, std::ios::trunc);
+
+	f << "sizeof memory_address_t = " << sizeof(memory_address_t) << std::endl;
+	f << "sizeof instruction_t = " << sizeof(instruction_t) << std::endl;
+	f << "sizeof fetched_instruction_data_t = " << sizeof(fetched_instruction_data_t) << std::endl;
+	f << "sizeof ExecutionMask = " << sizeof(ExecutionMask) << std::endl;
+	f << "sizeof StoreToFetchBus::Packet = " << sizeof(StoreToFetchBus::Packet) << std::endl;
+	f << "sizeof InsnCacheMemoryBus::Packet = " << sizeof(InsnCacheMemoryBus::Packet) << std::endl;
+	f << "sizeof Opcode = " << sizeof(Opcode) << std::endl;
+
+	f.close();
+}
+
 int main(int argc, char** argv)
 {
 	printf("booted!\n");
@@ -83,6 +99,8 @@ int main(int argc, char** argv)
 		Usage();
 		return -1;
 	}
+
+	write_config("config.txt");
 
 	std::string filename(argv[1]);
 

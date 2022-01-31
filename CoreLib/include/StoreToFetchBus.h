@@ -22,12 +22,14 @@ namespace ecc
 			queue.push(pkt);
 		}
 
-		std::optional<Packet> try_recv()
+		bool can_recv() const
 		{
-			if (queue.empty())
-			{
-				return std::nullopt;
-			}
+			return !queue.empty();
+		}
+
+		Packet recv()
+		{
+			assert(!queue.empty());
 			Packet v = queue.front();
 			queue.pop();
 			return v;

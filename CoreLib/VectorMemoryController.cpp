@@ -50,9 +50,11 @@ namespace ecc
 
 							while (1)
 							{
-								if (auto pkt = toMemory.try_accept_response())
+								if (toMemory.have_response())
 								{
-									const int64_t value = pkt->payload;
+									auto pkt = toMemory.get_response();
+								
+									const int64_t value = pkt.payload;
 									reply.payload.set(i, value);
 									break;
 								}

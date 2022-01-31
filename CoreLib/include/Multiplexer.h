@@ -64,21 +64,23 @@ namespace ecc
 
 				// we should be able to forward the incoming packet to the source
 				// in one step, hence no co_await here.
-				if (auto pkt = out.try_accept_response())
+				if (out.have_response())
 				{
+					auto pkt = out.get_response();
+				
 					bool sent = false;
 					for (auto& in : inputs)
 					{
-						if (in.packetResponseShouldBeSentToThisInput(*pkt))
+						if (in.packetResponseShouldBeSentToThisInput(pkt))
 						{
 							sent = true;
-							in.bus->send_response(*pkt);
+							in.bus->send_response(pkt);
 						}
 					}
 					assert(sent);
 				}
-				Task& t = *this;
-				co_await t;
+
+				CONTEXT_SWITCH();
 			}
 		}
 	};

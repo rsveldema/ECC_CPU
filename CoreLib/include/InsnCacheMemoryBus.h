@@ -69,15 +69,16 @@ namespace ecc
 			return std::nullopt;
 		}
 
-		std::optional<Packet> try_accept_response()
+		bool have_response() const
 		{
-			if (!response_queue.empty())
-			{
-				const Packet f = response_queue.front();
-				response_queue.pop();
-				return f;
-			}
-			return std::nullopt;
+			return !response_queue.empty();
+		}
+
+		Packet get_response()
+		{
+			const Packet f = response_queue.front();
+			response_queue.pop();
+			return f;
 		}
 
 		void send_request(const Packet& pkt)

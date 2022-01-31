@@ -1,0 +1,5 @@
+%Error: FetchStage.sv:3:2: syntax error, unexpected IDENTIFIER
+    3 |  bool have_outstanding_jmp = 0;
+      |  ^~~~
+%Error: Exiting due to 1 error(s)
+make: *** [Makefile:3: all] Error 1

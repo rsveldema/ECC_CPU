@@ -23,17 +23,19 @@ namespace ecc
 				toMemory.send_request(rawPkt);
 			}
 
-			if (auto pkt = toMemory.try_accept_response())
+			if (toMemory.have_response())
 			{
+				auto pkt = toMemory.get_response();
+			
 				ecc::fetched_instruction_data_t ret;
 
-				static_assert(sizeof(ret) == sizeof(pkt->payload));
-				memcpy(ret.data(), &pkt->payload, sizeof(ret));
+				static_assert(sizeof(ret) == sizeof(pkt.payload));
+				memcpy(ret.data(), &pkt.payload, sizeof(ret));
 
 				InsnCacheMemoryBus::Packet insn_cache_pkt{
 					.type = InsnCacheMemoryBus::Type::read_response,
-					.source = pkt->source,
-					.address = pkt->address,
+					.source = pkt.source,
+					.address = pkt.address,
 					.payload = ret
 				};
 
