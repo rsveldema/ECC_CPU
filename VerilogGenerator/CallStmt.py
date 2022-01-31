@@ -10,8 +10,8 @@ class CallStmt(Statement):
         self.call_expr = CallExpr(func, args)
    
         
-    def lower(self, state: LowerState):
-        ce = self.call_expr.lower(state)
+    def lower_ast(self, state: LowerState):
+        ce = self.call_expr.lower_ast(state)
         return CallStmt(ce.func, ce.args)
     
     def generate(self, ps: PrintStream):

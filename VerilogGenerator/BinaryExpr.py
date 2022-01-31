@@ -1,9 +1,10 @@
 from typing import List
 from PrintStream import PrintStream
 from LowerState import LowerState
+from Expr import Expr
 
-class BinaryExpr:
-    def __init__(self, op, left, right) -> None:
+class BinaryExpr: 
+    def __init__(self, op, left:Expr, right:Expr) -> None:
         self.op = op
         self.left = left
         self.right = right
@@ -11,8 +12,8 @@ class BinaryExpr:
     def generate(self, ps: PrintStream):
         ps.print(f"{self.str()};")
         
-    def lower(self, state: LowerState):
-        return BinaryExpr(self.op, self.left.lower(state), self.right.lower(state))
+    def lower_ast(self, state: LowerState):
+        return BinaryExpr(self.op, self.left.lower_ast(state), self.right.lower_ast(state))
     
     def str(self) -> str:
         if self.op == "[]":

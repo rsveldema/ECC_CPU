@@ -10,21 +10,15 @@ class CallExpr(Expression):
         self.args = args
     
         
-    def lower(self, state: LowerState):
+    def lower_ast(self, state: LowerState):
         new_args = []
         for p in self.args:
-            z = p.lower(state)
+            z = p.lower_ast(state)
             new_args.append(z)
         return CallExpr(self.func, new_args)
     
-    def generate(self, ps: PrintStream):       
-        s = ""
-        comma = ""
-        for k in self.args:
-            s += comma
-            s += k.str()
-            comma = ", "
-        ps.print(f"{self.func({s})}")
+    def generate(self, ps: PrintStream):               
+        ps.print(f"{self.str()}")
         
     def pretty(self):
         print(f"{self.str()};")
@@ -36,4 +30,4 @@ class CallExpr(Expression):
             s += comma
             s += k.str()
             comma = ", "
-        return f"call {self.func.str()}({s})"
+        return f"{self.func.str()}({s})"

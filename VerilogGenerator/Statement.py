@@ -9,6 +9,10 @@ class Statement(ABC):
         pass
     
     @abstractmethod
+    def lower_ast(self, state: 'LowerState') -> 'Statement':
+        pass
+    
+    @abstractmethod
     def getLocalDecls(self) -> List:
         pass
     

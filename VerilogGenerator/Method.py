@@ -20,9 +20,9 @@ class Method:
         print("method " + self.funcname)
         self.block.pretty()
         
-    def lower(self):
+    def lower_ast(self):
         state = LowerState()        
-        self.block = self.block.lower(state)
+        self.block = self.block.lower_ast(state)
         return self
                 
     def create_case_stmt(self):

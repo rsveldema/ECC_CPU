@@ -9,7 +9,7 @@ class LiteralExpr:
         #if value.find('x'):
         #    print(f"SAW: {value}")
 
-    def lower(self, state: LowerState):
+    def lower_ast(self, state: LowerState):
         if self.value == "true":
             return LiteralExpr("1")
         if self.value == "false":

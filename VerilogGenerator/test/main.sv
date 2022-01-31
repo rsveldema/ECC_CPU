@@ -23,7 +23,5 @@ typedef int64_t StoreToFetchBus__Packet;
 
 typedef byte unsigned Opcode;
 
-`define INSTRUCTION_SIZE ($bits(instruction_t) / 8)
-
 `include "FetchStage.sv"
 

@@ -94,7 +94,7 @@ namespace ecc
 			}
 			else
 			{
-				if ((address_cached + INSTRUCTION_SIZE) == fetch_PC)
+				if ((address_cached + sizeof(instruction_t)) == fetch_PC)
 				{
 					insn = fetched_cached[1];
 				}
@@ -119,7 +119,7 @@ namespace ecc
 			}
 
 			const memory_address_t PC = fetch_PC;
-			fetch_PC += INSTRUCTION_SIZE;
+			fetch_PC += sizeof(instruction_t);
 			FetchToDecodeBus::Packet pkt{exec_mask, PC, insn};
 			decode_bus.send(pkt);
 

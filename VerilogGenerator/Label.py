@@ -12,6 +12,9 @@ class Label(Statement):
         counter += 1
         self.label = counter
         
+    def lower_ast(self, state: 'LowerState') -> 'Statement':
+        return self
+        
     def str(self):
         return f"{self.label}"
         

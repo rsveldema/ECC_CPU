@@ -55,7 +55,7 @@ def main():
                 print(f"AST = ")
                 ast.pretty()
 
-                methods = ast.lower()
+                methods = ast.lower_ast()
 
                 methods = create_state_switch(methods)
                 

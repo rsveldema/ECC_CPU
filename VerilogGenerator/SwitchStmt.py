@@ -3,10 +3,11 @@ from PrintStream import PrintStream
 from LowerState import LowerState
 from Statement import Statement
 from Block import Block
+from Expr import Expr
 
 class CaseStmt(Statement):
     # blk can be None for a fallthrough
-    def __init__(self, value, blk: Block) -> None:
+    def __init__(self, value: Expr, blk: Block) -> None:
         super().__init__()
         self.expr = value
         self.blk = blk
@@ -20,16 +21,13 @@ class CaseStmt(Statement):
         if self.blk:
             self.blk.pretty()            
             
-
-        
-        
-    def lower(self, state:LowerState):
+    def lower_ast(self, state:LowerState):
         e = None
         if self.expr:
-            e = self.expr.lower(state)
+            e = self.expr.lower_ast(state)
             
         if self.blk != None:
-            return CaseStmt(e, self.blk.lower(state))
+            return CaseStmt(e, self.blk.lower_ast(state))
         return CaseStmt(e, None)
         
     def get_last_stmt(self):
@@ -55,15 +53,15 @@ class CaseStmt(Statement):
     
     
 class SwitchStmt(Statement):
-    def __init__(self, expr, cases) -> None:
+    def __init__(self, expr, cases: List[CaseStmt]) -> None:
         self.expr = expr
         self.cases = cases
         
-    def lower(self, state:LowerState):
+    def lower_ast(self, state:LowerState):
         newcases = []
         for c in self.cases:
-            newcases.append(c.lower(state))
-        return SwitchStmt(self.expr.lower(state), newcases)
+            newcases.append(c.lower_ast(state))
+        return SwitchStmt(self.expr.lower_ast(state), newcases)
         
         
     def getLocalDecls(self) -> List:

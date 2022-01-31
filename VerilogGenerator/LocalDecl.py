@@ -2,9 +2,11 @@ from typing import List
 from PrintStream import PrintStream
 from LowerState import LowerState
 from Type import Type
+from Expr import Expr
+
 
 class LocalDecl:
-    def __init__(self, type: Type, var, init_expr) -> None:
+    def __init__(self, type: Type, var, init_expr: Expr) -> None:
         self.type = type
         self.var = var
         self.init_expr = init_expr
@@ -12,8 +14,11 @@ class LocalDecl:
     def generate(self, ps: PrintStream):
         ps.print(f"{self.var} = {self.init_expr.str()};")
         
-    def lower(self, state: LowerState):
-        return LocalDecl(self.type.lower(state), self.var.lower(), self.init_expr.lower(state))
+    def lower_ast(self, state: LowerState):
+        assert isinstance(self.var, str)
+        return LocalDecl(self.type.lower_ast(state), 
+                         self.var, 
+                         self.init_expr.lower_ast(state))
     
     def pretty(self):
         print(f"{self.str()}")

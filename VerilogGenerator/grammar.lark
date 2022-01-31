@@ -81,9 +81,9 @@ term: "(" expr ")"
 | false_expr
 | true_expr
 | array_access
+| sizeof_term
 | access_expr
 | hex_number_expr
-| sizeof_term
 | bit_not_expr
 | static_cast
 
@@ -103,7 +103,6 @@ false_expr: "false"
 number_expr: NUMBER
 
 array_access: qual_ident  "[" expr "]"
-
 
 sizeof_term: "sizeof" "(" expr ")"
 

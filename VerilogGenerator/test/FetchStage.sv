@@ -3,7 +3,7 @@ endfunction
 module FetchStage;
 	reg[32:0] state = 0;
 	bool have_outstanding_jmp = 0;
-	memory_address_t fetch_pc = 0;
+	memory_address_t fetch_PC = 0;
 	ExecutionMask exec_mask = 0;
 	memory_address_t address_cached = 0;
 	fetched_instruction_data_t fetched_cached = 0;
@@ -12,7 +12,7 @@ module FetchStage;
 	InsnCacheMemoryBus__Packet response = 0;
 	instruction_t insn = 0;
 	Opcode opcode = 0;
-	memory_address_t pc = 0;
+	memory_address_t PC = 0;
 	FetchToDecodeBus__Packet pkt = 0;
 
 
@@ -22,7 +22,7 @@ module FetchStage;
 		0:
 			begin
 				have_outstanding_jmp = 0;
-				fetch_pc = 0;
+				fetch_PC = 0;
 				// local_obj ExecutionMask exec_mask(ALL_THREADS_EXEC_MASK_INT64)
 				address_cached = 'hffffffff;
 				// local_obj fetched_instruction_data_t fetched_cached()
@@ -42,12 +42,12 @@ module FetchStage;
 			end
 		4:
 			begin
-				if (!(call store_bus()))
+				if (!(store_bus()))
 				begin
 					state = 6; // GOTO
 					return;
 				end
-				jmp_retarget = call store_bus();
+				jmp_retarget = store_bus();
 				fetch_PC=jmp_retarget;
 				exec_mask=jmp_retarget;
 				state = 5; // GOTO
@@ -55,7 +55,7 @@ module FetchStage;
 			end
 		6:
 			begin
-				// call CONTEXT_SWITCH()
+				// CONTEXT_SWITCH()
 				state = 4; // GOTO
 				return;
 			end
@@ -79,7 +79,7 @@ module FetchStage;
 			end
 		8:
 			begin
-				if (((address_cached + call sizeof(instruction_t)) == fetch_PC))
+				if (((address_cached + ($bits(instruction_t) / 8)) == fetch_PC))
 				begin
 				end
 				else
@@ -93,28 +93,28 @@ module FetchStage;
 		10:
 			begin
 				address_fetched = (fetch_PC & ~(7));
-				// call memory_bus(address_fetched, memory_bus_id)
+				// memory_bus(address_fetched, memory_bus_id)
 				state = 11; // GOTO
 				return;
 			end
 		11:
 			begin
-				if (!(call memory_bus()))
+				if (!(memory_bus()))
 				begin
 					state = 13; // GOTO
 					return;
 				end
-				response = call memory_bus();
-				// call assert((response == InsnCacheMemoryBus::Type::read_response))
+				response = memory_bus();
+				// assert((response == InsnCacheMemoryBus::Type::read_response))
 				address_cached=address_fetched;
-				fetched_cached=call response();
+				fetched_cached=response();
 				state = 12; // GOTO
 				return;
 			end
 		13:
 			begin
-				// call stats()
-				// call CONTEXT_SWITCH()
+				// stats()
+				// CONTEXT_SWITCH()
 				state = 11; // GOTO
 				return;
 			end
@@ -145,7 +145,7 @@ module FetchStage;
 			end
 		15:
 			begin
-				if (((address_cached + INSTRUCTION_SIZE) == fetch_PC))
+				if (((address_cached + ($bits(instruction_t) / 8)) == fetch_PC))
 				begin
 				end
 				else
@@ -159,8 +159,8 @@ module FetchStage;
 			end
 		17:
 			begin
-				// call logger("failed to get insn from local fetcher cache")
-				// call abort()
+				// logger("failed to get insn from local fetcher cache")
+				// abort()
 				state = 16; // GOTO
 				return;
 			end
@@ -172,7 +172,7 @@ module FetchStage;
 		14:
 			begin
 				opcode = (Opcode'((insn & 'hff)));
-				if (!(call changesControlFlow(opcode)))
+				if (!(changesControlFlow(opcode)))
 				begin
 					state = 18; // GOTO
 					return;
@@ -188,8 +188,8 @@ module FetchStage;
 			end
 		19:
 			begin
-				// call CONTEXT_SWITCH()
-				if (call decode_bus())
+				// CONTEXT_SWITCH()
+				if (decode_bus())
 				begin
 					state = 19; // GOTO
 					return;
@@ -199,11 +199,11 @@ module FetchStage;
 			end
 		20:
 			begin
-				pc = fetch_PC;
-				fetch_PC+=INSTRUCTION_SIZE;
+				PC = fetch_PC;
+				fetch_PC+=($bits(instruction_t) / 8);
 				// local_obj FetchToDecodeBus__Packet pkt(exec_mask, PC, insn)
-				// call decode_bus(pkt)
-				// call CONTEXT_SWITCH()
+				// decode_bus(pkt)
+				// CONTEXT_SWITCH()
 				state = 1; // GOTO
 				return;
 			end

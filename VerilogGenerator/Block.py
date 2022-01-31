@@ -30,10 +30,10 @@ class Block(Statement):
             ret.extend(r)
         return ret
         
-    def lower(self, state: LowerState):
+    def lower_ast(self, state: LowerState):
         b = Block()        
         for insn in self.insns:
-            k = insn.lower(state)
+            k = insn.lower_ast(state)
             self.append_recurs(b, k)
         return b
     

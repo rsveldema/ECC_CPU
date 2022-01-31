@@ -7,7 +7,7 @@ class Break:
     def __init__(self) -> None:
         pass
 
-    def lower(self, state: LowerState):
+    def lower_ast(self, state: LowerState):
         k = state.get_labels()
         return Goto(k.end)
     

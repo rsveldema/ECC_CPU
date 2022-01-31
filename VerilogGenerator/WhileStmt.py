@@ -19,7 +19,7 @@ class WhileStmt(Statement):
             return cond.value == "1"
         return False
 
-    def lower(self, state: LowerState):       
+    def lower_ast(self, state: LowerState):       
         start_label = Label()
         end_label = Label()
         
@@ -28,9 +28,9 @@ class WhileStmt(Statement):
         
         ret = Block()
         ret.insns.append(start_label)
-        ret.insns.append(self.code.lower(state))        
+        ret.insns.append(self.code.lower_ast(state))        
         
-        cond = self.expr.lower(state)
+        cond = self.expr.lower_ast(state)
         if self.is_one(cond):
             ret.insns.append(Goto(start_label))
         else:

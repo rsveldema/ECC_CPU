@@ -2,19 +2,20 @@ from PrintStream import PrintStream
 from LowerState import LowerState
 from Statement import Statement
 from typing import List
+from Expr import Expr
 
 
 class ObjectDecl(Statement):
-    def __init__(self, type, var, args) -> None:
+    def __init__(self, type, var, args: List[Expr]) -> None:
         self.type = type
         self.var = var
         self.args = args
         
-    def lower(self, state: LowerState):
+    def lower_ast(self, state: LowerState):
         new_args = []
         for p in self.args:
-            new_args.append(p.lower(state))
-        return ObjectDecl(self.type.lower(state), self.var, new_args)
+            new_args.append(p.lower_ast(state))
+        return ObjectDecl(self.type.lower_ast(state), self.var, new_args)
     
     def generate(self, ps: PrintStream):
         ps.print("// " + self.str())
@@ -33,7 +34,7 @@ class ObjectDecl(Statement):
         return f"local_obj {self.type.str()} {self.var}({s})"
 
     def get_num_bits(self):
-        return 10000
+        return self.type.get_num_bits()
 
     def getLocalDecls(self) -> List:
         return [self]

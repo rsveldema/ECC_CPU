@@ -6,7 +6,7 @@ class Type:
     def __init__(self, name) -> None:
         self.name = name
 
-    def lower(self, state: LowerState):
+    def lower_ast(self, state: LowerState):
         return self
     
     def str(self) -> str:

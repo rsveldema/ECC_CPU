@@ -27,18 +27,18 @@ class IfStmt(Statement):
             self.else_code.generate(ps)
 
         
-    def lower(self, state: LowerState):
+    def lower_ast(self, state: LowerState):
         ret = Block()       
         
         end_label = Label()
         
-        if_code = self.if_code.lower(state)
-        cond = self.expr.lower(state)
+        if_code = self.if_code.lower_ast(state)
+        cond = self.expr.lower_ast(state)
 
 
         if self.else_code:
             else_label = Label()
-            else_code = self.else_code.lower(state)
+            else_code = self.else_code.lower_ast(state)
             
             jmp_if = Block()
             jmp_if.append(Goto(end_label))
