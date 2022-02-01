@@ -21,20 +21,20 @@ typedef instruction_t fetched_instruction_data_t[2];
 
 
 typedef enum {
-	R0
-	,R1
-	,R2
-	,R3
-	,R4
-	,R5
-	,R6
-	,R7
-	,R8
-	,R9
-	,BLOCK_INDEX
-	,SP
-	,FLAGS
-	,PC
+	REG_R0
+	,REG_R1
+	,REG_R2
+	,REG_R3
+	,REG_R4
+	,REG_R5
+	,REG_R6
+	,REG_R7
+	,REG_R8
+	,REG_R9
+	,REG_BLOCK_INDEX
+	,REG_SP
+	,REG_FLAGS
+	,REG_PC
 	,MAX_REG_ID
 } RegisterID;
 

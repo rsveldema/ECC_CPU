@@ -10,7 +10,7 @@ namespace ecc
 	static bool isValidIndex(const ecc::RegisterID id)
 	{
 		return
-			(id >= ecc::RegisterID::R0) &&
+			(id >= ecc::RegisterID::REG_R0) &&
 			(id < ecc::RegisterID::MAX_REG_ID);
 	}
 

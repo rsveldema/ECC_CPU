@@ -29,7 +29,7 @@ namespace ecc
 
 					const VectorValue src = value1.compare_int64(value2);
 
-					const auto dest = RegisterID::FLAGS;
+					const auto dest = RegisterID::REG_FLAGS;
 
 					// logger.debbug("[EXECUTE] CMP: " + value1 + " -- " + value2 + "-----" + result);
 
@@ -204,7 +204,7 @@ namespace ecc
 
 					auto offset = off1.add_int64(off2);
 
-					auto dest = RegisterID::PC;
+					auto dest = RegisterID::REG_PC;
 					while (store_bus.is_busy())
 					{
 						CONTEXT_SWITCH();
@@ -228,12 +228,12 @@ namespace ecc
 					const auto& jmp_mask = pkt.value1;
 					const auto& exec_mask = pkt.exec_mask;
 
-					while (!regs.is_valid(RegisterID::FLAGS))
+					while (!regs.is_valid(RegisterID::REG_FLAGS))
 					{
 						CONTEXT_SWITCH();
 					}
 
-					const VectorValue flags = regs[RegisterID::FLAGS];
+					const VectorValue flags = regs[RegisterID::REG_FLAGS];
 					const auto& should_jmp_masks = flags.bit_and_int64(jmp_mask);
 					const uint64_t should_jmp = exec_mask.get_masked_flags(should_jmp_masks.reduce_int64_to_single_int64_t());
 					const uint64_t all_threads_mask = exec_mask.get_masked_flags(ALL_THREADS_EXEC_MASK_INT64);

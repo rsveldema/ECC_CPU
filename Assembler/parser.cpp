@@ -326,7 +326,7 @@ void Program::parseCodeLine(const Line& line, const SourcePosition& pos)
 		else if (isRegister(toks[1]) && isRegister(toks[2]))
 		{
 			auto src = getRegisterID(toks[2]);
-			if (src == ecc::RegisterID::BLOCK_INDEX)
+			if (src == ecc::RegisterID::REG_BLOCK_INDEX)
 			{
 				Add(new MoveRegBlockIndex(getRegisterID(toks[1]), getRegisterID(toks[2])));
 			}

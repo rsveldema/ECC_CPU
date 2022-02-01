@@ -271,7 +271,7 @@ namespace ecc
 
 				case Opcode::MOVE_R0_CONST24A:
 				{
-					const auto dest = RegisterID::R0;
+					const auto dest = RegisterID::REG_R0;
 					const auto off1_const = static_cast<int32_t>(pkt.insn >> 8);
 					VectorValue off1 = VectorValue::create_vec_int64(off1_const);
 
@@ -285,10 +285,10 @@ namespace ecc
 
 				case Opcode::MOVE_R0_CONST24B:
 				{
-					const auto dest = RegisterID::R0;
+					const auto dest = RegisterID::REG_R0;
 					const auto off1_const = static_cast<int32_t>(pkt.insn >> 8);
 					VectorValue off1 = VectorValue::create_vec_int64(off1_const);
-					const auto& off2 = regs[RegisterID::R0];
+					const auto& off2 = regs[RegisterID::REG_R0];
 
 					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_ORB_REG_VALUE,
 							dest,
@@ -301,10 +301,10 @@ namespace ecc
 
 				case Opcode::MOVE_R0_CONST24C:
 				{
-					const auto dest = RegisterID::R0;
+					const auto dest = RegisterID::REG_R0;
 					const auto off1_const = static_cast<int32_t>(pkt.insn >> 8);
 					VectorValue off1 = VectorValue::create_vec_int64(off1_const);
-					const auto& off2 = regs[RegisterID::R0];
+					const auto& off2 = regs[RegisterID::REG_R0];
 
 					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_ORC_REG_VALUE,
 							dest,

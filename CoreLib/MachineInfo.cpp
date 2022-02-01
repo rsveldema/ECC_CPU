@@ -80,19 +80,19 @@ namespace ecc
 	};
 
 	std::map<std::string, RegisterID> regnames{
-		{ "%r0", RegisterID::R0 },
-		{ "%r1", RegisterID::R1 },
-		{ "%r2", RegisterID::R2 },
-		{ "%r3", RegisterID::R3 },
-		{ "%r4", RegisterID::R4 },
-		{ "%r5", RegisterID::R5 },
-		{ "%r6", RegisterID::R6 },
-		{ "%r7", RegisterID::R7 },
-		{ "%r8", RegisterID::R8 },
-		{ "%sp", RegisterID::SP },
-		{ "%flags", RegisterID::FLAGS },
-		{ "%pc", RegisterID::PC },
-		{ "%block_index", RegisterID::BLOCK_INDEX },
+		{ "%r0", RegisterID::REG_R0 },
+		{ "%r1", RegisterID::REG_R1 },
+		{ "%r2", RegisterID::REG_R2 },
+		{ "%r3", RegisterID::REG_R3 },
+		{ "%r4", RegisterID::REG_R4 },
+		{ "%r5", RegisterID::REG_R5 },
+		{ "%r6", RegisterID::REG_R6 },
+		{ "%r7", RegisterID::REG_R7 },
+		{ "%r8", RegisterID::REG_R8 },
+		{ "%sp", RegisterID::REG_SP },
+		{ "%flags", RegisterID::REG_FLAGS },
+		{ "%pc", RegisterID::REG_PC },
+		{ "%block_index", RegisterID::REG_BLOCK_INDEX },
 	};
 
 }
