@@ -1,0 +1,133 @@
+
+`define POINTER_SIZE ($bits(memory_address_t) / 8)
+
+`define INSTRUCTION_SIZE ($bits(instruction_t) / 8)
+
+`define CODE_SEGMENT_START 0
+
+`define DATA_SEGMENT_START (1024 * 1024)
+
+`define VECTOR_MEM_SIZE 64
+
+`define NUMBER_OF_VECTOR_THREADS_INT64 (VECTOR_MEM_SIZE / ($bits(uint64_t) / 8))
+
+`define ALL_THREADS_EXEC_MASK_INT64 ((1 << NUMBER_OF_VECTOR_THREADS_INT64) - 1)
+
+`define MACHINE_FLAGS_MASK_HALT (1 << 0)
+
+`define FLAGS_MASK_EQ (1 << 1)
+
+`define FLAGS_MASK_GT (1 << 2)
+
+`define FLAGS_MASK_LT (1 << 3)
+
+typedef uint32_t instruction_t;
+
+typedef uint64_t memory_address_t;
+
+typedef std__array fetched_instruction_data_t;
+
+
+typedef enum {
+	R0
+	,R1
+	,R2
+	,R3
+	,R4
+	,R5
+	,R6
+	,R7
+	,R8
+	,R9
+	,BLOCK_INDEX
+	,SP
+	,FLAGS
+	,PC
+	,MAX_REG_ID
+} RegisterID;
+
+
+typedef enum {
+	Core0
+	,Core1
+	,Core2
+	,Core3
+	,Core4
+	,Core5
+	,Core6
+	,Core7
+} CoreID;
+
+
+typedef enum {
+	FETCH
+	,DECODE
+	,EXECUTE
+	,STORE
+} CoreComponentID;
+
+
+typedef enum {
+	NOP
+	,HALT
+	,MOVE_REG_BLOCK_INDEX
+	,MOVE_REG_REG
+	,MOVE_REG_CPU_ID
+	,MOVE_REG_TIMESTAMP
+	,MOVE_REG_CONST16
+	,MOVE_R0_CONST24A
+	,MOVE_R0_CONST24B
+	,MOVE_R0_CONST24C
+	,LOAD_REG_CONST_REG
+	,STORE_REG_CONST_REG
+	,CMP_REG_REG
+	,ADD_REG_REG_REG
+	,ADD_REG_REG_CONST
+	,RSHIFT_REG_REG_REG
+	,RSHIFT_REG_REG_CONST
+	,L_SSHIFT_REG_REG_REG
+	,L_SSHIFT_REG_REG_CONST
+	,L_USHIFT_REG_REG_REG
+	,L_USHIFT_REG_REG_CONST
+	,MUL_REG_REG_REG
+	,MUL_REG_REG_CONST
+	,DIV_REG_REG_REG
+	,DIV_REG_REG_CONST
+	,JMP_ALWAYS
+	,JMP_EQUAL
+	,JMP_NOT_EQUAL
+	,JMP_LOWER
+	,JMP_LOWER_EQUAL
+	,JMP_GREATER
+	,JMP_GREATER_EQUAL
+	,LOAD_RESTORE_PC
+	,MOVE_PCREL_REG_CONST16
+} Opcode;
+
+
+typedef enum {
+	NOP
+	,MOVE_REG_VALUE
+	,STORE_ADDR_VALUE
+	,JMP
+	,LOAD_RESTORE_PC
+	,LOAD_REG
+	,CMP
+	,COND_JMP
+	,ADD_REG_VALUE_VALUE
+	,SHL_REG_VALUE_VALUE
+	,ORB_REG_VALUE
+	,ORC_REG_VALUE
+	,HALT
+} ExecuteStageOpcode;
+
+
+typedef enum {
+	NOP
+	,STORE_VALUE_INTO_REG
+	,STORE_REG_INTO_MEM
+	,JMP
+	,LOAD_MEM_INTO_REG
+	,CJMP
+	,HALT
+} StorageStageOpcode;
