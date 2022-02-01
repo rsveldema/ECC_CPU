@@ -37,7 +37,7 @@ class CaseStmt(Statement):
     
     def generate(self, ps: PrintStream):
         if self.expr:
-            ps.print(f"{self.expr.str()}:")
+            ps.print(f"{self.expr.const_expr()}:")
         else:
             ps.print("default:")
             

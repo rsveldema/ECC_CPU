@@ -6,7 +6,10 @@ namespace ecc
 
 	using memory_address_t = uint64_t;
 
-	using fetched_instruction_data_t = std::array<instruction_t, 2>;
+	struct fetched_instruction_data_t
+	{
+		instruction_t data[2];
+	};
 
 	static constexpr unsigned POINTER_SIZE = sizeof(memory_address_t);
 	static constexpr auto INSTRUCTION_SIZE = sizeof(instruction_t);
@@ -21,7 +24,7 @@ namespace ecc
 	static constexpr uint64_t ALL_THREADS_EXEC_MASK_INT64 = (1 << NUMBER_OF_VECTOR_THREADS_INT64) - 1;
 
 
-	enum class RegisterID
+	enum class RegisterID : uint8_t
 	{
 		R0,
 		R1,
@@ -46,13 +49,13 @@ namespace ecc
 		MAX_REG_ID
 	};
 
-	static const uint64_t MACHINE_FLAGS_MASK_HALT = (1 << 0);
+	static constexpr uint64_t MACHINE_FLAGS_MASK_HALT = (1 << 0);
 
-	static const uint64_t FLAGS_MASK_EQ = (1 << 1);
-	static const uint64_t FLAGS_MASK_GT = (1 << 2);
-	static const uint64_t FLAGS_MASK_LT = (1 << 3);
+	static constexpr uint64_t FLAGS_MASK_EQ = (1 << 1);
+	static constexpr uint64_t FLAGS_MASK_GT = (1 << 2);
+	static constexpr uint64_t FLAGS_MASK_LT = (1 << 3);
 
-	enum class CoreID
+	enum class CoreID : uint8_t
 	{
 		Core0,
 		Core1,
@@ -61,10 +64,10 @@ namespace ecc
 		Core4,
 		Core5,
 		Core6,
-		Core7,
+		Core7
 	};
 
-	enum class CoreComponentID
+	enum class CoreComponentID : uint8_t
 	{
 		FETCH,
 		DECODE,
@@ -124,10 +127,10 @@ namespace ecc
 		JMP_GREATER_EQUAL,
 
 		LOAD_RESTORE_PC,     // PC = [rX + offset]
-		MOVE_PCREL_REG_CONST16,
+		MOVE_PCREL_REG_CONST16
 	};
 
-	enum class ExecuteStageOpcode
+	enum class ExecuteStageOpcode : uint8_t
 	{
 		NOP,
 		MOVE_REG_VALUE,
@@ -146,7 +149,7 @@ namespace ecc
 		HALT
 	};
 
-	enum class StorageStageOpcode
+	enum class StorageStageOpcode : uint8_t
 	{
 		NOP,
 		STORE_VALUE_INTO_REG,

@@ -30,7 +30,7 @@ namespace ecc
 				ecc::fetched_instruction_data_t ret;
 
 				static_assert(sizeof(ret) == sizeof(pkt.payload));
-				memcpy(ret.data(), &pkt.payload, sizeof(ret));
+				memcpy(ret.data, &pkt.payload, sizeof(ret));
 
 				InsnCacheMemoryBus::Packet insn_cache_pkt{
 					.type = InsnCacheMemoryBus::Type::read_response,

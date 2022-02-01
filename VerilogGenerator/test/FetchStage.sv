@@ -1,4 +1,26 @@
 function changesControlFlow;
+	reg[32:0] state = 0;
+begin
+	case (op)
+		HALT:
+		JMP_ALWAYS:
+		JMP_EQUAL:
+		JMP_NOT_EQUAL:
+		JMP_GREATER:
+		JMP_GREATER_EQUAL:
+		JMP_LOWER:
+		JMP_LOWER_EQUAL:
+		LOAD_RESTORE_PC:
+			begin
+				return 1;
+			end
+		default:
+			begin
+				return 0;
+			end
+	endcase
+	return 0;
+end
 endfunction
 module FetchStage;
 	reg[32:0] state = 0;

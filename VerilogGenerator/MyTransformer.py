@@ -6,6 +6,9 @@ from Continue import Continue
 from IfStmt import IfStmt
 from SwitchStmt import CaseStmt, SwitchStmt
 from ReturnStmt import ReturnStmt
+from EnumDecl import EnumDecl
+from ConstantDecl import ConstantDecl
+from TypeDef import TypeDef
 from WhileStmt import WhileStmt
 from LiteralExpr import LiteralExpr
 from BinaryExpr import BinaryExpr
@@ -124,11 +127,32 @@ class MyTransformer(Transformer):
     def plus(self, tree):
         return "+"
 
+    def subtract(self, tree):
+        return "-"
+
     def bit_and(self, tree):
         return "&"
 
     def bit_or(self, tree):
         return "|"
+
+    def mult(self, tree):
+        return "*"
+    
+    def divide(self, tree):
+        return "/"
+
+    def bit_and(self, tree):
+        return "&"
+
+    def bit_or(self, tree):
+        return "|"
+    
+    def bit_shl(self, tree):
+        return "<<"
+    
+    def bit_shr(self, tree):
+        return ">>"
 
     def expr(self, tree):
         if len(tree) == 1:
@@ -202,12 +226,43 @@ class MyTransformer(Transformer):
         params = tree[2]
         block = tree[3]
         return Method(type, func, params, block)
+    
+    def enum_decl(self, tree):
+        name = tree[1] + ""
+        type = tree[2]
+        vars = []
+        for k in tree[3:]:
+            vars.append(k + "")
+        return EnumDecl(name, type, vars)
+    
+    def static_decl(self, tree):
+        type = tree[1]
+        name = tree[2] + ""
+        expr = tree[3]
+        return ConstantDecl(name, type, expr)
+    
+    def global_decl(self, tree):
+        return tree[0]
+
+    def global_methods(self, tree):
+        return tree[0:]
+
+    def global_decls(self, tree):
+        return tree[0:]
 
     def namespace(self, tree):
-        return Namespace(tree[1:])
+        name = tree[0]
+        global_decls = tree[1]
+        methods = tree[2]
+        return Namespace(name, global_decls, methods)
+    
+    def using_decl(self, tree):
+        name = tree[1] + ""
+        type = tree[2]
+        return TypeDef(name, type)
 
     def stmt(self, tree):
         return tree
 
     def start(self, tree):
-        return tree[1]
+        return tree[0]

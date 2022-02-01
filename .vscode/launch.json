@@ -8,7 +8,7 @@
             "name": "Python: parser",
             "type": "python",
             "request": "launch",
-            "program": "parser.py",
+            "program": "Main.py",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/VerilogGenerator"
         },

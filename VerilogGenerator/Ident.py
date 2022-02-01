@@ -9,6 +9,13 @@ class Ident(Expr):
     def lower_ast(self, state: LowerState):
         return self
     
+    def const_expr(self):
+        s = self.str()
+        ix = s.find("::")
+        if ix > 0:
+            return s[ix+2:]
+        return s
+    
     def str(self) -> str:
         return self.value
 

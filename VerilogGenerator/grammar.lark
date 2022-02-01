@@ -2,7 +2,20 @@ start: include* namespace
 
 include: "#" "include"  (string | "<" IDENT "." IDENT ">")
 
-namespace:  "namespace" IDENT "{" method* "}"
+namespace:  "namespace" IDENT "{" global_decls global_methods "}"
+
+global_decls: global_decl*
+
+global_methods: method*
+
+global_decl: using_decl | static_decl | enum_decl
+
+using_decl: USING IDENT "=" type ";"
+
+static_decl: STATIC "constexpr" type IDENT "=" expr ";"
+
+enum_decl: ENUM "class" IDENT ":" type "{" IDENT ("," IDENT)* "}" ";"
+
 
 
 method: type IDENT "(" params ")" block
@@ -67,13 +80,18 @@ args: (expr ("," expr)*)?
 
 expr: term (binary_op term)?
 
-binary_op: cmp_eq | plus | cmp_neq | bit_and | bit_or
+binary_op: cmp_eq | plus | cmp_neq | bit_and | bit_or | mult | divide | bit_shl | bit_shr | subtract
 
 cmp_eq: "=="
 cmp_neq: "!="
 plus: "+"
+subtract: "-"
+mult: "*"
+divide: "/"
 bit_and: "&"
 bit_or: "|"
+bit_shl: "<<"
+bit_shr: ">>"
 
 term: "(" expr ")"
 | number_expr
@@ -109,8 +127,9 @@ sizeof_term: "sizeof" "(" expr ")"
 qual_ident: IDENT
 
 type: ("const")? ( booltype
-|                   qual_ident_type
+|                   qual_ident_type ("<" IDENT "," expr ">")?
 |                   autotype)
+
 
 qual_ident_type: qual_ident
 
@@ -131,6 +150,10 @@ HEX_NUMBER: "0" "x" ("a".."z"|"A".."Z"|"0".."9")+
 _NEWLINE: "\n"
 
 COMMENT: "//" /[^\n]*/ _NEWLINE
+
+USING: "using"
+STATIC: "static"
+ENUM: "enum"
 
 %import common.ESCAPED_STRING
 %import common.SIGNED_NUMBER

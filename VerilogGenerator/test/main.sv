@@ -10,18 +10,13 @@ typedef shortint signed int16_t;
 
 typedef bit bool;
 
+`include "global_decls.sv"
 
-typedef uint32_t instruction_t;
-typedef uint64_t memory_address_t;
 typedef uint64_t ExecutionMask;
-
-typedef instruction_t fetched_instruction_data_t[2];
 
 typedef int64_t FetchToDecodeBus__Packet;
 typedef int64_t InsnCacheMemoryBus__Packet;
 typedef int64_t StoreToFetchBus__Packet;
-
-typedef byte unsigned Opcode;
 
 `include "FetchStage.sv"
 

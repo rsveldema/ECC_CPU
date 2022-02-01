@@ -44,8 +44,13 @@ class Method:
         sw = SwitchStmt(Ident("state"), cases)
         return sw
     
+    def is_function(self):
+        return self.funcname.find("::") < 0
     
     def toStateSwitch(self):
+        if self.is_function():
+            return self
+        
         self.block = self.create_case_stmt()
         return self
         
@@ -58,13 +63,15 @@ class Method:
         ps.down()
         
     def generate(self, ps:PrintStream):
-        if self.funcname.find("::") > 0:
-            self.generate_module(ps)
-        else:
+        if self.is_function():
             self.generate_function(ps)
+        else:
+            self.generate_module(ps)
 
     def generate_function(self, ps:PrintStream):
         ps.print("function " + self.funcname + ";")
+        self.generate_local_vars(ps)         
+        self.block.generate(ps)
         ps.print("endfunction")
         
         

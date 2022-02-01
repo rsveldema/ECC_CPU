@@ -3,5 +3,5 @@ sizeof instruction_t = 4
 sizeof fetched_instruction_data_t = 8
 sizeof ExecutionMask = 8
 sizeof StoreToFetchBus::Packet = 16
-sizeof InsnCacheMemoryBus::Packet = 40
+sizeof InsnCacheMemoryBus::Packet = 32
 sizeof Opcode = 1
