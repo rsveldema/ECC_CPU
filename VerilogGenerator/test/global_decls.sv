@@ -1,4 +1,10 @@
 
+typedef uint32_t instruction_t;
+
+typedef uint64_t memory_address_t;
+
+typedef instruction_t fetched_instruction_data_t[2];
+
 `define POINTER_SIZE ($bits(memory_address_t) / 8)
 
 `define INSTRUCTION_SIZE ($bits(instruction_t) / 8)
@@ -12,20 +18,6 @@
 `define NUMBER_OF_VECTOR_THREADS_INT64 (VECTOR_MEM_SIZE / ($bits(uint64_t) / 8))
 
 `define ALL_THREADS_EXEC_MASK_INT64 ((1 << NUMBER_OF_VECTOR_THREADS_INT64) - 1)
-
-`define MACHINE_FLAGS_MASK_HALT (1 << 0)
-
-`define FLAGS_MASK_EQ (1 << 1)
-
-`define FLAGS_MASK_GT (1 << 2)
-
-`define FLAGS_MASK_LT (1 << 3)
-
-typedef uint32_t instruction_t;
-
-typedef uint64_t memory_address_t;
-
-typedef std__array fetched_instruction_data_t;
 
 
 typedef enum {
@@ -45,6 +37,14 @@ typedef enum {
 	,PC
 	,MAX_REG_ID
 } RegisterID;
+
+`define MACHINE_FLAGS_MASK_HALT (1 << 0)
+
+`define FLAGS_MASK_EQ (1 << 1)
+
+`define FLAGS_MASK_GT (1 << 2)
+
+`define FLAGS_MASK_LT (1 << 3)
 
 
 typedef enum {
@@ -106,28 +106,28 @@ typedef enum {
 
 
 typedef enum {
-	NOP
-	,MOVE_REG_VALUE
-	,STORE_ADDR_VALUE
-	,JMP
-	,LOAD_RESTORE_PC
-	,LOAD_REG
-	,CMP
-	,COND_JMP
-	,ADD_REG_VALUE_VALUE
-	,SHL_REG_VALUE_VALUE
-	,ORB_REG_VALUE
-	,ORC_REG_VALUE
-	,HALT
+	EXEC_NOP
+	,EXEC_MOVE_REG_VALUE
+	,EXEC_STORE_ADDR_VALUE
+	,EXEC_JMP
+	,EXEC_LOAD_RESTORE_PC
+	,EXEC_LOAD_REG
+	,EXEC_CMP
+	,EXEC_COND_JMP
+	,EXEC_ADD_REG_VALUE_VALUE
+	,EXEC_SHL_REG_VALUE_VALUE
+	,EXEC_ORB_REG_VALUE
+	,EXEC_ORC_REG_VALUE
+	,EXEC_HALT
 } ExecuteStageOpcode;
 
 
 typedef enum {
-	NOP
-	,STORE_VALUE_INTO_REG
-	,STORE_REG_INTO_MEM
-	,JMP
-	,LOAD_MEM_INTO_REG
-	,CJMP
-	,HALT
+	STORAGE_NOP
+	,STORAGE_STORE_VALUE_INTO_REG
+	,STORAGE_STORE_REG_INTO_MEM
+	,STORAGE_JMP
+	,STORAGE_LOAD_MEM_INTO_REG
+	,STORAGE_CJMP
+	,STORAGE_HALT
 } StorageStageOpcode;

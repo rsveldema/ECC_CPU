@@ -6,10 +6,7 @@ namespace ecc
 
 	using memory_address_t = uint64_t;
 
-	struct fetched_instruction_data_t
-	{
-		instruction_t data[2];
-	};
+	using fetched_instruction_data_t = std::array<instruction_t, 2>;
 
 	static constexpr unsigned POINTER_SIZE = sizeof(memory_address_t);
 	static constexpr auto INSTRUCTION_SIZE = sizeof(instruction_t);
@@ -132,32 +129,32 @@ namespace ecc
 
 	enum class ExecuteStageOpcode : uint8_t
 	{
-		NOP,
-		MOVE_REG_VALUE,
-		STORE_ADDR_VALUE,
-		JMP,
-		LOAD_RESTORE_PC,
-		LOAD_REG,
-		CMP,
-		COND_JMP,
-		ADD_REG_VALUE_VALUE,
-		SHL_REG_VALUE_VALUE,
+		EXEC_NOP,
+		EXEC_MOVE_REG_VALUE,
+		EXEC_STORE_ADDR_VALUE,
+		EXEC_JMP,
+		EXEC_LOAD_RESTORE_PC,
+		EXEC_LOAD_REG,
+		EXEC_CMP,
+		EXEC_COND_JMP,
+		EXEC_ADD_REG_VALUE_VALUE,
+		EXEC_SHL_REG_VALUE_VALUE,
 
-		ORB_REG_VALUE,
-		ORC_REG_VALUE,
+		EXEC_ORB_REG_VALUE,
+		EXEC_ORC_REG_VALUE,
 
-		HALT
+		EXEC_HALT
 	};
 
 	enum class StorageStageOpcode : uint8_t
 	{
-		NOP,
-		STORE_VALUE_INTO_REG,
-		STORE_REG_INTO_MEM,
-		JMP,
-		LOAD_MEM_INTO_REG,
-		CJMP,
-		HALT
+		STORAGE_NOP,
+		STORAGE_STORE_VALUE_INTO_REG,
+		STORAGE_STORE_REG_INTO_MEM,
+		STORAGE_JMP,
+		STORAGE_LOAD_MEM_INTO_REG,
+		STORAGE_CJMP,
+		STORAGE_HALT
 	};
 }
 

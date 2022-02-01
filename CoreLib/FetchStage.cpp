@@ -90,13 +90,13 @@ namespace ecc
 			instruction_t insn = 0;
 			if (address_cached == fetch_PC)
 			{
-				insn = fetched_cached.data[0];
+				insn = fetched_cached[0];
 			}
 			else
 			{
 				if ((address_cached + sizeof(instruction_t)) == fetch_PC)
 				{
-					insn = fetched_cached.data[1];
+					insn = fetched_cached[1];
 				}
 				else
 				{

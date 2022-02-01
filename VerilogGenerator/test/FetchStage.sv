@@ -3,13 +3,21 @@ function changesControlFlow;
 begin
 	case (op)
 		HALT:
+		;
 		JMP_ALWAYS:
+		;
 		JMP_EQUAL:
+		;
 		JMP_NOT_EQUAL:
+		;
 		JMP_GREATER:
+		;
 		JMP_GREATER_EQUAL:
+		;
 		JMP_LOWER:
+		;
 		JMP_LOWER_EQUAL:
+		;
 		LOAD_RESTORE_PC:
 			begin
 				return 1;

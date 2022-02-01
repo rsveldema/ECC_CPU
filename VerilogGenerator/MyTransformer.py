@@ -9,6 +9,9 @@ from ReturnStmt import ReturnStmt
 from EnumDecl import EnumDecl
 from ConstantDecl import ConstantDecl
 from TypeDef import TypeDef
+from MemberDecl import MemberDecl
+from StructDecl import StructDecl
+from ArrayType import ArrayType
 from WhileStmt import WhileStmt
 from LiteralExpr import LiteralExpr
 from BinaryExpr import BinaryExpr
@@ -35,6 +38,15 @@ class MyTransformer(Transformer):
             ret.append(x)
         #args: (expr ("," expr)*)?
         return ret
+    
+    def type(self, tree):
+        return tree[0]
+
+    def user_defined_type(self, tree):
+        if len(tree) == 1:
+            return Type(tree[0])
+        else:
+            return ArrayType(tree[1]+"", tree[2])
 
     def booltype(self, tree):
         return Type("bool")
@@ -255,11 +267,21 @@ class MyTransformer(Transformer):
         global_decls = tree[1]
         methods = tree[2]
         return Namespace(name, global_decls, methods)
-    
+        
     def using_decl(self, tree):
         name = tree[1] + ""
         type = tree[2]
         return TypeDef(name, type)
+
+    def struct_decl(self, tree):
+        name = tree[0]
+        members = tree[1:]
+        return StructDecl(name, members)
+
+    def member_decl(self, tree):
+        type = tree[0]
+        name = tree[1]
+        return MemberDecl(type, name)
 
     def stmt(self, tree):
         return tree

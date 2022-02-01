@@ -45,6 +45,8 @@ class CaseStmt(Statement):
             ps.up()
             self.blk.generate(ps)
             ps.down()
+        else:
+            ps.print(";")
 
     def getLocalDecls(self) -> List:
         if self.blk == None:

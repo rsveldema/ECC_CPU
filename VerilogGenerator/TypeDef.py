@@ -1,3 +1,4 @@
+from ArrayType import ArrayType
 from GlobalDecl import GlobalDecl
 from LowerState import LowerState
 from PrintStream import PrintStream
@@ -12,5 +13,9 @@ class TypeDef(GlobalDecl):
     
     def generate_decl(self, ps:PrintStream):
         ps.print("")
-        ps.print("typedef " + self.type.str() + " " + self.name + ";")
+        
+        if isinstance(self.type, ArrayType):
+            ps.print("typedef " + self.type.name + " " + self.name + f"[{self.type.num_elts.str()}];")
+        else:
+            ps.print("typedef " + self.type.str() + " " + self.name + ";")
         

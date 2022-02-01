@@ -79,14 +79,13 @@ namespace ecc
 	{
 		switch (op)
 		{
-		case ecc::StorageStageOpcode::NOP: return "nop";
-		case ecc::StorageStageOpcode::STORE_VALUE_INTO_REG: return "value_to_reg";
-		case ecc::StorageStageOpcode::STORE_REG_INTO_MEM: return "store_mem";
-		case ecc::StorageStageOpcode::CJMP: return "cjmp";
-		case ecc::StorageStageOpcode::HALT: return "halt";
-		case ecc::StorageStageOpcode::JMP: return "jmp";
-		case ecc::StorageStageOpcode::LOAD_MEM_INTO_REG: return "load_reg";
-
+		case StorageStageOpcode::STORAGE_NOP: return "nop";
+		case StorageStageOpcode::STORAGE_STORE_VALUE_INTO_REG: return "value_to_reg";
+		case StorageStageOpcode::STORAGE_STORE_REG_INTO_MEM: return "store_mem";
+		case StorageStageOpcode::STORAGE_CJMP: return "cjmp";
+		case StorageStageOpcode::STORAGE_HALT: return "halt";
+		case StorageStageOpcode::STORAGE_JMP: return "jmp";
+		case StorageStageOpcode::STORAGE_LOAD_MEM_INTO_REG: return "load_reg";
 		}
 		return "unknown store type";
 	}

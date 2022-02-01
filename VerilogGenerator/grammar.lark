@@ -8,7 +8,11 @@ global_decls: global_decl*
 
 global_methods: method*
 
-global_decl: using_decl | static_decl | enum_decl
+global_decl: using_decl | static_decl | enum_decl | struct_decl
+
+struct_decl: "struct" IDENT "{" member_decl* "}" ";"
+
+member_decl: type IDENT ";"
 
 using_decl: USING IDENT "=" type ";"
 
@@ -127,9 +131,10 @@ sizeof_term: "sizeof" "(" expr ")"
 qual_ident: IDENT
 
 type: ("const")? ( booltype
-|                   qual_ident_type ("<" IDENT "," expr ">")?
-|                   autotype)
+|                  user_defined_type
+|                  autotype)
 
+user_defined_type: qual_ident_type ("<" IDENT "," expr ">")?
 
 qual_ident_type: qual_ident
 
