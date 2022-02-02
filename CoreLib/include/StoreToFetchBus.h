@@ -7,39 +7,31 @@
 
 namespace ecc
 {
+	struct StoreToFetchPacket
+	{
+		ExecutionMask exec_mask;
+		memory_address_t newpc;
+	};
+
 	class StoreToFetchBus
 	{
 	public:
-		struct Packet
+		void send(const StoreToFetchPacket& pkt)
 		{
-			ExecutionMask exec_mask;
-			ecc::memory_address_t newpc;
-		};
-
-		void send(const Packet& pkt)
-		{
-			assert(!is_busy());
-			queue.push(pkt);
+			assert(!can_receive);
+			data = pkt;
+			can_receive = true;
 		}
 
-		bool can_recv() const
+		StoreToFetchPacket recv()
 		{
-			return !queue.empty();
-		}
-
-		Packet recv()
-		{
-			assert(!queue.empty());
-			Packet v = queue.front();
-			queue.pop();
+			assert(can_receive);
+			StoreToFetchPacket v = data;
+			can_receive = false;
 			return v;
 		}
 
-		bool is_busy() const
-		{
-			return queue.size() > 0;
-		}
-
-		std::queue<Packet> queue;
+		bool can_receive = false;
+		StoreToFetchPacket data;
 	};
 }

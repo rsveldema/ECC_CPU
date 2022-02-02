@@ -26,9 +26,9 @@ namespace ecc
 	{
 		while (1)
 		{
-			if (auto pkt_opt = this->fetch_bus.try_recv())
+			if (fetch_bus.can_receive)
 			{
-				const auto& pkt = *pkt_opt;
+				const FetchToDecodeBusPacket pkt = fetch_bus.recv();
 
 				auto PC = pkt.PC;
 				auto opcode = (Opcode)(pkt.insn & 0xff);

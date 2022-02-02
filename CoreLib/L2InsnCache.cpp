@@ -33,7 +33,7 @@ namespace ecc
 				memcpy(ret.data(), &pkt.payload, sizeof(ret));
 
 				InsnCacheMemoryBus::Packet insn_cache_pkt{
-					.type = InsnCacheMemoryBus::Type::read_response,
+					.type = InsnCachePacketType::read_response,
 					.source = pkt.source,
 					.address = pkt.address,
 					.payload = ret

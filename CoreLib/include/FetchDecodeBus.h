@@ -1,44 +1,49 @@
 #pragma once
 
 #include <optional>
+#include <queue>
+#include <cassert>
+#include <cstdint>
+
+#include "Defines.h"
 
 #include "ExecutionMask.h"
 
 namespace ecc
 {
 
+	struct FetchToDecodeBusPacket
+	{
+		ExecutionMask exec_mask;
+		ecc::memory_address_t PC;
+		uint32_t insn;
+	};
+	
 	class FetchToDecodeBus
 	{
 	public:
-		struct Packet
-		{
-			ExecutionMask exec_mask;
-			ecc::memory_address_t PC;
-			uint32_t insn;
-		};
 
-		void send(const Packet& pkt)
+		void send(const FetchToDecodeBusPacket& pkt)
 		{
 			assert(!is_busy());
-			queue.push(pkt);
+			data = pkt;
+			can_receive = true;
 		}
 
-		std::optional<Packet> try_recv()
+		FetchToDecodeBusPacket recv()
 		{
-			if (queue.empty())
-			{
-				return std::nullopt;
-			}
-			Packet v = queue.front();
-			queue.pop();
+			assert(can_receive);
+			FetchToDecodeBusPacket v = data;
+			can_receive = false;			
 			return v;
 		}
 
 		bool is_busy() const
 		{
-			return queue.size() > 0;
+			return can_receive;
 		}
 
-		std::queue<Packet> queue;
+		bool can_receive = false;
+		FetchToDecodeBusPacket data;
 	};
 }

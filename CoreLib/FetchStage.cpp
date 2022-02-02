@@ -25,7 +25,9 @@ namespace ecc
 	}
 
 
-	ReturnObject FetchStage::run()
+	ReturnObject FetchStage::run(FetchToDecodeBus& decode_bus,
+								 StoreToFetchBus& store_bus,
+								 InsnCacheMemoryBus& memory_bus)
 	{
 		bool have_outstanding_jmp = false;
 		memory_address_t fetch_PC = 0;
@@ -42,9 +44,9 @@ namespace ecc
 
 				while (1)
 				{
-					if (store_bus.can_recv())
+					if (store_bus.can_receive)
 					{
-						StoreToFetchBus::Packet jmp_retarget = store_bus.recv();
+						StoreToFetchPacket jmp_retarget = store_bus.recv();
 						fetch_PC = jmp_retarget.newpc;
 						exec_mask = jmp_retarget.exec_mask;
 						break;
@@ -74,7 +76,7 @@ namespace ecc
 						if (memory_bus.have_response())
 						{
 							InsnCacheMemoryBus::Packet response = memory_bus.get_response();
-							assert(response.type == InsnCacheMemoryBus::Type::read_response);
+							assert(response.type == InsnCachePacketType::read_response);
 
 							address_cached = address_fetched;
 							fetched_cached = response.getInsnData();
@@ -120,7 +122,7 @@ namespace ecc
 
 			const memory_address_t PC = fetch_PC;
 			fetch_PC += sizeof(instruction_t);
-			FetchToDecodeBus::Packet pkt{exec_mask, PC, insn};
+			FetchToDecodeBusPacket pkt{exec_mask, PC, insn};
 			decode_bus.send(pkt);
 
 			CONTEXT_SWITCH();

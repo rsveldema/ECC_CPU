@@ -28,7 +28,7 @@ namespace ecc
 
 	private:
 
-		ecc::ReturnObject handle_conditional_jump(uint32_t jmp_mask_const, const FetchToDecodeBus::Packet& pkt);
+		ecc::ReturnObject handle_conditional_jump(uint32_t jmp_mask_const, const FetchToDecodeBusPacket& pkt);
 	};
 
 }

@@ -71,7 +71,7 @@ namespace ecc
 							if (is_store_to_pc)
 							{
 								auto new_pc = value.get_PC();
-								fetch_bus.send(StoreToFetchBus::Packet{ pkt.exec_mask, new_pc });
+								fetch_bus.send(StoreToFetchPacket{ pkt.exec_mask, new_pc });
 							}
 							break;
 						}
@@ -89,7 +89,7 @@ namespace ecc
 				{
 					auto new_address = std::get<memory_address_t>(pkt.dest);
 
-					fetch_bus.send(StoreToFetchBus::Packet{ pkt.exec_mask, new_address });
+					fetch_bus.send(StoreToFetchPacket{ pkt.exec_mask, new_address });
 					break;
 				}
 
@@ -112,7 +112,7 @@ namespace ecc
 					};
 					divergence_queue.push_front(ctxt);
 
-					fetch_bus.send(StoreToFetchBus::Packet{ exec_mask_next_address, next_address });
+					fetch_bus.send(StoreToFetchPacket{ exec_mask_next_address, next_address });
 					break;
 				}
 
@@ -129,7 +129,7 @@ namespace ecc
 
 						this->regs = new_thread_ctxt.regs;
 
-						fetch_bus.send(StoreToFetchBus::Packet{ new_thread_ctxt.exec_mask, new_thread_ctxt.PC });
+						fetch_bus.send(StoreToFetchPacket{ new_thread_ctxt.exec_mask, new_thread_ctxt.PC });
 					}
 					break;
 				}

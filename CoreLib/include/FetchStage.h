@@ -5,16 +5,18 @@
 #include "FetchDecodeBus.h"
 #include "Stats.h"
 #include "InsnCacheMemoryBus.h"
+#include "StoreToFetchBus.h"
+#include "Logger.h"
 
 namespace ecc
 {
 	class FetchStage : public SimComponent
 	{
 	private:
-		FetchToDecodeBus& decode_bus;
-		InsnCacheMemoryBus& memory_bus;
+		FetchToDecodeBus& _decode_bus;
+		InsnCacheMemoryBus& _memory_bus;
 		ecc::BusID memory_bus_id;
-		StoreToFetchBus& store_bus;
+		StoreToFetchBus& _store_bus;
 		GlobalStats& stats;
 		Logger& logger;
 
@@ -22,14 +24,22 @@ namespace ecc
 		FetchStage(SimComponentRegistry& registry, FetchToDecodeBus& _decode_bus, InsnCacheMemoryBus& _memory_bus, ecc::BusID id,
 			StoreToFetchBus& _store_bus, GlobalStats& _stats,
 			Logger& _logger)
-			: SimComponent(registry, "fetch"), decode_bus(_decode_bus),
-			memory_bus(_memory_bus), memory_bus_id(id),
-			store_bus(_store_bus),
+			: SimComponent(registry, "fetch"), 
+			_decode_bus(_decode_bus),
+			_memory_bus(_memory_bus), memory_bus_id(id),
+			_store_bus(_store_bus),
 			stats(_stats),
 			logger(_logger)
 		{}
 
-		ecc::ReturnObject run() override;
+		ecc::ReturnObject run() override 
+		{
+			return run(_decode_bus, _store_bus, _memory_bus);
+		}
+
+		ReturnObject run(FetchToDecodeBus& decode_bus,
+								 StoreToFetchBus& store_bus,
+								 InsnCacheMemoryBus& memory_bus);
 	};
 
 }
