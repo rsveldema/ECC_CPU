@@ -24,7 +24,11 @@ class LocalDecl:
         print(f"{self.str()}")
         
     def str(self):
-        return f"local {self.type.str()} {self.var} {self.init_expr.str()}"
+        if self.init_expr:
+            return f"local {self.type.str()} {self.var} {self.init_expr.str()}"
+        else:
+            return f"{self.type.str()} {self.var}"
+            
 
     def getLocalDecls(self) -> List:
         return [self]

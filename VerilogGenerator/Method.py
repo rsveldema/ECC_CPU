@@ -69,7 +69,14 @@ class Method:
             self.generate_module(ps)
 
     def generate_function(self, ps:PrintStream):
-        ps.print("function " + self.funcname + ";")
+        params = ""
+        comma = ""
+        for k in self.params:
+            params += comma
+            params += k.str()
+            comma = ", "
+            
+        ps.print(f"function {self.funcname}({params});")
         self.generate_local_vars(ps)         
         self.block.generate(ps)
         ps.print("endfunction")

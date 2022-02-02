@@ -239,6 +239,12 @@ class MyTransformer(Transformer):
         block = tree[3]
         return Method(type, func, params, block)
     
+    def params(self, tree):
+        return tree[0:]
+    
+    def param(self, tree):
+        return LocalDecl(tree[0], tree[1] + "", None)
+    
     def enum_decl(self, tree):
         name = tree[1] + ""
         type = tree[2]

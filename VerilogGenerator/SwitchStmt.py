@@ -37,16 +37,22 @@ class CaseStmt(Statement):
     
     def generate(self, ps: PrintStream):
         if self.expr:
-            ps.print(f"{self.expr.const_expr()}:")
+            if self.blk != None:
+                ps.print(f"{self.expr.const_expr()}:")
+                ps.up()
+                self.blk.generate(ps)
+                ps.down()
+            else:
+                ps.print(f"{self.expr.const_expr()},")
         else:
             ps.print("default:")
+            if self.blk != None:
+                ps.up()
+                self.blk.generate(ps)
+                ps.down()
+            else:
+                ps.print_same_line(",")
             
-        if self.blk != None:
-            ps.up()
-            self.blk.generate(ps)
-            ps.down()
-        else:
-            ps.print(";")
 
     def getLocalDecls(self) -> List:
         if self.blk == None:
