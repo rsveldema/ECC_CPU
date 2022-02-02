@@ -50,7 +50,7 @@ class WhileStmt(Statement):
         self.code.pretty()
 
     def generate(self, ps: PrintStream):
-        ps.print(f"while ({self.expr.str()})")
+        ps.println(f"while ({self.expr.str()})")
         self.code.generate(ps)
         
     def getLocalDecls(self) -> List:

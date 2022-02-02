@@ -18,7 +18,7 @@ class CallExpr(Expression):
         return CallExpr(self.func, new_args)
     
     def generate(self, ps: PrintStream):               
-        ps.print(f"{self.str()}")
+        ps.println(f"{self.str()}")
         
     def pretty(self):
         print(f"{self.str()};")

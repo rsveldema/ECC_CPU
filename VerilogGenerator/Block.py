@@ -44,9 +44,9 @@ class Block(Statement):
         return self.insns[len(self.insns) - 1]
         
     def generate(self, ps: PrintStream):
-        ps.print("begin")
+        ps.println("begin")
         ps.up()
         for insn in self.insns:
             insn.generate(ps)
         ps.down()
-        ps.print("end")
+        ps.println("end")

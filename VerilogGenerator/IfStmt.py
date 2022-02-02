@@ -20,10 +20,10 @@ class IfStmt(Statement):
         return ret
     
     def generate(self, ps: PrintStream):
-        ps.print(f"if ({self.expr.str()})")
+        ps.println(f"if ({self.expr.str()})")
         self.if_code.generate(ps)
         if self.else_code:
-            ps.print("else")
+            ps.println("else")
             self.else_code.generate(ps)
 
         

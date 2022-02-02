@@ -13,6 +13,6 @@ class MemberDecl(GlobalDecl):
         pass
     
     def generate_decl(self, ps: PrintStream):
-        ps.print(self.type.str() + " " + self.name + ";")
+        ps.println(self.type.str() + " " + self.name + ";")
         
         

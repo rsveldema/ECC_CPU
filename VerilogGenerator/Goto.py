@@ -7,8 +7,8 @@ class Goto:
         
     
     def generate(self, ps: PrintStream):
-        ps.print(f"state = {self.label.str()}; // GOTO")
-        ps.print(f"return;")
+        ps.println(f"state = {self.label.str()}; // GOTO")
+        ps.println(f"return;")
         
 
     def getLocalDecls(self) -> List:

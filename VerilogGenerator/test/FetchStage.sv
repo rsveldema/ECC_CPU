@@ -22,6 +22,8 @@ begin
 	return 0;
 end
 endfunction
+
+
 module FetchStage;
 	reg[32:0] state = 0;
 	bool have_outstanding_jmp = 0;

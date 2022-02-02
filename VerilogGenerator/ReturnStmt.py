@@ -17,7 +17,7 @@ class ReturnStmt(Statement):
         return ReturnStmt(self.expr.lower_ast(state))
             
     def generate(self, ps: PrintStream):
-        ps.print(f"return {self.expr.str()};")
+        ps.println(f"return {self.expr.str()};")
 
     def getLocalDecls(self) -> List:
         return []

@@ -19,7 +19,7 @@ class Label(Statement):
         return f"{self.label}"
         
     def generate(self, ps: PrintStream):
-        ps.print(f"{self.label}: ;")
+        ps.println(f"{self.label}: ;")
 
     def getLocalDecls(self) -> List:
         return []

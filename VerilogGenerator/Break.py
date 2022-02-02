@@ -15,7 +15,7 @@ class Break:
         print("break")
         
     def generate(self, ps: PrintStream):
-        ps.print("break;")
+        ps.println("break;")
 
 
     def getLocalDecls(self) -> List:

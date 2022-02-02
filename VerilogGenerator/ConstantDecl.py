@@ -17,7 +17,7 @@ class ConstantDecl(GlobalDecl):
         return self
         
     def generate_decl(self, ps:PrintStream):
-        ps.print("")
-        ps.print("`define " + self.name + " " + self.expr.str())
+        ps.println("")
+        ps.println("`define " + self.name + " " + self.expr.str())
         
         

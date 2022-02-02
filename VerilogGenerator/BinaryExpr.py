@@ -10,7 +10,7 @@ class BinaryExpr:
         self.right = right
 
     def generate(self, ps: PrintStream):
-        ps.print(f"{self.str()};")
+        ps.println(f"{self.str()};")
         
     def lower_ast(self, state: LowerState):
         return BinaryExpr(self.op, self.left.lower_ast(state), self.right.lower_ast(state))

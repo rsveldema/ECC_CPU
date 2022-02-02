@@ -14,7 +14,7 @@ class StructDecl(GlobalDecl):
         pass
     
     def generate_decl(self, ps: PrintStream):
-        ps.print("typedef struct {")
+        ps.println("typedef struct {")
         for m in self.members:
             m.generate_decl(ps)
-        ps.print("} " + self.name)
+        ps.println("} " + self.name)

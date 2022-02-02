@@ -4,7 +4,7 @@ class PrintStream:
         self.fp = fp
         self.indent = 0
 
-    def print(self, str) -> None:
+    def println(self, str) -> None:
         self.print_no_newline(str)
         self.fp.write("\n")
     

@@ -18,7 +18,7 @@ class ObjectDecl(Statement):
         return ObjectDecl(self.type.lower_ast(state), self.var, new_args)
     
     def generate(self, ps: PrintStream):
-        ps.print("// " + self.str())
+        ps.println("// " + self.str())
         
     def pretty(self):
         print(f"{self.str()}")

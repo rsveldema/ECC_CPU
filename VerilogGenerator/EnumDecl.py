@@ -15,11 +15,11 @@ class EnumDecl(GlobalDecl):
         return self
         
     def generate_decl(self, ps:PrintStream):
-        ps.print("")
-        ps.print("")
-        ps.print("typedef enum {")
+        ps.println("")
+        ps.println("")
+        ps.println("typedef enum {")
         comma = ""
         for v in self.vars:
-            ps.print("\t" + comma + v)
+            ps.println("\t" + comma + v)
             comma = ","
-        ps.print("} " + self.name + ";")
+        ps.println("} " + self.name + ";")

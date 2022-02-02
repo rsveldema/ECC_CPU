@@ -56,10 +56,10 @@ class Method:
         
     def generate_local_vars(self, ps: PrintStream):
         ps.up()
-        ps.print("reg[32:0] state = 0;")
+        ps.println("reg[32:0] state = 0;")
         for k in self.block.getLocalDecls():
             #num_bits = k.get_num_bits()
-            ps.print(f"{k.type.str()} {k.var} = 0;")
+            ps.println(f"{k.type.str()} {k.var} = 0;")
         ps.down()
         
     def generate(self, ps:PrintStream):
@@ -76,17 +76,19 @@ class Method:
             params += k.str()
             comma = ", "
             
-        ps.print(f"function {self.funcname}({params});")
+        ps.println(f"function {self.funcname}({params});")
         self.generate_local_vars(ps)         
         self.block.generate(ps)
-        ps.print("endfunction")
+        ps.println("endfunction")
         
         
     def generate_module(self, ps:PrintStream):
         module_name = self.funcname.split("::")[0]
         task_name = self.funcname.split("::")[1]
-                
-        ps.print("module " + module_name + ";")
+            
+        ps.println("")
+        ps.println("")
+        ps.println("module " + module_name + ";")
         
         self.generate_local_vars(ps)
         
@@ -95,17 +97,17 @@ class Method:
         #ps.print("begin")
         #ps.up()
         
-        ps.print("")
-        ps.print("")
-        ps.print("")
+        ps.println("")
+        ps.println("")
+        ps.println("")
         ps.up()
-        ps.print(f"task {task_name};")            
+        ps.println(f"task {task_name};")            
         self.block.generate(ps)
-        ps.print("endtask")
+        ps.println("endtask")
         ps.down()
         
         #ps.print("$finish;")
         #ps.down()
         #ps.print("end")
         ps.down()
-        ps.print("endmodule")
+        ps.println("endmodule")

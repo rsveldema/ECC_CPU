@@ -12,7 +12,7 @@ class LocalDecl:
         self.init_expr = init_expr
 
     def generate(self, ps: PrintStream):
-        ps.print(f"{self.var} = {self.init_expr.str()};")
+        ps.println(f"{self.var} = {self.init_expr.str()};")
         
     def lower_ast(self, state: LowerState):
         assert isinstance(self.var, str)

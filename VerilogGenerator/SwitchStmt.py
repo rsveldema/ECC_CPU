@@ -38,14 +38,14 @@ class CaseStmt(Statement):
     def generate(self, ps: PrintStream):
         if self.expr:
             if self.blk != None:
-                ps.print(f"{self.expr.const_expr()}:")
+                ps.println(f"{self.expr.const_expr()}:")
                 ps.up()
                 self.blk.generate(ps)
                 ps.down()
             else:
-                ps.print(f"{self.expr.const_expr()},")
+                ps.println(f"{self.expr.const_expr()},")
         else:
-            ps.print("default:")
+            ps.println("default:")
             if self.blk != None:
                 ps.up()
                 self.blk.generate(ps)
@@ -80,12 +80,12 @@ class SwitchStmt(Statement):
     
 
     def generate(self, ps: PrintStream):
-        ps.print(f"case ({self.expr.str()})")
+        ps.println(f"case ({self.expr.str()})")
         ps.up()
         for p in self.cases:
             p.generate(ps)
         ps.down()
-        ps.print("endcase")
+        ps.println("endcase")
 
     def pretty(self):
         print(f"switch ({self.expr.str()})") 

@@ -16,7 +16,7 @@ class Continue:
         print("continue")
         
     def generate(self, ps: PrintStream):
-        ps.print("continue;")
+        ps.println("continue;")
 
 
     def getLocalDecls(self) -> List:
