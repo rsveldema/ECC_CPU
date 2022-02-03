@@ -1,6 +1,7 @@
 #pragma once
 
 #include <optional>
+#include <cassert>
 
 #include "MachineInfo.h"
 #include "ExecutionMask.h"

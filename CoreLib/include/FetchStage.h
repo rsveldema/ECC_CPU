@@ -1,10 +1,9 @@
 #pragma once
 
 #include "SimComponent.h"
-#include "InsnCacheMemoryBus.h"
+#include "MemoryBus.h"
 #include "FetchDecodeBus.h"
 #include "Stats.h"
-#include "InsnCacheMemoryBus.h"
 #include "StoreToFetchBus.h"
 #include "Logger.h"
 
@@ -14,14 +13,15 @@ namespace ecc
 	{
 	private:
 		FetchToDecodeBus &_decode_bus;
-		InsnCacheMemoryBus &_memory_bus;
+		MemoryBus &_memory_bus;
 		BusID memory_bus_id;
 		StoreToFetchBus &_store_bus;
 		GlobalStats &stats;
 		Logger &logger;
 
 	public:
-		FetchStage(SimComponentRegistry &registry, FetchToDecodeBus &_decode_bus, InsnCacheMemoryBus &_memory_bus, ecc::BusID id,
+		FetchStage(SimComponentRegistry &registry, FetchToDecodeBus &_decode_bus, 
+				   MemoryBus &_memory_bus, ecc::BusID id,
 				   StoreToFetchBus &_store_bus, GlobalStats &_stats,
 				   Logger &_logger)
 			: SimComponent(registry, "fetch"),
@@ -40,7 +40,7 @@ namespace ecc
 
 		ReturnObject run(FetchToDecodeBus &decode_bus,
 						 StoreToFetchBus &store_bus,
-						 InsnCacheMemoryBus &memory_bus);
+						 MemoryBus &memory_bus);
 	};
 
 }

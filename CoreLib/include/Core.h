@@ -32,15 +32,15 @@ namespace ecc
 
 		// data cache
 		L1DataCache L1d;
-		RawMemoryBus core_L1d;
+		MemoryBus core_L1d;
 
 		// instruction cache
 		L1InsnCache L1i;
-		InsnCacheMemoryBus core_L1i;
+		MemoryBus core_L1i;
 
 
-		InsnCacheMemoryBus L1i_to_L2i;
-		RawMemoryBus L1d_to_l2d;
+		MemoryBus L1i_to_L2i;
+		MemoryBus L1d_to_l2d;
 
 		//RawMemoryBus idle_core_memory_bus;
 
@@ -63,11 +63,11 @@ namespace ecc
 		{
 		}
 
-		RawMemoryBus& getExternalDataBus() {
+		MemoryBus& getExternalDataBus() {
 			return L1d_to_l2d;
 		}
 
-		InsnCacheMemoryBus& getExternalInsnBus() {
+		MemoryBus& getExternalInsnBus() {
 			return L1i_to_L2i;
 		}
 

@@ -5,6 +5,7 @@
 #include <optional>
 #include <array>
 #include <variant>
+#include <cassert>
 
 #include "MachineInfo.h"
 #include "VectorValue.h"
@@ -12,12 +13,7 @@
 
 namespace ecc
 {
-	/** simple memory bus that allows sending requests and receiving replies.
-	*/
-	class VecMemoryBus
-	{
-	public:
-		enum class Type
+		enum class VecBusPacketType
 		{
 			read_vec64,
 			write_vec64,
@@ -25,79 +21,69 @@ namespace ecc
 			write_response
 		};
 
-		using payload_t = VectorValue;
+		using vec_bus_payload_t = VectorValue;
 
-		struct Packet
+		struct VecBusPacket
 		{
-			Type type;
-			ecc::BusID source;
+			VecBusPacketType type;
+			BusID source;
 			vec_vector_obj_t<int64_t> address;
-			payload_t payload;
+			vec_bus_payload_t payload;
 		};
 
+	/** simple memory bus that allows sending requests and receiving replies.
+	*/
+	class VecMemoryBus
+	{
+	public:
 
-		std::queue<Packet> request_queue;
-		std::queue<Packet> response_queue;
+		std::queue<VecBusPacket> request_queue;
+		std::queue<VecBusPacket> response_queue;
 
-		void send_read_request_vec(const vec_vector_obj_t<int64_t>& address, const ecc::BusID& source)
+		void send_read_request_vec(const vec_vector_obj_t<int64_t>& address, const BusID& source)
 		{
-			Packet pkt{ Type::read_vec64, source, address };
+			VecBusPacket pkt{ VecBusPacketType::read_vec64, source, address };
 			send_request(pkt);
 		}
 
 		void send_write_request_vec(const vec_vector_obj_t<int64_t>& address,
-			const ecc::BusID& source,
+			const BusID& source,
 			const VectorValue& value)
 		{
-			Packet pkt{ Type::write_vec64, source, address, value };
+			VecBusPacket pkt{ VecBusPacketType::write_vec64, 
+						source, address, value };
 			send_request(pkt);
 		}
 
-		/*
-
-		void send_read_request_insn(MachineInfo::memory_address_t address, const MachineInfo::BusID& source)
-		{
-			Packet pkt{ Type::read_insn, source, address };
-			send_request(pkt);
-		}
-
-		void send_read_response(const payload_t& value, const MachineInfo::BusID& source)
-		{
-			MachineInfo::memory_address_t addr = 0;
-			Packet pkt{ Type::read_response, source, addr, value };
-			send_response(pkt);
-		}
-		*/
-
-		std::optional<Packet> try_accept_request()
+		std::optional<VecBusPacket> try_accept_request()
 		{
 			if (!request_queue.empty())
 			{
-				const Packet f = request_queue.front();
+				const VecBusPacket f = request_queue.front();
 				request_queue.pop();
 				return f;
 			}
 			return std::nullopt;
 		}
 
-		std::optional<Packet> try_accept_response()
+		std::optional<VecBusPacket> try_accept_response()
 		{
 			if (!response_queue.empty())
 			{
-				const Packet f = response_queue.front();
+				const VecBusPacket f = response_queue.front();
 				response_queue.pop();
 				return f;
 			}
 			return std::nullopt;
 		}
 
-		void send_request(const Packet& pkt)
+		void send_request(const VecBusPacket& pkt)
 		{
 			assert(!is_busy());
 			request_queue.push(pkt);
 		}
 
-		void send_response(const Packet& pkt)
+		void send_response(const VecBusPacket& pkt)
 		{
 			response_queue.push(pkt);
 		}

@@ -27,7 +27,7 @@ namespace ecc
 
 	ReturnObject FetchStage::run(FetchToDecodeBus& decode_bus,
 								 StoreToFetchBus& store_bus,
-								 InsnCacheMemoryBus& memory_bus)
+								 MemoryBus& memory_bus)
 	{
 		bool have_outstanding_jmp = false;
 		memory_address_t fetch_PC = 0;
@@ -69,14 +69,14 @@ namespace ecc
 				{
 					const memory_address_t address_fetched = fetch_PC & ~7;
 
-					memory_bus.send_read_request_insn(address_fetched, memory_bus_id);
+					memory_bus.send_read_request_data(address_fetched, memory_bus_id);
 
 					while (1)
 					{
 						if (memory_bus.response_busy)
 						{
-							InsnCacheMemoryBusPacket response = memory_bus.get_response();
-							assert(response.type == InsnCachePacketType::read_response);
+							BusPacket response = memory_bus.get_response();
+							assert(response.type == BusPacketType::read_response);
 
 							address_cached = address_fetched;
 							fetched_cached = response.getInsnData();

@@ -14,8 +14,8 @@ namespace ecc
 				auto pkt = toCPU.accept_request();
 				// translates from an InsnCachePacket to to an RawDataPacket
 				ecc::memory_address_t addr = pkt.address;
-				RawMemoryBus::Packet rawPkt{
-					.type = RawMemoryBus::Type::read_data,
+				MemoryBus::Packet rawPkt{
+					.type = MemoryBus::Type::read_data,
 					.source = pkt.source,
 					.address = addr,
 					.payload = pkt.address
@@ -28,16 +28,11 @@ namespace ecc
 			{
 				auto pkt = toMemory.get_response();
 			
-				ecc::fetched_instruction_data_t ret;
-
-				static_assert(sizeof(ret) == sizeof(pkt.payload));
-				memcpy(ret.data(), &pkt.payload, sizeof(ret));
-
-				InsnCacheMemoryBus::Packet insn_cache_pkt{
-					.type = InsnCachePacketType::read_response,
+				MemoryBus::Packet insn_cache_pkt{
+					.type = BusPacketType::read_response,
 					.source = pkt.source,
 					.address = pkt.address,
-					.payload = ret
+					.payload = pkt.payload
 				};
 
 				toCPU.send_response(insn_cache_pkt);

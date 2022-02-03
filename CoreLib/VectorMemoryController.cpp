@@ -32,10 +32,10 @@ namespace ecc
 					switch (pkt->type)
 					{
 					default: abort();
-					case VecMemoryBus::Type::read_vec64:
+					case VecBusPacketType::read_vec64:
 					{
-						VecMemoryBus::Packet reply{
-							.type = VecMemoryBus::Type::read_response
+						VecBusPacket reply{
+							.type = VecBusPacketType::read_response
 						};
 						reply.payload = VectorValue(vec_vector_obj_t<int64_t>());
 
@@ -67,7 +67,7 @@ namespace ecc
 						break;
 					}
 
-					case VecMemoryBus::Type::write_vec64:
+					case VecBusPacketType::write_vec64:
 					{
 						assert(pkt->payload.getType() == VectorValue::Type::INT64);
 						const auto& arrayData = pkt->payload.get_int64_array();
@@ -78,7 +78,7 @@ namespace ecc
 							{
 								CONTEXT_SWITCH();
 							}
-							RawMemoryBus::payload_t payload = arrayData.get(i);
+							MemoryBus::payload_t payload = arrayData.get(i);
 							const auto& address = addresses.data[i];
 							toMemory.send_write_request_data(address, src, payload);
 						}

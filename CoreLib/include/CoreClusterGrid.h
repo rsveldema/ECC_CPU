@@ -15,17 +15,17 @@ namespace ecc
 	class CoreClusterGrid
 	{
 	public:
-		RawMemoryBus L3_DRAM;
-		RawMemoryBus L2d_multiplexer_bus;
-		RawMemoryBus L2i_multiplexer_bus;
-		RawMemoryBus L2_L3;
-		RawMemoryBus core_to_L2d;
-		InsnCacheMemoryBus core_to_L2i;
+		MemoryBus L3_DRAM;
+		MemoryBus L2d_multiplexer_bus;
+		MemoryBus L2i_multiplexer_bus;
+		MemoryBus L2_L3;
+		MemoryBus core_to_L2d;
+		MemoryBus core_to_L2i;
 
 		L2DataCache L2d;
 		L2InsnCache L2i;
 
-		Multiplexer<RawMemoryBus> l2di_multiplexer;
+		Multiplexer<MemoryBus> l2di_multiplexer;
 
 		L3Cache L3;
 
@@ -42,10 +42,10 @@ namespace ecc
 			dram(registry, L3_DRAM, config.grid_mem_config),
 			coreCluster(registry, core_to_L2d, core_to_L2i, stats, config)
 		{
-			l2di_multiplexer.addInput(&L2d_multiplexer_bus, [](const RawMemoryBus::Packet& p) {
+			l2di_multiplexer.addInput(&L2d_multiplexer_bus, [](const MemoryBus::Packet& p) {
 				return p.source.within_core_id != ecc::CoreComponentID::FETCH;
 				});
-			l2di_multiplexer.addInput(&L2i_multiplexer_bus, [](const RawMemoryBus::Packet& p) {
+			l2di_multiplexer.addInput(&L2i_multiplexer_bus, [](const MemoryBus::Packet& p) {
 				return p.source.within_core_id == ecc::CoreComponentID::FETCH;
 				});
 		}

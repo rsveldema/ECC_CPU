@@ -13,14 +13,14 @@ namespace ecc
 
 				switch (pkt.type)
 				{
-				case RawMemoryBus::Type::read_data:
+				case MemoryBus::Type::read_data:
 				{
 					const auto address = pkt.address;
 					assert(address >= 0);
 					assert(address < (storage.size() - 8));
 
-					auto* ptr = reinterpret_cast<RawMemoryBus::payload_t*>(storage.data() + address);
-					RawMemoryBus::payload_t ret = *ptr;
+					auto* ptr = reinterpret_cast<MemoryBus::payload_t*>(storage.data() + address);
+					MemoryBus::payload_t ret = *ptr;
 
 					for (uint64_t i = 0; i < config.read_latency.cycles; i++)
 					{
@@ -31,7 +31,7 @@ namespace ecc
 					break;
 				}
 
-				case RawMemoryBus::Type::write_data:
+				case MemoryBus::Type::write_data:
 				{
 					const auto address = pkt.address;
 
@@ -42,7 +42,7 @@ namespace ecc
 						CONTEXT_SWITCH();
 					}
 
-					auto* dest_ptr = reinterpret_cast<RawMemoryBus::payload_t*>(storage.data() + address);
+					auto* dest_ptr = reinterpret_cast<MemoryBus::payload_t*>(storage.data() + address);
 
 					*dest_ptr = value;
 					break;

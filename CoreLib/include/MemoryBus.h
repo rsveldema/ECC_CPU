@@ -13,12 +13,7 @@
 
 namespace ecc
 {
-	/** simple memory bus that allows sending requests and receiving replies.
-	*/
-	class RawMemoryBus
-	{
-	public:
-		enum class Type
+		enum class BusPacketType
 		{
 			read_data,
 			write_data,
@@ -27,15 +22,32 @@ namespace ecc
 			write_response
 		};
 
-		using payload_t = uint64_t;
+		using bus_packet_payload_t = uint64_t;
 
-		struct Packet
+		struct BusPacket
 		{
-			Type type;
+			BusPacketType type;
 			BusID source;
 			memory_address_t address;
-			payload_t payload;
+			bus_packet_payload_t payload;
+
+			fetched_instruction_data_t getInsnData() 
+			{
+				assert(sizeof(fetched_instruction_data_t) == sizeof(payload));
+				return *reinterpret_cast<fetched_instruction_data_t*>(&payload);
+			}
 		};
+
+
+
+	/** simple memory bus that allows sending requests and receiving replies.
+	*/
+	class MemoryBus
+	{
+	public:
+		using Type = BusPacketType;
+		using Packet = BusPacket;
+		using payload_t = bus_packet_payload_t;
 
 
 		bool request_busy = false;

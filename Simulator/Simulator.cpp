@@ -85,7 +85,7 @@ void write_config(const std::string& filename)
 	f << "sizeof fetched_instruction_data_t = " << sizeof(fetched_instruction_data_t) << std::endl;
 	f << "sizeof ExecutionMask = " << sizeof(ExecutionMask) << std::endl;
 	f << "sizeof StoreToFetchBus::Packet = " << sizeof(StoreToFetchPacket) << std::endl;
-	f << "sizeof InsnCacheMemoryBus::Packet = " << sizeof(InsnCacheMemoryBus::Packet) << std::endl;
+	f << "sizeof InsnCacheMemoryBus::Packet = " << sizeof(MemoryBus::Packet) << std::endl;
 	f << "sizeof Opcode = " << sizeof(Opcode) << std::endl;
 
 	f.close();

@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 
-#include "RawMemoryBus.h"
+#include "MemoryBus.h"
 #include "VecMemoryBus.h"
 
 namespace ecc
@@ -12,12 +12,12 @@ namespace ecc
 	{
 	public:
 		VecMemoryBus& toCPU;
-		RawMemoryBus& toMemory;
+		MemoryBus& toMemory;
 
 		VectorMemoryController(SimComponentRegistry& registry,
 			const std::string& name,
 			VecMemoryBus& toCPU,
-			RawMemoryBus& toMemory) : SimComponent(registry, name), toCPU(toCPU), toMemory(toMemory)
+			MemoryBus& toMemory) : SimComponent(registry, name), toCPU(toCPU), toMemory(toMemory)
 		{
 			std::cerr << "allocated: " << name << std::endl;
 		}

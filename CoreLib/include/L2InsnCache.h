@@ -4,21 +4,20 @@
 #include <iostream>
 
 #include "SimComponent.h"
-#include "RawMemoryBus.h"
-#include "InsnCacheMemoryBus.h"
+#include "MemoryBus.h"
 
 namespace ecc
 {
 	class L2InsnCache : public SimComponent
 	{
 	public:
-		InsnCacheMemoryBus& toCPU;
-		RawMemoryBus& toMemory;
+		MemoryBus& toCPU;
+		MemoryBus& toMemory;
 
 		L2InsnCache(SimComponentRegistry& registry,
 			const std::string& name,
-			InsnCacheMemoryBus& toCPU,
-			RawMemoryBus& toMemory) : SimComponent(registry, name), toCPU(toCPU), toMemory(toMemory)
+			MemoryBus& toCPU,
+			MemoryBus& toMemory) : SimComponent(registry, name), toCPU(toCPU), toMemory(toMemory)
 		{
 			std::cerr << "allocated: " << name << std::endl;
 		}
