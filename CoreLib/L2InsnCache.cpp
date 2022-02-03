@@ -9,21 +9,22 @@ namespace ecc
 		running = true;
 		while (1)
 		{
-			if (auto pkt = toCPU.try_accept_request())
+			if (toCPU.request_busy)
 			{
+				auto pkt = toCPU.accept_request();
 				// translates from an InsnCachePacket to to an RawDataPacket
-				ecc::memory_address_t addr = pkt->address;
+				ecc::memory_address_t addr = pkt.address;
 				RawMemoryBus::Packet rawPkt{
 					.type = RawMemoryBus::Type::read_data,
-					.source = pkt->source,
+					.source = pkt.source,
 					.address = addr,
-					.payload = pkt->address
+					.payload = pkt.address
 				};
 
 				toMemory.send_request(rawPkt);
 			}
 
-			if (toMemory.have_response())
+			if (toMemory.response_busy)
 			{
 				auto pkt = toMemory.get_response();
 			

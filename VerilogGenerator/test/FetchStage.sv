@@ -31,17 +31,17 @@ module FetchStage;
 	ExecutionMask exec_mask = 0;
 	memory_address_t address_cached = 0;
 	fetched_instruction_data_t fetched_cached = 0;
-	StoreToFetchBus__Packet jmp_retarget = 0;
+	StoreToFetchPacket jmp_retarget = 0;
 	memory_address_t address_fetched = 0;
 	InsnCacheMemoryBus__Packet response = 0;
 	instruction_t insn = 0;
 	Opcode opcode = 0;
 	memory_address_t PC = 0;
-	FetchToDecodeBus__Packet pkt = 0;
+	FetchToDecodeBusPacket pkt = 0;
 
 
 
-	task run;
+	task run(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, InsnCacheMemoryBus memory_bus);
 	case (state)
 		0:
 			begin
@@ -66,7 +66,7 @@ module FetchStage;
 			end
 		4:
 			begin
-				if (!(store_bus()))
+				if (!(store_bus))
 				begin
 					state = 6; // GOTO
 					return;
@@ -129,7 +129,7 @@ module FetchStage;
 					return;
 				end
 				response = memory_bus();
-				// assert((response == InsnCacheMemoryBus::Type::read_response))
+				// assert((response == InsnCachePacketType::read_response))
 				address_cached=address_fetched;
 				fetched_cached=response();
 				state = 12; // GOTO
@@ -225,7 +225,7 @@ module FetchStage;
 			begin
 				PC = fetch_PC;
 				fetch_PC+=($bits(instruction_t) / 8);
-				// local_obj FetchToDecodeBus__Packet pkt(exec_mask, PC, insn)
+				// local_obj FetchToDecodeBusPacket pkt(exec_mask, PC, insn)
 				// decode_bus(pkt)
 				// CONTEXT_SWITCH()
 				state = 1; // GOTO

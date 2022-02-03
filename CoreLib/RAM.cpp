@@ -7,9 +7,9 @@ namespace ecc
 	{
 		while (1)
 		{
-			if (const auto pkt_opt = toCPU.try_accept_request())
+			if (toCPU.request_busy)
 			{
-				const auto& pkt = *pkt_opt;
+				const auto pkt = toCPU.accept_request();
 
 				switch (pkt.type)
 				{

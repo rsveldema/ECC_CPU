@@ -41,7 +41,8 @@ namespace ecc
 
 						for (unsigned i = 0; i < addresses.size(); i++)
 						{
-							while (toMemory.is_busy())
+							// wait for the bus to clear so we can send another request
+							while (toMemory.request_busy)
 							{
 								CONTEXT_SWITCH();
 							}
@@ -50,7 +51,7 @@ namespace ecc
 
 							while (1)
 							{
-								if (toMemory.have_response())
+								if (toMemory.response_busy)
 								{
 									auto pkt = toMemory.get_response();
 								
@@ -73,7 +74,7 @@ namespace ecc
 
 						for (unsigned i = 0; i < addresses.size(); i++)
 						{
-							while (toMemory.is_busy())
+							while (toMemory.request_busy)
 							{
 								CONTEXT_SWITCH();
 							}

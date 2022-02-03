@@ -32,81 +32,66 @@ namespace ecc
 		struct Packet
 		{
 			Type type;
-			ecc::BusID source;
-			ecc::memory_address_t address;
+			BusID source;
+			memory_address_t address;
 			payload_t payload;
 		};
 
 
-		std::queue<Packet> request_queue;
-		std::queue<Packet> response_queue;
+		bool request_busy = false;
+		bool response_busy = false;
 
+		Packet request_data;
+		Packet response_data;
 
-		void send_read_request_data(ecc::memory_address_t address, const ecc::BusID& source)
+		void send_read_request_data(memory_address_t address, const BusID& source)
 		{
 			Packet pkt{ Type::read_data, source, address };
 			send_request(pkt);
 		}
 
 
-		void send_write_request_data(ecc::memory_address_t address,
-			const ecc::BusID& source,
+		void send_write_request_data(memory_address_t address,
+			const BusID& source,
 			const payload_t& value)
 		{
 			Packet pkt{ Type::write_data, source, address, value };
 			send_request(pkt);
 		}
 
-		void send_read_response(const payload_t& value, const ecc::BusID& source)
+		void send_read_response(const payload_t& value, const BusID& source)
 		{
-			ecc::memory_address_t addr = 0;
+			memory_address_t addr = 0;
 			Packet pkt{ Type::read_response, source, addr, value };
 			send_response(pkt);
 		}
 
-		std::optional<Packet> try_accept_request()
+		Packet accept_request()
 		{
-			if (!request_queue.empty())
-			{
-				const Packet f = request_queue.front();
-				request_queue.pop();
-				return f;
-			}
-			return std::nullopt;
-		}
-
-		bool have_response() const
-		{
-			return !response_queue.empty();
+			const Packet f = request_data;
+			request_busy = false;
+			return f;			
 		}
 
 		Packet get_response()
 		{
-			assert(!response_queue.empty());
-			const Packet f = response_queue.front();
-			response_queue.pop();
+			assert(response_busy);
+			const Packet f = response_data;
+			response_busy = false;
 			return f;
 		}
 
 		void send_request(const Packet& pkt)
 		{
-			assert(!is_busy());
-			request_queue.push(pkt);
+			assert(! request_busy);
+			request_data = pkt;
+			request_busy = true;
 		}
 
 		void send_response(const Packet& pkt)
 		{
-			response_queue.push(pkt);
-		}
-
-		bool is_busy() const
-		{
-			return request_queue.size() > 0;
-		}
-
-		bool is_reponse_busy() const
-		{
-			return response_queue.size() > 0;
+			response_data = pkt;
+			response_busy = true;
 		}
 	};
 

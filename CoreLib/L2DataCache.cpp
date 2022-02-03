@@ -8,15 +8,17 @@ namespace ecc
 		running = true;
 		while (1)
 		{
-			if (!toMemory.is_busy())
+			if (!toMemory.request_busy)
 			{
-				if (auto pkt = toCPU.try_accept_request())
+				if (toCPU.request_busy)
 				{
-					toMemory.send_request(*pkt);
+					auto pkt = toCPU.accept_request();
+				
+					toMemory.send_request(pkt);
 				}
 			}
 
-			if (toMemory.have_response())
+			if (toMemory.response_busy)
 			{
 				auto pkt = toMemory.get_response();			
 				toCPU.send_response(pkt);

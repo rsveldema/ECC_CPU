@@ -68,14 +68,17 @@ class Method:
         else:
             self.generate_module(ps)
 
-    def generate_function(self, ps:PrintStream):
+    def get_param_str(self):        
         params = ""
         comma = ""
         for k in self.params:
             params += comma
             params += k.str()
             comma = ", "
-            
+        return params
+
+    def generate_function(self, ps:PrintStream):
+        params = self.get_param_str()
         ps.println(f"function {self.funcname}({params});")
         self.generate_local_vars(ps)         
         self.block.generate(ps)
@@ -100,8 +103,11 @@ class Method:
         ps.println("")
         ps.println("")
         ps.println("")
-        ps.up()
-        ps.println(f"task {task_name};")            
+        ps.up()        
+        
+        params = self.get_param_str()
+
+        ps.println(f"task {task_name}({params});")            
         self.block.generate(ps)
         ps.println("endtask")
         ps.down()

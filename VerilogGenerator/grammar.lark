@@ -134,7 +134,7 @@ type: ("const")? ( booltype
 |                  user_defined_type
 |                  autotype)
 
-user_defined_type: qual_ident_type ("<" IDENT "," expr ">")?
+user_defined_type: qual_ident_type ("<" IDENT "," expr ">")? ("&")?
 
 qual_ident_type: qual_ident
 

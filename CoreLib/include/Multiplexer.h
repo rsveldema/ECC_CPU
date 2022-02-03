@@ -48,14 +48,15 @@ namespace ecc
 			{
 				for (auto& in : inputs)
 				{
-					if (auto pkt = in.bus->try_accept_request())
+					if (in.bus->request_busy)
 					{
-						while (out.is_busy())
+						auto pkt = in.bus->accept_request();
+						while (out.request_busy)
 						{
 							Task& t = *this;
 							co_await t;
 						}
-						out.send_request(*pkt);
+						out.send_request(pkt);
 					}
 					// sending one packet will cost us a cycle (as will testing if an input has a pkt for us to send.
 					Task& t = *this;
@@ -64,7 +65,7 @@ namespace ecc
 
 				// we should be able to forward the incoming packet to the source
 				// in one step, hence no co_await here.
-				if (out.have_response())
+				if (out.response_busy)
 				{
 					auto pkt = out.get_response();
 				

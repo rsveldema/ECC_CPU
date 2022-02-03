@@ -20,7 +20,7 @@ namespace ecc
 	};
 
 	// memory-address on the request, instruction-t on the response
-	using insn_cache_payload_t = std::variant<ecc::memory_address_t, ecc::fetched_instruction_data_t>;
+	using insn_cache_payload_t = std::variant<memory_address_t, fetched_instruction_data_t>;
 
 	struct InsnCacheMemoryBusPacket
 	{
@@ -45,10 +45,13 @@ namespace ecc
 		using payload_t = insn_cache_payload_t;
 		using Packet = InsnCacheMemoryBusPacket;
 
-		std::queue<InsnCacheMemoryBusPacket> request_queue;
-		std::queue<InsnCacheMemoryBusPacket> response_queue;
+		bool request_busy = false;
+		bool response_busy = false;
 
-		void send_read_request_insn(ecc::memory_address_t address, const ecc::BusID& source)
+		InsnCacheMemoryBusPacket request_data;
+		InsnCacheMemoryBusPacket response_data;
+
+		void send_read_request_insn(memory_address_t address, const BusID& source)
 		{
 			InsnCacheMemoryBusPacket pkt{ InsnCachePacketType::read_insn, source, address };
 			send_request(pkt);
@@ -62,43 +65,34 @@ namespace ecc
 			send_response(pkt);
 		}
 
-		std::optional<InsnCacheMemoryBusPacket> try_accept_request()
+		InsnCacheMemoryBusPacket accept_request()
 		{
-			if (!request_queue.empty())
-			{
-				const InsnCacheMemoryBusPacket f = request_queue.front();
-				request_queue.pop();
-				return f;
-			}
-			return std::nullopt;
-		}
-
-		bool have_response() const
-		{
-			return !response_queue.empty();
+			assert(request_busy);
+			const InsnCacheMemoryBusPacket f = request_data;
+			request_busy = false;
+			return f;
 		}
 
 		InsnCacheMemoryBusPacket get_response()
 		{
-			const InsnCacheMemoryBusPacket f = response_queue.front();
-			response_queue.pop();
+			assert(response_busy);
+			const InsnCacheMemoryBusPacket f = response_data;
+			response_busy = false;
 			return f;
 		}
 
 		void send_request(const InsnCacheMemoryBusPacket& pkt)
 		{
-			assert(!is_busy());
-			request_queue.push(pkt);
+			assert(! request_busy);
+			request_data = pkt;
+			request_busy = true;
 		}
 
 		void send_response(const InsnCacheMemoryBusPacket& pkt)
 		{
-			response_queue.push(pkt);
-		}
-
-		bool is_busy() const
-		{
-			return request_queue.size() > 0;
+			assert(! response_busy);
+			response_data = pkt;
+			response_busy = true;
 		}
 	};
 

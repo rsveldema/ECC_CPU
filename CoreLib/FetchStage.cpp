@@ -73,9 +73,9 @@ namespace ecc
 
 					while (1)
 					{
-						if (memory_bus.have_response())
+						if (memory_bus.response_busy)
 						{
-							InsnCacheMemoryBus::Packet response = memory_bus.get_response();
+							InsnCacheMemoryBusPacket response = memory_bus.get_response();
 							assert(response.type == InsnCachePacketType::read_response);
 
 							address_cached = address_fetched;
