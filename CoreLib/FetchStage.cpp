@@ -2,6 +2,16 @@
 
 namespace ecc
 {
+	fetched_instruction_data_t getInsnData(const BusPacket& pkt)
+	{
+		union {
+			uint64_t value;
+			fetched_instruction_data_t data;
+		} tmp;
+		tmp.value = pkt.payload;
+		return tmp.data;
+	}
+
 	bool changesControlFlow(Opcode op)
 	{
 		switch (op)

@@ -13,11 +13,6 @@
 
 namespace ecc
 {
-	static fetched_instruction_data_t getInsnData(BusPacket& pkt)
-	{
-		assert(sizeof(fetched_instruction_data_t) == sizeof(pkt.payload));
-		return *reinterpret_cast<fetched_instruction_data_t *>(&pkt.payload);
-	}
 
 	/** simple memory bus that allows sending requests and receiving replies.
 	 */
