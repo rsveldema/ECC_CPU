@@ -31,7 +31,7 @@ namespace ecc
 	{
 		bool have_outstanding_jmp = false;
 		memory_address_t fetch_PC = 0;
-		ExecutionMask exec_mask(ALL_THREADS_EXEC_MASK_INT64);
+		execution_mask_t exec_mask(ALL_THREADS_EXEC_MASK_INT64);
 
 		memory_address_t address_cached = 0xffffffff;
 		fetched_instruction_data_t fetched_cached{};

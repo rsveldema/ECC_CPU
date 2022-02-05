@@ -11,7 +11,7 @@ namespace ecc
 	{
 		RegisterFile regs;
 		ecc::memory_address_t PC{ 0 };
-		ExecutionMask exec_mask;
+		execution_mask_t exec_mask;
 	};
 
 

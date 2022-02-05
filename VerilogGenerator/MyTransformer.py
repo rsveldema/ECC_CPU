@@ -166,6 +166,18 @@ class MyTransformer(Transformer):
     def bit_shr(self, tree):
         return ">>"
 
+    def cmp_lt(self, tree):
+        return "<"
+
+    def cmp_gt(self, tree):
+        return ">"
+
+    def cmp_le(self, tree):
+        return "<="
+
+    def cmp_ge(self, tree):
+        return ">="
+    
     def expr(self, tree):
         if len(tree) == 1:
             return tree[0]

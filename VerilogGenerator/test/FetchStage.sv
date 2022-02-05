@@ -28,12 +28,12 @@ module FetchStage;
 	reg[32:0] state = 0;
 	bool have_outstanding_jmp = 0;
 	memory_address_t fetch_PC = 0;
-	ExecutionMask exec_mask = 0;
+	execution_mask_t exec_mask = 0;
 	memory_address_t address_cached = 0;
 	fetched_instruction_data_t fetched_cached = 0;
 	StoreToFetchPacket jmp_retarget = 0;
 	memory_address_t address_fetched = 0;
-	InsnCacheMemoryBus__Packet response = 0;
+	BusPacket response = 0;
 	instruction_t insn = 0;
 	Opcode opcode = 0;
 	memory_address_t PC = 0;
@@ -41,13 +41,13 @@ module FetchStage;
 
 
 
-	task run(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, InsnCacheMemoryBus memory_bus);
+	task run(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
 	case (state)
 		0:
 			begin
 				have_outstanding_jmp = 0;
 				fetch_PC = 0;
-				// local_obj ExecutionMask exec_mask(ALL_THREADS_EXEC_MASK_INT64)
+				// local_obj execution_mask_t exec_mask(ALL_THREADS_EXEC_MASK_INT64)
 				address_cached = 'hffffffff;
 				// local_obj fetched_instruction_data_t fetched_cached()
 				state = 1; // GOTO
@@ -123,13 +123,13 @@ module FetchStage;
 			end
 		11:
 			begin
-				if (!(memory_bus()))
+				if (!(memory_bus))
 				begin
 					state = 13; // GOTO
 					return;
 				end
 				response = memory_bus();
-				// assert((response == InsnCachePacketType::read_response))
+				// assert((response == BusPacketType::read_response))
 				address_cached=address_fetched;
 				fetched_cached=response();
 				state = 12; // GOTO

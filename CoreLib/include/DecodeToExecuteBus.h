@@ -14,7 +14,7 @@ namespace ecc
 	public:
 		struct Packet
 		{
-			ExecutionMask exec_mask;
+			execution_mask_t exec_mask;
 
 			ecc::memory_address_t PC;
 			ecc::ExecuteStageOpcode opcode;
@@ -26,26 +26,19 @@ namespace ecc
 
 		void send(const Packet& pkt)
 		{
-			assert(!is_busy());
-			queue.push(pkt);
+			assert(!is_busy);
+			data = pkt;
+			is_busy = true;
 		}
 
-		std::optional<Packet> try_recv()
+		Packet recv()
 		{
-			if (queue.empty())
-			{
-				return std::nullopt;
-			}
-			const Packet v = queue.front();
-			queue.pop();
-			return v;
+			Packet tmp = data;
+			is_busy = false;
+			return tmp;
 		}
 
-		bool is_busy() const
-		{
-			return queue.size() > 0;
-		}
-
-		std::queue<Packet> queue;
+		bool is_busy = false;
+		Packet data;
 	};
 }

@@ -7,9 +7,9 @@ namespace ecc
 	{
 		while (1)
 		{
-			if (const auto pkt_opt = this->execute_bus.try_recv())
+			if (execute_bus.is_busy)
 			{
-				const auto& pkt = *pkt_opt;
+				const auto& pkt = execute_bus.recv();
 				const auto PC = pkt.PC;
 				const auto opcode = pkt.opcode;
 
@@ -39,7 +39,7 @@ namespace ecc
 
 					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
 
-					this->memory_bus.send_write_request_vec(dest.get_int64_array(), memory_bus_id, src);
+					this->memory_bus.send_write_request_vec(dest.data, memory_bus_id, src);
 					break;
 				}
 
@@ -54,7 +54,7 @@ namespace ecc
 
 					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
 
-					memory_bus.send_read_request_vec(src.get_int64_array(), memory_bus_id);
+					memory_bus.send_read_request_vec(src.data, memory_bus_id);
 
 					while (1)
 					{
@@ -102,8 +102,8 @@ namespace ecc
 					const auto& exec_mask_new_address = pkt.execution_flags_true;
 					const auto& exec_mask_next_address = pkt.execution_flags_false;
 
-					logger.debug("[STORE] splitting cond-jump into " + std::to_string(exec_mask_new_address.count())
-						+ " and " + std::to_string(exec_mask_next_address.count()));
+					logger.debug("[STORE] splitting cond-jump into " + std::to_string(count_num_bits64(exec_mask_new_address))
+						+ " and " + std::to_string(count_num_bits64(exec_mask_next_address)));
 
 					ThreadContext ctxt{
 						this->regs,

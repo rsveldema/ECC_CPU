@@ -180,208 +180,66 @@ namespace ecc
 
 	struct VectorValue
 	{
-		std::variant<vec_vector_obj_t<int8_t>,
-			vec_vector_obj_t<int16_t>,
-			vec_vector_obj_t<int32_t>,
-			vec_vector_obj_t<int64_t>,
-
-			vec_vector_obj_t<float>,
-			vec_vector_obj_t<double>> data;
-
-		enum class Type
-		{
-			INT8,
-			INT16,
-			INT32,
-			INT64,
-			FLT,
-			DBL
-		};
+		vec_vector_obj_t<int64_t> data;
 
 		std::string to_string() const
 		{
 			std::string s;
 			s += "<";
-			switch (getType())
-			{
-			case Type::INT8: s += get_int8_array().to_string(); break;
-			case Type::INT16: s += get_int16_array().to_string(); break;
-			case Type::INT32: s += get_int32_array().to_string(); break;
-			case Type::INT64: s += get_int64_array().to_string(); break;
-			case Type::FLT: s += get_float_array().to_string(); break;
-			case Type::DBL: s += get_double_array().to_string(); break;
-				break;
-			}
+			s += data.to_string();
 			s += ">";
 			return s;
 		}
 
 		void set(unsigned ix, int8_t value)
 		{
-			assert(getType() == Type::INT8);
-			get_int8_array().set(ix, value);
+			data.set(ix, value);
 		}
 
 		void set(unsigned ix, int16_t value)
 		{
-			assert(getType() == Type::INT16);
-			get_int16_array().set(ix, value);
+			data.set(ix, value);
 		}
 
 		void set(unsigned ix, int32_t value)
 		{
-			assert(getType() == Type::INT32);
-			get_int32_array().set(ix, value);
+			data.set(ix, value);
 		}
 
 		void set(unsigned ix, int64_t value)
 		{
-			assert(getType() == Type::INT64);
-			get_int64_array().set(ix, value);
+			data.set(ix, value);
 		}
 
 		void set(unsigned ix, float value)
 		{
-			assert(getType() == Type::FLT);
-			get_float_array().set(ix, value);
+			data.set(ix, value);
 		}
 
 		void set(unsigned ix, double value)
 		{
-			assert(getType() == Type::DBL);
-			get_double_array().set(ix, value);
+			data.set(ix, value);
 		}
-
-
-		Type getType() const
-		{
-			return static_cast<Type>(data.index());
-		}
-
-		vec_vector_obj_t<int8_t>& get_int8_array()
-		{
-			assert(getType() == Type::INT8);
-			auto& vec = std::get< vec_vector_obj_t<int8_t> >(data);
-			return vec;
-		}
-
-		const vec_vector_obj_t<int8_t>& get_int8_array() const
-		{
-			assert(getType() == Type::INT8);
-			const auto& vec = std::get< vec_vector_obj_t<int8_t> >(data);
-			return vec;
-		}
-
-		vec_vector_obj_t<int16_t>& get_int16_array()
-		{
-			assert(getType() == Type::INT16);
-			auto& vec = std::get< vec_vector_obj_t<int16_t> >(data);
-			return vec;
-		}
-
-		const vec_vector_obj_t<int16_t>& get_int16_array() const
-		{
-			assert(getType() == Type::INT16);
-			const auto& vec = std::get< vec_vector_obj_t<int16_t> >(data);
-			return vec;
-		}
-
-		vec_vector_obj_t<int32_t>& get_int32_array()
-		{
-			assert(getType() == Type::INT32);
-			auto& vec = std::get< vec_vector_obj_t<int32_t> >(data);
-			return vec;
-		}
-
-		const vec_vector_obj_t<int32_t>& get_int32_array() const
-		{
-			assert(getType() == Type::INT32);
-			const auto& vec = std::get< vec_vector_obj_t<int32_t> >(data);
-			return vec;
-		}
-
-		vec_vector_obj_t<int64_t>& get_int64_array()
-		{
-			assert(getType() == Type::INT64);
-			auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
-			return vec;
-		}
-		const vec_vector_obj_t<int64_t>& get_int64_array() const
-		{
-			assert(getType() == Type::INT64);
-			const auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
-			return vec;
-		}
-
-		vec_vector_obj_t<float>& get_float_array()
-		{
-			assert(getType() == Type::INT64);
-			auto& vec = std::get< vec_vector_obj_t<float> >(data);
-			return vec;
-		}
-
-		const vec_vector_obj_t<float>& get_float_array() const
-		{
-			assert(getType() == Type::INT64);
-			const auto& vec = std::get< vec_vector_obj_t<float> >(data);
-			return vec;
-		}
-
-		vec_vector_obj_t<double>& get_double_array()
-		{
-			assert(getType() == Type::INT64);
-			auto& vec = std::get< vec_vector_obj_t<double> >(data);
-			return vec;
-		}
-
-		const vec_vector_obj_t<double>& get_double_array() const
-		{
-			assert(getType() == Type::INT64);
-			auto& vec = std::get< vec_vector_obj_t<double> >(data);
-			return vec;
-		}
-
 
 		uint64_t reduce_int64_to_single_int64_t() const
 		{
-			assert(getType() == Type::INT64);
-			auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
-			return vec.reduce_to_uint64_t();
+			return data.reduce_to_uint64_t();
 		}
 
 		void load_from_int64(uint8_t* ptr)
 		{
 			data = vec_vector_obj_t<int64_t>{ { } };
-			auto& vec = get_int64_array();
-			vec.load_from(ptr);
+			data.load_from(ptr);
 		}
 
 		void store_at(uint8_t* ptr) const
 		{
-			switch (data.index())
-			{
-			case 0: // int8
-			{ abort(); }
-			case 1: // int16
-			case 2: // int32
-			case 3: // int64
-			{
-				auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
-				vec.store_at(ptr);
-				break;
-			}
-			case 4: // float
-			case 5: // double
-			default:
-				abort();
-			}
+			data.store_at(ptr);
 		}
 
 		bool are_all_adjacent_memory_addresses(unsigned elt_size) const
 		{
-			assert(getType() == Type::INT64);
-			auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
-			return vec.are_all_adjacent_memory_addresses(elt_size);
+			return data.are_all_adjacent_memory_addresses(elt_size);
 		}
 
 		ecc::memory_address_t get_PC() const
@@ -396,50 +254,39 @@ namespace ecc
 
 		int64_t get_int64(unsigned ix) const
 		{
-			assert(getType() == Type::INT64);
-			auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
-			return vec.get(ix);
+			return data.get(ix);
 		}
 
 		void set_int64(unsigned ix, int64_t value)
 		{
-			auto& me = get_int64_array();
-			return me.set(ix, value);
+			return data.set(ix, value);
 		}
 
 		static VectorValue create_vec_int64_blockindex()
 		{
 			VectorValue ret;
-			ret.data = vec_vector_obj_t<int64_t>();
-			auto& arr = std::get<vec_vector_obj_t<int64_t> >(ret.data);
-			arr.set_incrementing_values();
+			ret.data.set_incrementing_values();
 			return ret;
 		}
 
 		static VectorValue create_vec_int64(int64_t v)
 		{
 			VectorValue ret;
-			ret.data = vec_vector_obj_t<int64_t>();
-			auto& arr = std::get<vec_vector_obj_t<int64_t> >(ret.data);
-			arr.replicate(v);
+			ret.data.replicate(v);
 			return ret;
 		}
 
 		VectorValue shift_left_int64(const VectorValue& v) const
 		{
 			VectorValue ret(*this);
-			auto& me = std::get<vec_vector_obj_t<int64_t> >(ret.data);
-			const auto& other = std::get<vec_vector_obj_t<int64_t> >(v.data);
-			me.shift_left(other);
+			ret.data.shift_left(v.data);
 			return ret;
 		}
 
 		VectorValue or_shift_left_int64(const VectorValue& v, int shift_count) const
 		{
 			VectorValue ret(*this);
-			auto& me = std::get<vec_vector_obj_t<int64_t> >(ret.data);
-			const auto& other = std::get<vec_vector_obj_t<int64_t> >(v.data);
-			me.or_shift_left(other, shift_count);
+			ret.data.or_shift_left(v.data, shift_count);
 			return ret;
 		}
 
@@ -447,9 +294,7 @@ namespace ecc
 		VectorValue add_int64(const VectorValue& v) const
 		{
 			VectorValue ret(*this);
-			auto& me = std::get<vec_vector_obj_t<int64_t> >(ret.data);
-			const auto& other = std::get<vec_vector_obj_t<int64_t> >(v.data);
-			me.add(other);
+			ret.data.add(v.data);
 			return ret;
 		}
 
@@ -457,30 +302,20 @@ namespace ecc
 		VectorValue bit_and_int64(const VectorValue& v) const
 		{
 			VectorValue ret(*this);
-			auto& me = std::get<vec_vector_obj_t<int64_t> >(ret.data);
-			const auto& other = std::get<vec_vector_obj_t<int64_t> >(v.data);
-			me.bit_and(other);
+			ret.data.bit_and(v.data);
 			return ret;
 		}
 
 		VectorValue compare_int64(const VectorValue& v) const
 		{
 			VectorValue ret;
-			ret.data = vec_vector_obj_t<int64_t>();
-
-			const auto& me = std::get<vec_vector_obj_t<int64_t> >(this->data);
-			const auto& other = std::get<vec_vector_obj_t<int64_t> >(v.data);
-			auto& ret_cmp = std::get<vec_vector_obj_t<int64_t> >(ret.data);
-
-			me.compare(ret_cmp, other);
+			this->data.compare(ret.data, v.data);
 			return ret;
 		}
 
 		bool all_equal_int64() const
 		{
-			assert(getType() == Type::INT64);
-			auto& vec = std::get< vec_vector_obj_t<int64_t> >(data);
-			return vec.all_equal();
+			return data.all_equal();
 		}
 	};
 }

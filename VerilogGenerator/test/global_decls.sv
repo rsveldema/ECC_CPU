@@ -5,6 +5,8 @@ typedef uint64_t memory_address_t;
 
 typedef instruction_t fetched_instruction_data_t[2];
 
+typedef uint64_t execution_mask_t;
+
 `define POINTER_SIZE ($bits(memory_address_t) / 8)
 
 `define INSTRUCTION_SIZE ($bits(instruction_t) / 8)
@@ -131,3 +133,10 @@ typedef enum {
 	,STORAGE_CJMP
 	,STORAGE_HALT
 } StorageStageOpcode;
+
+
+typedef struct {
+	execution_mask_t exec_mask;
+	memory_address_t PC;
+	instruction_t insn;
+} FetchToDecodeBusPacket;

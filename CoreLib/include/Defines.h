@@ -8,6 +8,8 @@ namespace ecc
 
 	using fetched_instruction_data_t = std::array<instruction_t, 2>;
 
+	using execution_mask_t = uint64_t;
+
 	static constexpr unsigned POINTER_SIZE = sizeof(memory_address_t);
 	static constexpr auto INSTRUCTION_SIZE = sizeof(instruction_t);
 
@@ -154,5 +156,20 @@ namespace ecc
 		STORAGE_CJMP,
 		STORAGE_HALT
 	};
+
+
+	static 
+	uint32_t count_num_bits64(uint64_t value)
+	{
+		uint32_t c = 0;
+		uint64_t f = value;
+		for (unsigned i = 0; i < 64; i++)
+		{
+			c += (f & 1);
+
+			f = f >> 1;
+		}
+		return c;
+	}
 }
 

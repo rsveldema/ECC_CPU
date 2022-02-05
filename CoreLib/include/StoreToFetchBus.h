@@ -4,13 +4,12 @@
 #include <cassert>
 
 #include "MachineInfo.h"
-#include "ExecutionMask.h"
 
 namespace ecc
 {
 	struct StoreToFetchPacket
 	{
-		ExecutionMask exec_mask;
+		execution_mask_t exec_mask;
 		memory_address_t newpc;
 	};
 

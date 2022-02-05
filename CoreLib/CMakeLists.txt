@@ -22,9 +22,9 @@ add_library (CoreLib  "include/CoreLib.h"
          "include/SimComponentRegistry.h" "include/Logger.h" 
          "include/Stats.h" "include/MachineConfig.h" 
          "include/units.h" "include/RAM_Config.h" 
-          "include/VectorValue.h" "include/ExecutionMask.h" 
+          "include/VectorValue.h" 
           "include/DivergenceQueue.h" 
-          "L2InsnCache.cpp" "include/RawMemoryBus.h" "include/L2DataCache.h" "include/L2InsnCache.h" "include/L1InsnCache.h" "include/VectorMemoryController.h" "L1DataCache.cpp" "L2DataCache.cpp" "L3Cache.cpp" "VectorMemoryController.cpp")
+          "L2InsnCache.cpp" "include/MemoryBus.h" "include/L2DataCache.h" "include/L2InsnCache.h" "include/L1InsnCache.h" "include/VectorMemoryController.h" "L1DataCache.cpp" "L2DataCache.cpp" "L3Cache.cpp" "VectorMemoryController.cpp")
 
 target_compile_features(CoreLib PUBLIC cxx_std_20)
 

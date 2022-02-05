@@ -69,8 +69,7 @@ namespace ecc
 
 					case VecBusPacketType::write_vec64:
 					{
-						assert(pkt->payload.getType() == VectorValue::Type::INT64);
-						const auto& arrayData = pkt->payload.get_int64_array();
+						const auto& arrayData = pkt->payload.data;
 
 						for (unsigned i = 0; i < addresses.size(); i++)
 						{

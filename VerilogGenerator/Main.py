@@ -47,11 +47,10 @@ def main():
 
     parser = Lark(grammar)
     
-    module_name = "global_decls"
-    with open(output_path + module_name + ".sv", "w") as fp: 
+    with open(output_path + "global_decls.sv", "w") as fp: 
         ps = PrintStream(fp)
 
-        includes = ["../CoreLib/include/Defines.h"]
+        includes = ["../CoreLib/include/Defines.h", "../CoreLib/include/Packets.h"]
         for file in includes:
             tree = parseInclude(parser, file)
             ast = createAST(tree)

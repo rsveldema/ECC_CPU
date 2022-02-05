@@ -7,9 +7,9 @@ namespace ecc
 	{
 		while (1)
 		{
-			if (const auto pkt_opt = this->decode_bus.try_recv())
+			if (this->decode_bus.is_busy)
 			{
-				const DecodeToExecuteBus::Packet& pkt = *pkt_opt;
+				const DecodeToExecuteBus::Packet& pkt = this->decode_bus.recv();
 				const auto opcode = pkt.opcode;
 				const auto PC = pkt.PC;
 
@@ -33,7 +33,7 @@ namespace ecc
 
 					// logger.debbug("[EXECUTE] CMP: " + value1 + " -- " + value2 + "-----" + result);
 
-					while (store_bus.is_busy())
+					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
 					}
@@ -53,7 +53,7 @@ namespace ecc
 					const auto& dest = std::get<RegisterID>(pkt.value0);
 					const auto& src = pkt.value1;
 
-					while (store_bus.is_busy())
+					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
 					}
@@ -76,7 +76,7 @@ namespace ecc
 
 					auto src = src2.or_shift_left_int64(src1, 24);
 
-					while (store_bus.is_busy())
+					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
 					}
@@ -98,7 +98,7 @@ namespace ecc
 					const auto& src2 = pkt.value2;
 
 					auto src = src2.or_shift_left_int64(src1, 48);
-					while (store_bus.is_busy())
+					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
 					}
@@ -119,7 +119,7 @@ namespace ecc
 					const auto& src2 = pkt.value2;
 
 					auto src = src1.shift_left_int64(src2);
-					while (store_bus.is_busy())
+					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
 					}
@@ -141,7 +141,7 @@ namespace ecc
 
 					auto src = src1.add_int64(src2);
 
-					while (store_bus.is_busy())
+					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
 					}
@@ -164,7 +164,7 @@ namespace ecc
 
 					auto offset = off1.add_int64(off2);
 
-					while (store_bus.is_busy())
+					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
 					}
@@ -185,7 +185,7 @@ namespace ecc
 
 					auto addr = addr1.add_int64(addr2);
 
-					while (store_bus.is_busy())
+					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
 					}
@@ -205,7 +205,7 @@ namespace ecc
 					auto offset = off1.add_int64(off2);
 
 					auto dest = RegisterID::REG_PC;
-					while (store_bus.is_busy())
+					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
 					}
@@ -235,15 +235,12 @@ namespace ecc
 
 					const VectorValue flags = regs[RegisterID::REG_FLAGS];
 					const auto& should_jmp_masks = flags.bit_and_int64(jmp_mask);
-					const uint64_t should_jmp = exec_mask.get_masked_flags(should_jmp_masks.reduce_int64_to_single_int64_t());
-					const uint64_t all_threads_mask = exec_mask.get_masked_flags(ALL_THREADS_EXEC_MASK_INT64);
-
-
-					assert(flags.getType() == VectorValue::Type::INT64);
+					const uint64_t should_jmp = exec_mask & should_jmp_masks.reduce_int64_to_single_int64_t();
+					const uint64_t all_threads_mask = exec_mask & ALL_THREADS_EXEC_MASK_INT64;
 
 
 					std::cerr << "store-bus busy" << std::endl;
-					while (store_bus.is_busy())
+					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
 					}
@@ -265,8 +262,8 @@ namespace ecc
 					else
 					{
 						// some threads want to jump, some don't.
-						ExecutionMask execution_flags_true(should_jmp);
-						ExecutionMask execution_flags_false(exec_mask.get_masked_flags(~should_jmp));
+						execution_mask_t execution_flags_true(should_jmp);
+						execution_mask_t execution_flags_false(exec_mask & ~should_jmp);
 						bool is_store_to_pc = false;
 
 						ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_CJMP,
@@ -289,7 +286,7 @@ namespace ecc
 
 					const auto new_address = PC + offset.get_PC();
 
-					while (store_bus.is_busy())
+					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
 					}
@@ -300,7 +297,7 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_HALT:
 				{
-					while (store_bus.is_busy())
+					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
 					}

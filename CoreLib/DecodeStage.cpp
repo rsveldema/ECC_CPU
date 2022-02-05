@@ -222,10 +222,9 @@ namespace ecc
 					const DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC,
 						ExecuteStageOpcode::EXEC_COND_JMP,
 						off, jmp_mask };
-					while (execute_bus.is_busy())
+					while (execute_bus.is_busy)
 					{
-						Task& t = *this;
-						co_await t;
+						CONTEXT_SWITCH();
 					}
 					execute_bus.send(execute_pkt);
 					break;

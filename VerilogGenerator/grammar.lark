@@ -22,7 +22,7 @@ enum_decl: ENUM "class" IDENT ":" type "{" IDENT ("," IDENT)* "}" ";"
 
 
 
-method: type IDENT "(" params ")" block
+method: ("static" | "inline")* type IDENT "(" params ")" block
 
 params: (param ("," param)*)?
 
@@ -31,17 +31,21 @@ param: type IDENT
 block: "{" stmt* "}"
 
 
-stmt: local_decl
+stmt: local_decl ";"
 |     object_init
 |     while_stmt
 |     block
 |     if_stmt
+|     for_stmt
 |     call_stmt
 |     break_stmt
 |     continue_stmt
 |     assign_stmt
 |     switch_stmt
 |     return_stmt
+|     inc_stmt ";"
+
+inc_stmt: IDENT "++"
 
 return_stmt: "return" expr ";"
 
@@ -64,11 +68,13 @@ access: qual_ident ("." IDENT)? ("->" IDENT)?
 
 if_stmt: "if" "(" expr ")" block ("else" block)?
 
+for_stmt: "for" "(" local_decl ";" expr ";" inc_stmt ")" block 
+
 while_stmt: "while" "(" expr ")" block
 
 assign_stmt:   access some_assign_op expr ";"
 
-local_decl: type IDENT "=" expr ";"
+local_decl: type IDENT "=" expr 
 
 object_init: type IDENT "(" args ")" ";"
 |            type IDENT "{" args "}" ";"
@@ -84,7 +90,7 @@ args: (expr ("," expr)*)?
 
 expr: term (binary_op term)?
 
-binary_op: cmp_eq | plus | cmp_neq | bit_and | bit_or | mult | divide | bit_shl | bit_shr | subtract
+binary_op: cmp_eq | plus | cmp_neq | bit_and | bit_or | mult | divide | bit_shl | bit_shr | subtract | cmp_lt | cmp_gt | cmp_le | cmp_ge
 
 cmp_eq: "=="
 cmp_neq: "!="
@@ -96,6 +102,10 @@ bit_and: "&"
 bit_or: "|"
 bit_shl: "<<"
 bit_shr: ">>"
+cmp_lt: "<"
+cmp_gt: ">"
+cmp_le: "<="
+cmp_ge: ">="
 
 term: "(" expr ")"
 | number_expr

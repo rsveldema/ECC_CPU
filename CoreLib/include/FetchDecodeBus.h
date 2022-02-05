@@ -7,18 +7,11 @@
 
 #include "Defines.h"
 
-#include "ExecutionMask.h"
+#include "Packets.h"
 
 namespace ecc
 {
 
-	struct FetchToDecodeBusPacket
-	{
-		ExecutionMask exec_mask;
-		ecc::memory_address_t PC;
-		uint32_t insn;
-	};
-	
 	class FetchToDecodeBus
 	{
 	public:
