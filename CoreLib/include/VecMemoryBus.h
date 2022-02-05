@@ -17,8 +17,8 @@ namespace ecc
 		{
 			read_vec64,
 			write_vec64,
-			read_response,
-			write_response
+			read_response_vec64,
+			write_response_vec64
 		};
 
 		using vec_bus_payload_t = VectorValue;
@@ -27,7 +27,7 @@ namespace ecc
 		{
 			VecBusPacketType type;
 			BusID source;
-			vec_vector_obj_t<int64_t> address;
+			VectorValue address;
 			vec_bus_payload_t payload;
 		};
 
@@ -40,13 +40,13 @@ namespace ecc
 		std::queue<VecBusPacket> request_queue;
 		std::queue<VecBusPacket> response_queue;
 
-		void send_read_request_vec(const vec_vector_obj_t<int64_t>& address, const BusID& source)
+		void send_read_request_vec(const VectorValue& address, const BusID& source)
 		{
 			VecBusPacket pkt{ VecBusPacketType::read_vec64, source, address };
 			send_request(pkt);
 		}
 
-		void send_write_request_vec(const vec_vector_obj_t<int64_t>& address,
+		void send_write_request_vec(const VectorValue& address,
 			const BusID& source,
 			const VectorValue& value)
 		{

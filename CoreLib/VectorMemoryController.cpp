@@ -35,9 +35,8 @@ namespace ecc
 					case VecBusPacketType::read_vec64:
 					{
 						VecBusPacket reply{
-							.type = VecBusPacketType::read_response
+							.type = VecBusPacketType::read_response_vec64
 						};
-						reply.payload = VectorValue(vec_vector_obj_t<int64_t>());
 
 						for (unsigned i = 0; i < addresses.size(); i++)
 						{
@@ -69,7 +68,7 @@ namespace ecc
 
 					case VecBusPacketType::write_vec64:
 					{
-						const auto& arrayData = pkt->payload.data;
+						const auto& arrayData = pkt->payload;
 
 						for (unsigned i = 0; i < addresses.size(); i++)
 						{

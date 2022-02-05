@@ -11,8 +11,15 @@ namespace ecc
 	template <typename ElementType>
 	struct vec_vector_obj_t
 	{
-		using elt_t = ElementType;
-		using elt_vector_t = std::array<ElementType, ecc::VECTOR_MEM_SIZE / sizeof(ElementType)>;
+		
+	};
+
+
+	struct VectorValue
+	{
+		using elt_t = int64_t;
+
+		using elt_vector_t = std::array<elt_t, NUMBER_OF_VECTOR_THREADS_INT64>;
 
 		elt_vector_t data;
 
@@ -37,7 +44,7 @@ namespace ecc
 			return true;
 		}
 
-		void replicate(const ElementType v)
+		void replicate(const elt_t v)
 		{
 			for (int i = 0; i < data.size(); i++)
 			{
@@ -53,7 +60,7 @@ namespace ecc
 			}
 		}
 
-		void or_shift_left(const vec_vector_obj_t& other, unsigned shift_count)
+		void or_shift_left(const VectorValue& other, unsigned shift_count)
 		{
 			for (int i = 0; i < data.size(); i++)
 			{
@@ -61,7 +68,7 @@ namespace ecc
 			}
 		}
 
-		void shift_left(const vec_vector_obj_t& other)
+		void shift_left(const VectorValue& other)
 		{
 			for (int i = 0; i < data.size(); i++)
 			{
@@ -69,7 +76,7 @@ namespace ecc
 			}
 		}
 
-		void add(const vec_vector_obj_t& other)
+		void add(const VectorValue& other)
 		{
 			for (int i = 0; i < data.size(); i++)
 			{
@@ -77,7 +84,7 @@ namespace ecc
 			}
 		}
 
-		void bit_and(const vec_vector_obj_t& other)
+		void bit_and(const VectorValue& other)
 		{
 			for (int i = 0; i < data.size(); i++)
 			{
@@ -98,27 +105,28 @@ namespace ecc
 			return true;
 		}
 
-		template<typename ret_vector_type>
-		void compare(ret_vector_type& ret, const vec_vector_obj_t& other) const
+		VectorValue compare(const VectorValue& other) const
 		{
+			VectorValue ret;
 			for (int i = 0; i < data.size(); i++)
 			{
-				typename ret_vector_type::elt_t result = 0;
+				elt_t result = 0;
 
 				const auto value1 = data[i];
 				const auto value2 = other.data[i];
 
 				if (value1 == value2)
-					result |= ecc::FLAGS_MASK_EQ;
+					result |= FLAGS_MASK_EQ;
 
 				if (value1 > value2)
-					result |= ecc::FLAGS_MASK_GT;
+					result |= FLAGS_MASK_GT;
 
 				if (value1 < value2)
-					result |= ecc::FLAGS_MASK_LT;
+					result |= FLAGS_MASK_LT;
 
 				ret.data[i] = result;
 			}
+			return ret;
 		}
 
 		void store_at(uint8_t* ptr) const
@@ -128,20 +136,16 @@ namespace ecc
 			std::copy(data.begin(), data.end(), out);
 		}
 
+		/*
 		void load_from(uint8_t* ptr)
 		{
 			elt_t* out = reinterpret_cast<elt_t*>(data.data());
 
 			std::copy(out, out + data.size(), data.begin());
 		}
+		*/
 
-		void set(unsigned ix, ElementType value)
-		{
-			assert(ix < data.size());
-			data[ix] = value;
-		}
-
-		ElementType get(unsigned ix) const
+		elt_t get(unsigned ix) const
 		{
 			assert(ix < data.size());
 			return data[ix];
@@ -175,118 +179,106 @@ namespace ecc
 		{
 			return data.size();
 		}
-	};
-
-
-	struct VectorValue
-	{
-		vec_vector_obj_t<int64_t> data;
-
-		std::string to_string() const
-		{
-			std::string s;
-			s += "<";
-			s += data.to_string();
-			s += ">";
-			return s;
-		}
+		
 
 		void set(unsigned ix, int8_t value)
 		{
-			data.set(ix, value);
+			assert(ix < data.size());
+			data[ix] = value;
 		}
 
 		void set(unsigned ix, int16_t value)
 		{
-			data.set(ix, value);
+			assert(ix < data.size());
+			data[ix] = value;
 		}
 
 		void set(unsigned ix, int32_t value)
 		{
-			data.set(ix, value);
+			assert(ix < data.size());
+			data[ix] = value;
 		}
 
 		void set(unsigned ix, int64_t value)
 		{
-			data.set(ix, value);
+			assert(ix < data.size());
+			data[ix] = value;
 		}
 
 		void set(unsigned ix, float value)
 		{
-			data.set(ix, value);
+			assert(ix < data.size());
+			elt_t tmp = *(int32_t*) &value;
+			data[ix] = tmp;
 		}
 
 		void set(unsigned ix, double value)
 		{
-			data.set(ix, value);
+			assert(ix < data.size());
+			elt_t tmp = *(int64_t*) &value;
+			data[ix] = tmp;
 		}
 
 		uint64_t reduce_int64_to_single_int64_t() const
 		{
-			return data.reduce_to_uint64_t();
+			return reduce_to_uint64_t();
 		}
 
+		/*
 		void load_from_int64(uint8_t* ptr)
 		{
-			data = vec_vector_obj_t<int64_t>{ { } };
-			data.load_from(ptr);
+			load_from(ptr);
 		}
+		*/
 
-		void store_at(uint8_t* ptr) const
-		{
-			data.store_at(ptr);
-		}
 
-		bool are_all_adjacent_memory_addresses(unsigned elt_size) const
-		{
-			return data.are_all_adjacent_memory_addresses(elt_size);
-		}
-
-		ecc::memory_address_t get_PC() const
+		memory_address_t get_PC() const
 		{
 			return get_int64(0);
 		}
 
-		void setPC(ecc::memory_address_t value)
+		void setPC(memory_address_t value)
 		{
-			data = vec_vector_obj_t<int64_t>{ { static_cast<int64_t>(value) } };
+			data = { static_cast<elt_t>(value) };
 		}
 
 		int64_t get_int64(unsigned ix) const
 		{
-			return data.get(ix);
+			assert(ix < data.size());
+			return get(ix);
 		}
 
 		void set_int64(unsigned ix, int64_t value)
 		{
-			return data.set(ix, value);
+			assert(ix < data.size());
+			data[ix] = value;
 		}
 
 		static VectorValue create_vec_int64_blockindex()
 		{
 			VectorValue ret;
-			ret.data.set_incrementing_values();
+			ret.set_incrementing_values();
 			return ret;
 		}
 
 		static VectorValue create_vec_int64(int64_t v)
 		{
 			VectorValue ret;
-			ret.data.replicate(v);
+			ret.replicate(v);
 			return ret;
 		}
 
 		VectorValue shift_left_int64(const VectorValue& v) const
 		{
 			VectorValue ret(*this);
-			ret.data.shift_left(v.data);
+			ret.shift_left(v);
 			return ret;
 		}
 
 		VectorValue or_shift_left_int64(const VectorValue& v, int shift_count) const
 		{
 			VectorValue ret(*this);
-			ret.data.or_shift_left(v.data, shift_count);
+			ret.or_shift_left(v, shift_count);
 			return ret;
 		}
 
@@ -294,7 +286,7 @@ namespace ecc
 		VectorValue add_int64(const VectorValue& v) const
 		{
 			VectorValue ret(*this);
-			ret.data.add(v.data);
+			ret.add(v);
 			return ret;
 		}
 
@@ -302,28 +294,24 @@ namespace ecc
 		VectorValue bit_and_int64(const VectorValue& v) const
 		{
 			VectorValue ret(*this);
-			ret.data.bit_and(v.data);
+			ret.bit_and(v);
 			return ret;
 		}
 
 		VectorValue compare_int64(const VectorValue& v) const
 		{
-			VectorValue ret;
-			this->data.compare(ret.data, v.data);
+			VectorValue ret = compare(v);
 			return ret;
 		}
 
 		bool all_equal_int64() const
 		{
-			return data.all_equal();
+			return all_equal();
 		}
 	};
-}
 
 
-namespace ecc
-{
-	static std::string to_string(const ecc::VectorValue& v)
+	static std::string to_string(const VectorValue& v)
 	{
 		return v.to_string();
 	}

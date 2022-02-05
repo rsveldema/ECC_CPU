@@ -39,7 +39,7 @@ namespace ecc
 
 					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
 
-					this->memory_bus.send_write_request_vec(dest.data, memory_bus_id, src);
+					this->memory_bus.send_write_request_vec(dest, memory_bus_id, src);
 					break;
 				}
 
@@ -54,7 +54,7 @@ namespace ecc
 
 					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
 
-					memory_bus.send_read_request_vec(src.data, memory_bus_id);
+					memory_bus.send_read_request_vec(src, memory_bus_id);
 
 					while (1)
 					{
