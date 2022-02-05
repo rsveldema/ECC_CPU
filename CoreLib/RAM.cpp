@@ -11,7 +11,7 @@ namespace ecc
 			{
 				const auto pkt = toCPU.accept_request();
 
-				switch (pkt.type)
+				switch (pkt.packet_type)
 				{
 				case MemoryBus::Type::read_data:
 				{

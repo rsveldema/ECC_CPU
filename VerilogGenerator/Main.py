@@ -38,7 +38,7 @@ def parseInclude(parser, file):
         data = preprocess(lines)
         tree = parser.parse(data)
         return tree
-                
+
 
 def main():
     fp = open("grammar.lark")

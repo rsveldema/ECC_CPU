@@ -131,7 +131,7 @@ module FetchStage;
 				response = memory_bus();
 				// assert((response == BusPacketType::read_response))
 				address_cached=address_fetched;
-				fetched_cached=response();
+				fetched_cached=getInsnData(response);
 				state = 12; // GOTO
 				return;
 			end
@@ -213,7 +213,7 @@ module FetchStage;
 		19:
 			begin
 				// CONTEXT_SWITCH()
-				if (decode_bus())
+				if (decode_bus)
 				begin
 					state = 19; // GOTO
 					return;

@@ -21,11 +21,6 @@ namespace ecc
 	};
 
 
-	struct BusID
-	{
-		CoreID core_id;
-		CoreComponentID within_core_id;
-	};
 
 
 	static BusID createBusID(CoreID core_id, CoreComponentID within_id)

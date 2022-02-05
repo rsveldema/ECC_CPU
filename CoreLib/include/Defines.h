@@ -157,6 +157,11 @@ namespace ecc
 		STORAGE_HALT
 	};
 
+	struct BusID
+	{
+		CoreID core_id;
+		CoreComponentID within_core_id;
+	};
 
 	static 
 	uint32_t count_num_bits64(uint64_t value)

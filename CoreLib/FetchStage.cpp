@@ -76,10 +76,10 @@ namespace ecc
 						if (memory_bus.response_busy)
 						{
 							BusPacket response = memory_bus.get_response();
-							assert(response.type == BusPacketType::read_response);
+							assert(response.packet_type == BusPacketType::read_response);
 
 							address_cached = address_fetched;
-							fetched_cached = response.getInsnData();
+							fetched_cached = getInsnData(response);
 							break;
 						}
 
