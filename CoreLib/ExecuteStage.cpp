@@ -27,7 +27,7 @@ namespace ecc
 					const auto& value1 = std::get<VectorValue>(pkt.value0);
 					const auto& value2 = pkt.value1;
 
-					const VectorValue src = value1.compare_int64(value2);
+					const VectorValue src = value1.compare(value2);
 
 					const auto dest = RegisterID::REG_FLAGS;
 

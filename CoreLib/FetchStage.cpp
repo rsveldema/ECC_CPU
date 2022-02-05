@@ -115,7 +115,7 @@ namespace ecc
 				have_outstanding_jmp = true;
 			}
 
-			while (decode_bus.is_busy())
+			while (decode_bus.is_busy)
 			{
 				CONTEXT_SWITCH();
 			}

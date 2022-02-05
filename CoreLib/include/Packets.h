@@ -12,4 +12,10 @@ namespace ecc
 		instruction_t insn;
 	};
 	
+	struct StoreToFetchPacket
+	{
+		execution_mask_t exec_mask;
+		memory_address_t newpc;
+	};
+	
 }

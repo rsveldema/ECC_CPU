@@ -18,25 +18,20 @@ namespace ecc
 
 		void send(const FetchToDecodeBusPacket& pkt)
 		{
-			assert(!is_busy());
+			assert(!is_busy);
 			data = pkt;
-			can_receive = true;
+			is_busy = true;
 		}
 
 		FetchToDecodeBusPacket recv()
 		{
-			assert(can_receive);
+			assert(is_busy);
 			FetchToDecodeBusPacket v = data;
-			can_receive = false;			
+			is_busy = false;			
 			return v;
 		}
 
-		bool is_busy() const
-		{
-			return can_receive;
-		}
-
-		bool can_receive = false;
+		bool is_busy = false;
 		FetchToDecodeBusPacket data;
 	};
 }

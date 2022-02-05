@@ -17,7 +17,7 @@ namespace ecc
 
 		RegisterFile& regs;
 		ExecuteToStoreBus& execute_bus;
-		ecc::BusID memory_bus_id;
+		BusID memory_bus_id;
 		StoreToFetchBus& fetch_bus;
 		Logger& logger;
 		GlobalStats& stats;
@@ -28,7 +28,7 @@ namespace ecc
 			ExecuteToStoreBus& _execute_bus,
 			VecMemoryBus& _memory_bus,
 			RegisterFile& _regs,
-			ecc::BusID bus_id,
+			BusID bus_id,
 			StoreToFetchBus& _fetch_bus,
 			Logger& _logger,
 			GlobalStats& _stats,
@@ -45,6 +45,6 @@ namespace ecc
 			divergence_queue(_divergence_queue)
 		{}
 
-		ecc::ReturnObject run() override;
+		ReturnObject run() override;
 	};
 }

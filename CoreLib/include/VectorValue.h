@@ -8,13 +8,6 @@
 
 namespace ecc
 {
-	template <typename ElementType>
-	struct vec_vector_obj_t
-	{
-		
-	};
-
-
 	struct VectorValue
 	{
 		using elt_t = int64_t;
@@ -136,21 +129,6 @@ namespace ecc
 			std::copy(data.begin(), data.end(), out);
 		}
 
-		/*
-		void load_from(uint8_t* ptr)
-		{
-			elt_t* out = reinterpret_cast<elt_t*>(data.data());
-
-			std::copy(out, out + data.size(), data.begin());
-		}
-		*/
-
-		elt_t get(unsigned ix) const
-		{
-			assert(ix < data.size());
-			return data[ix];
-		}
-
 		bool are_all_adjacent_memory_addresses(int64_t elt_size) const
 		{
 			elt_t first = data[0];
@@ -175,11 +153,13 @@ namespace ecc
 			return ret;
 		}
 
-		size_t size() const
-		{
-			return data.size();
-		}
 		
+		elt_t get(unsigned ix) const
+		{
+			assert(ix < data.size());
+			return data[ix];
+		}
+
 
 		void set(unsigned ix, int8_t value)
 		{
@@ -224,14 +204,6 @@ namespace ecc
 			return reduce_to_uint64_t();
 		}
 
-		/*
-		void load_from_int64(uint8_t* ptr)
-		{
-			load_from(ptr);
-		}
-		*/
-
-
 		memory_address_t get_PC() const
 		{
 			return get_int64(0);
@@ -254,19 +226,6 @@ namespace ecc
 			data[ix] = value;
 		}
 
-		static VectorValue create_vec_int64_blockindex()
-		{
-			VectorValue ret;
-			ret.set_incrementing_values();
-			return ret;
-		}
-
-		static VectorValue create_vec_int64(int64_t v)
-		{
-			VectorValue ret;
-			ret.replicate(v);
-			return ret;
-		}
 
 		VectorValue shift_left_int64(const VectorValue& v) const
 		{
@@ -297,19 +256,22 @@ namespace ecc
 			ret.bit_and(v);
 			return ret;
 		}
-
-		VectorValue compare_int64(const VectorValue& v) const
-		{
-			VectorValue ret = compare(v);
-			return ret;
-		}
-
-		bool all_equal_int64() const
-		{
-			return all_equal();
-		}
 	};
 
+
+	static VectorValue create_vec_int64_blockindex()
+	{
+		VectorValue ret;
+		ret.set_incrementing_values();
+		return ret;
+	}
+
+	static VectorValue create_vec_int64(int64_t v)
+	{
+		VectorValue ret;
+		ret.replicate(v);
+		return ret;
+	}
 
 	static std::string to_string(const VectorValue& v)
 	{

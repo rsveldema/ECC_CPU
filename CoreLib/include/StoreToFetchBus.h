@@ -4,14 +4,10 @@
 #include <cassert>
 
 #include "MachineInfo.h"
+#include <Packets.h>
 
 namespace ecc
 {
-	struct StoreToFetchPacket
-	{
-		execution_mask_t exec_mask;
-		memory_address_t newpc;
-	};
 
 	class StoreToFetchBus
 	{

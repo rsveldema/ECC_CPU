@@ -12,10 +12,10 @@ namespace ecc
 		case Opcode::JMP_EQUAL:		return FLAGS_MASK_EQ;
 		case Opcode::JMP_NOT_EQUAL:	return FLAGS_MASK_LT | FLAGS_MASK_GT;
 
-		case Opcode::JMP_GREATER:		return FLAGS_MASK_GT;
+		case Opcode::JMP_GREATER:	return FLAGS_MASK_GT;
 		case Opcode::JMP_LOWER:		return FLAGS_MASK_LT;
 
-		case Opcode::JMP_GREATER_EQUAL:return FLAGS_MASK_GT | FLAGS_MASK_EQ;
+		case Opcode::JMP_GREATER_EQUAL:	return FLAGS_MASK_GT | FLAGS_MASK_EQ;
 		case Opcode::JMP_LOWER_EQUAL:	return FLAGS_MASK_LT | FLAGS_MASK_EQ;
 		}
 		assert(false);
@@ -26,7 +26,7 @@ namespace ecc
 	{
 		while (1)
 		{
-			if (fetch_bus.can_receive)
+			if (fetch_bus.is_busy)
 			{
 				const FetchToDecodeBusPacket pkt = fetch_bus.recv();
 
@@ -55,7 +55,7 @@ namespace ecc
 
 					memory_address_t value = constValue + pkt.PC;
 
-					VectorValue vec = VectorValue::create_vec_int64(value);
+					VectorValue vec = create_vec_int64(value);
 
 					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_MOVE_REG_VALUE,
 									reg,
@@ -74,7 +74,7 @@ namespace ecc
 					const auto& addr2 = regs[base_reg_id];
 					const auto& value = regs[src_reg];
 
-					VectorValue addr1 = VectorValue::create_vec_int64(addr_offset_value);
+					VectorValue addr1 = create_vec_int64(addr_offset_value);
 
 					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_STORE_ADDR_VALUE,
 						value, addr1, addr2 };
@@ -87,7 +87,7 @@ namespace ecc
 				{
 					const auto& reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 
-					VectorValue value = VectorValue::create_vec_int64_blockindex();
+					VectorValue value = create_vec_int64_blockindex();
 
 					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_MOVE_REG_VALUE,
 						reg, value };
@@ -100,7 +100,7 @@ namespace ecc
 					const auto& reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto& const_value = static_cast<int16_t>((pkt.insn >> 16) & 0xffff);
 
-					VectorValue value = VectorValue::create_vec_int64(const_value);
+					VectorValue value = create_vec_int64(const_value);
 
 					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask,  PC, ExecuteStageOpcode::EXEC_MOVE_REG_VALUE,
 						reg, value };
@@ -127,7 +127,7 @@ namespace ecc
 					const auto src1_reg = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
 					const auto value2_const = static_cast<int8_t>((pkt.insn >> 24) & 0xff);
 
-					const auto value2 = VectorValue::create_vec_int64(value2_const);
+					const auto value2 = create_vec_int64(value2_const);
 
 					const auto& value1 = regs[src1_reg];
 
@@ -161,7 +161,7 @@ namespace ecc
 					const auto src1_reg = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
 					const auto value2_const = static_cast<int8_t>((pkt.insn >> 24) & 0xff);
 
-					VectorValue value2 = VectorValue::create_vec_int64(value2_const);
+					VectorValue value2 = create_vec_int64(value2_const);
 
 					const auto& value1 = regs[src1_reg];
 
@@ -213,10 +213,10 @@ namespace ecc
 
 					const auto expected_mask = get_expected_cond_jump_flags_mask(opcode);
 
-					const VectorValue jmp_mask = VectorValue::create_vec_int64(expected_mask);
+					const VectorValue jmp_mask = create_vec_int64(expected_mask);
 
 					const auto off_const = static_cast<int32_t>(pkt.insn >> 8);
-					const VectorValue off = VectorValue::create_vec_int64(off_const);
+					const VectorValue off = create_vec_int64(off_const);
 
 
 					const DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC,
@@ -236,7 +236,7 @@ namespace ecc
 					const auto base = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto off1_const = static_cast<int16_t>(pkt.insn >> 16);
 
-					VectorValue off1 = VectorValue::create_vec_int64(off1_const);
+					VectorValue off1 = create_vec_int64(off1_const);
 
 					const auto& off2 = regs[base];
 
@@ -255,7 +255,7 @@ namespace ecc
 					const auto base = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
 					const auto off1_const = static_cast<int16_t>(pkt.insn >> 24);
 
-					VectorValue off1 = VectorValue::create_vec_int64(off1_const);
+					VectorValue off1 = create_vec_int64(off1_const);
 
 					const auto& off2 = regs[base];
 
@@ -272,7 +272,7 @@ namespace ecc
 				{
 					const auto dest = RegisterID::REG_R0;
 					const auto off1_const = static_cast<int32_t>(pkt.insn >> 8);
-					VectorValue off1 = VectorValue::create_vec_int64(off1_const);
+					VectorValue off1 = create_vec_int64(off1_const);
 
 					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_MOVE_REG_VALUE,
 							dest,
@@ -286,7 +286,7 @@ namespace ecc
 				{
 					const auto dest = RegisterID::REG_R0;
 					const auto off1_const = static_cast<int32_t>(pkt.insn >> 8);
-					VectorValue off1 = VectorValue::create_vec_int64(off1_const);
+					VectorValue off1 = create_vec_int64(off1_const);
 					const auto& off2 = regs[RegisterID::REG_R0];
 
 					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_ORB_REG_VALUE,
@@ -302,7 +302,7 @@ namespace ecc
 				{
 					const auto dest = RegisterID::REG_R0;
 					const auto off1_const = static_cast<int32_t>(pkt.insn >> 8);
-					VectorValue off1 = VectorValue::create_vec_int64(off1_const);
+					VectorValue off1 = create_vec_int64(off1_const);
 					const auto& off2 = regs[RegisterID::REG_R0];
 
 					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_ORC_REG_VALUE,
