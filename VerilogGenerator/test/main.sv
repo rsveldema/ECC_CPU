@@ -10,9 +10,13 @@ typedef shortint signed int16_t;
 
 typedef bit bool;
 
-`include "global_decls.sv"
+`include "Defines.sv"
+`include "Packets.sv"
 `include "MemoryBus.sv"
 
 
 `include "FetchStage.sv"
+
+module main();
+endmodule;
 
