@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "Assembler"
+		},
+		{
+			"path": "CoreLib"
+		},
+		{
+			"path": "Simulator"
+		},
+		{
+			"path": "VerilogGenerator"
+		}
+	],
+	"settings": {}
+}

@@ -2,7 +2,7 @@
 
 #include "SimComponent.h"
 #include "MemoryBus.h"
-#include "FetchDecodeBus.h"
+#include "FetchToDecodeBus.h"
 #include "Stats.h"
 #include "StoreToFetchBus.h"
 #include "Logger.h"

@@ -54,9 +54,10 @@ def main():
     with open(output_path + "global_decls.sv", "w") as fp: 
         ps = PrintStream(fp)
 
-        includes = ["../CoreLib/include/Defines.h", "../CoreLib/include/Packets.h"]
+        inc_path = "../CoreLib/include/"
+        includes = ["Defines.h", "Packets.h", "FetchToDecodeBus.h"]
         for file in includes:
-            tree = parseFile(parser, file)
+            tree = parseFile(parser, inc_path + file)
             ast = createAST(tree)
             ast.generate_decls(ps)
         

@@ -4,7 +4,7 @@
 #include "RegisterFile.h"
 #include "DecodeToExecuteBus.h"
 #include "Logger.h"
-#include "FetchDecodeBus.h"
+#include "FetchToDecodeBus.h"
 
 namespace ecc
 {

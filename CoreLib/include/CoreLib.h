@@ -8,7 +8,7 @@
 #include "SimComponent.h"
 #include "MachineInfo.h"
 #include "Multiplexer.h"
-#include "FetchDecodeBus.h"
+#include "FetchToDecodeBus.h"
 #include "DecodeStage.h"
 #include "ExecuteStage.h"
 #include "StoreStage.h"

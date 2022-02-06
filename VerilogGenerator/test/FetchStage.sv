@@ -42,7 +42,7 @@ end
 endfunction
 
 
-module FetchStage;
+module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
 	reg[32:0] state = 0;
 	bool have_outstanding_jmp = 0;
 	memory_address_t fetch_PC = 0;
@@ -61,7 +61,7 @@ module FetchStage;
 
 	
 	
-	task run(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
+	task run();
 	case (state)
 		0:
 			begin

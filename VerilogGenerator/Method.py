@@ -90,10 +90,12 @@ class Method:
     def generate_module(self, ps:PrintStream):
         module_name = self.funcname.split("::")[0]
         task_name = self.funcname.split("::")[1]
-            
+        
+        params = self.get_param_str()
+
         ps.println("")
         ps.println("")
-        ps.println("module " + module_name + ";")
+        ps.println(f"module {module_name}({params});")
         
         self.generate_local_vars(ps)
         
@@ -107,11 +109,10 @@ class Method:
         ps.println("")
         ps.up()        
         
-        params = self.get_param_str()
 
         ps.println("")
         ps.println("")
-        ps.println(f"task {task_name}({params});")            
+        ps.println(f"task {task_name}();")            
         self.block.generate(ps)
         ps.println("endtask")
         ps.down()
