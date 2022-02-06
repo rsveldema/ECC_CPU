@@ -19,9 +19,9 @@ namespace ecc
 
 				case StorageStageOpcode::STORAGE_STORE_VALUE_INTO_REG:
 				{
-					const auto dest = std::get<RegisterID>(pkt.dest);
+					const auto dest = pkt.dest.regID;
 					assert(isValidIndex(dest));
-					const auto& src = std::get<VectorValue>(pkt.src);
+					const auto& src = pkt.src.value;
 
 					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
 
@@ -32,8 +32,8 @@ namespace ecc
 
 				case StorageStageOpcode::STORAGE_STORE_REG_INTO_MEM:
 				{
-					const auto& dest = std::get<VectorValue>(pkt.dest);
-					const auto& src = std::get<VectorValue>(pkt.src);
+					const auto& dest = pkt.dest.value;
+					const auto& src = pkt.src.value;
 
 					assert(dest.are_all_adjacent_memory_addresses(8));
 
@@ -46,11 +46,11 @@ namespace ecc
 				// reg = memory[src]
 				case StorageStageOpcode::STORAGE_LOAD_MEM_INTO_REG:
 				{
-					auto dest = std::get<RegisterID>(pkt.dest);
+					auto dest = pkt.dest.regID;
 					assert(isValidIndex(dest));
 					const auto is_store_to_pc = pkt.is_store_to_pc;
 
-					const auto& src = std::get<VectorValue>(pkt.src);
+					const auto& src = pkt.src.value;
 
 					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
 
@@ -87,7 +87,7 @@ namespace ecc
 
 				case StorageStageOpcode::STORAGE_JMP:
 				{
-					auto new_address = std::get<memory_address_t>(pkt.dest);
+					auto new_address = pkt.dest.address;
 
 					fetch_bus.send(StoreToFetchPacket{ pkt.exec_mask, new_address });
 					break;
@@ -97,8 +97,8 @@ namespace ecc
 				{
 					stats.numVectorLocalDivergences++;
 
-					const auto new_address = std::get<memory_address_t>(pkt.dest);
-					const auto next_address = std::get<memory_address_t>(pkt.src);
+					const auto new_address = pkt.dest.address;
+					const auto next_address = pkt.src.address;
 					const auto& exec_mask_new_address = pkt.execution_flags_true;
 					const auto& exec_mask_next_address = pkt.execution_flags_false;
 

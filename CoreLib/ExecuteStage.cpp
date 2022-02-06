@@ -40,10 +40,10 @@ namespace ecc
 
 					regs.mark_invalid(dest);
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
+					ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC,
 							StorageStageOpcode::STORAGE_STORE_VALUE_INTO_REG,
-							dest,
-							src };
+							{.regID = dest},
+							{.value = src} };
 					store_bus.send(store_pkt);
 					break;
 				}
@@ -60,9 +60,10 @@ namespace ecc
 
 					regs.mark_invalid(dest);
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
+					ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC,
 						StorageStageOpcode::STORAGE_STORE_VALUE_INTO_REG,
-						dest, src };
+						{.regID = dest}, 
+						{.value = src } };
 					store_bus.send(store_pkt);
 					break;
 				}
@@ -83,9 +84,10 @@ namespace ecc
 
 					regs.mark_invalid(dest);
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
+					ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC,
 						StorageStageOpcode::STORAGE_STORE_VALUE_INTO_REG,
-						dest, src };
+						{.regID = dest}, 
+						{.value = src }};
 					store_bus.send(store_pkt);
 					break;
 				}
@@ -105,9 +107,10 @@ namespace ecc
 
 					regs.mark_invalid(dest);
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
+					ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC,
 						StorageStageOpcode::STORAGE_STORE_VALUE_INTO_REG,
-						dest, src };
+						{.regID = dest}, 
+						{.value = src }};
 					store_bus.send(store_pkt);
 					break;
 				}
@@ -126,9 +129,10 @@ namespace ecc
 
 					regs.mark_invalid(dest);
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
+					ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC,
 						StorageStageOpcode::STORAGE_STORE_VALUE_INTO_REG,
-						dest, src };
+						{.regID = dest }, 
+						{.value = src } };
 					store_bus.send(store_pkt);
 					break;
 				}
@@ -148,9 +152,11 @@ namespace ecc
 
 					regs.mark_invalid(dest);
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
-						StorageStageOpcode::STORAGE_STORE_VALUE_INTO_REG,
-						dest, src };
+					ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC,
+							StorageStageOpcode::STORAGE_STORE_VALUE_INTO_REG,
+							{.regID = dest}, 
+							{.value = src} 
+						};
 					store_bus.send(store_pkt);
 					break;
 				}
@@ -158,7 +164,7 @@ namespace ecc
 				// reg = [value + value]
 				case ExecuteStageOpcode::EXEC_LOAD_REG:
 				{
-					auto dest = std::get<RegisterID>(pkt.value0);
+					const auto dest = std::get<RegisterID>(pkt.value0);
 					auto off1 = pkt.value1;
 					auto off2 = pkt.value2;
 
@@ -171,8 +177,9 @@ namespace ecc
 
 					regs.mark_invalid(dest);
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_LOAD_MEM_INTO_REG,
-						dest, offset };
+					ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_LOAD_MEM_INTO_REG,
+						{.regID = dest}, 
+						{.value = offset} };
 					store_bus.send(store_pkt);
 					break;
 				}
@@ -190,9 +197,10 @@ namespace ecc
 						CONTEXT_SWITCH();
 					}
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC,
+					ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC,
 						StorageStageOpcode::STORAGE_STORE_REG_INTO_MEM,
-						addr, value };
+						{.value = addr}, 
+						{.value = value} };
 					store_bus.send(store_pkt);
 					break;
 				}
@@ -204,14 +212,17 @@ namespace ecc
 
 					auto offset = off1.add_int64(off2);
 
-					auto dest = RegisterID::REG_PC;
+					const auto dest = RegisterID::REG_PC;
 					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
 					}
 
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_LOAD_MEM_INTO_REG,
-						dest, offset, 0 };
+					ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_LOAD_MEM_INTO_REG,
+							{.regID =  dest}, 
+							{.value = offset}, 
+							0 
+						};
 					store_pkt.is_store_to_pc = true;
 					store_bus.send(store_pkt);
 					break;
@@ -248,14 +259,14 @@ namespace ecc
 					if (should_jmp == 0)
 					{
 						// no thread wants to jump to the next-insn
-						ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_JMP,
+						ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_JMP,
 							next_address };
 						store_bus.send(store_pkt);
 					}
 					else if (should_jmp == all_threads_mask)
 					{
 						// all threads just want to go to the next-insn
-						ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_JMP,
+						ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_JMP,
 							new_address };
 						store_bus.send(store_pkt);
 					}
@@ -266,7 +277,7 @@ namespace ecc
 						execution_mask_t execution_flags_false(exec_mask & ~should_jmp);
 						bool is_store_to_pc = false;
 
-						ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_CJMP,
+						ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_CJMP,
 							new_address,
 							next_address,
 							is_store_to_pc,
@@ -290,7 +301,7 @@ namespace ecc
 					{
 						CONTEXT_SWITCH();
 					}
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_JMP, new_address };
+					ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_JMP, new_address };
 					store_bus.send(store_pkt);
 					break;
 				}
@@ -301,7 +312,8 @@ namespace ecc
 					{
 						CONTEXT_SWITCH();
 					}
-					ExecuteToStoreBus::Packet store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_HALT };
+					ExecStagePacket store_pkt{ pkt.exec_mask, 
+						pkt.PC, StorageStageOpcode::STORAGE_HALT };
 					store_bus.send(store_pkt);
 					break;
 				}

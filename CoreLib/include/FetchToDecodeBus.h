@@ -12,9 +12,12 @@
 namespace ecc
 {
 
-	class FetchToDecodeBus
+	INTERFACE FetchToDecodeBus
 	{
-	public:
+		bool is_busy = false;
+		FetchToDecodeBusPacket data;
+
+		METHOD_SECTION;
 
 		void send(const FetchToDecodeBusPacket& pkt)
 		{
@@ -30,8 +33,5 @@ namespace ecc
 			is_busy = false;			
 			return v;
 		}
-
-		bool is_busy = false;
-		FetchToDecodeBusPacket data;
 	};
 }
