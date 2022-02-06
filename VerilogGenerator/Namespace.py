@@ -31,6 +31,8 @@ class Namespace:
 
     def lower_ast(self):
         ret = []
-        for p in self.methods:
-            ret.append(p.lower_ast())
+
+        if self.methods:
+            for p in self.methods:
+                ret.append(p.lower_ast())
         return ret

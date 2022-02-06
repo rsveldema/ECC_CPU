@@ -1,7 +1,10 @@
-from lark import Lark
 from MyTransformer import MyTransformer
 from PrintStream import PrintStream
+from lark import Lark, logger
+import logging
 
+
+logger.setLevel(logging.DEBUG)
 
 output_path = "test/"
 
@@ -32,7 +35,7 @@ def generate(methods, ps: PrintStream):
     for m in methods:
         m.generate(ps)
 
-def parseInclude(parser, file):
+def parseFile(parser, file):
     with open(file) as fp:
         lines = fp.readlines()
         data = preprocess(lines)
@@ -46,14 +49,14 @@ def main():
     grammar = fp.read()
     fp.close()
 
-    parser = Lark(grammar)
-    
+    parser = Lark(grammar, parser='lalr', debug=True)
+
     with open(output_path + "global_decls.sv", "w") as fp: 
         ps = PrintStream(fp)
 
         includes = ["../CoreLib/include/Defines.h", "../CoreLib/include/Packets.h"]
         for file in includes:
-            tree = parseInclude(parser, file)
+            tree = parseFile(parser, file)
             ast = createAST(tree)
             ast.generate_decls(ps)
         
@@ -69,24 +72,20 @@ def main():
         for remove_ext in [".cpp", ".h"]:
             module_name = module_name.replace(remove_ext, "")
         
-        with open(output_path + module_name + ".sv", "w") as fp: 
-            ps = PrintStream(fp)
+            tree = parseFile(parser, file)
+            #print(tree)
 
-            with open(file) as fp:
-                lines = fp.readlines()
-                data = preprocess(lines)
-                print("PARSING: " + file)
-                tree = parser.parse(data)
-                #print(tree)
+            ast = createAST(tree)
+            #print(f"AST = ")
+            #ast.pretty()
 
-                ast = createAST(tree)
-                #print(f"AST = ")
-                #ast.pretty()
+            methods = ast.lower_ast()
 
-                methods = ast.lower_ast()
-
-                methods = create_state_switch(methods)
-                
+            methods = create_state_switch(methods)
+    
+            with open(output_path + module_name + ".sv", "w") as fp: 
+          
+                ps = PrintStream(fp)
                 ast.generate_decls(ps)
                 
                 generate(methods, ps)

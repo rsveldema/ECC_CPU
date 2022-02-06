@@ -2,7 +2,7 @@ start: include* namespace
 
 include: "#include"  (string | "<" IDENT "." IDENT ">")
 
-namespace:  "namespace" IDENT "{" global_decls global_methods "}"
+namespace:  "namespace" IDENT "{" global_decls ("METHOD_SECTION" ";" global_methods)? "}"
 
 global_decls: global_decl*
 
@@ -10,13 +10,14 @@ global_methods: method*
 
 global_decl: using_decl | static_decl | enum_decl | struct_decl | union_decl | interface_decl | local_decl ";"
 
-using_decl: "using" IDENT "=" type ";"
+using_decl: USING IDENT "=" type ";"
+
 
 struct_decl: "struct" IDENT "{" member_decl* "}" ";"
 
 union_decl: "union" IDENT "{" member_decl* "}" ";"
 
-interface_decl: "INTERFACE" IDENT "{" global_decls global_methods "}" ";"
+interface_decl: "INTERFACE" IDENT "{" global_decls ("METHOD_SECTION" ";" global_methods)? "}" ";"
 
 
 member_decl: type IDENT ";"
@@ -28,7 +29,7 @@ enum_decl: ENUM "class" IDENT ":" type "{" IDENT ("," IDENT)* "}" ";"
 
 
 
-method: ("static" | "inline")* type IDENT "(" params ")" block
+method: (STATIC | INLINE)* type IDENT "(" params ")" block
 
 params: (param ("," param)*)?
 
@@ -154,6 +155,10 @@ type: ("const")? ( booltype
 | uint16_t
 | uint32_t
 | uint64_t
+| int8_t
+| int16_t
+| int32_t
+| int64_t
 | user_defined_type
 | autotype)
 
@@ -165,7 +170,15 @@ uint32_t: "uint32_t"
 
 uint64_t: "uint64_t"
 
-user_defined_type: qual_ident_type ("<" IDENT "," expr ">")? ("&")?
+int8_t: "int8_t"
+
+int16_t: "int16_t"
+
+int32_t: "int32_t"
+
+int64_t: "int64_t"
+
+user_defined_type: qual_ident_type ("<" IDENT "," term ">")? ("&")?
 
 qual_ident_type: qual_ident
 
@@ -190,7 +203,11 @@ COMMENT: "//" /[^\n]*/ _NEWLINE
 MULTILINE_COMMENT: /\/\*.*?\*\//s
 
 STATIC: "static"
+INLINE: "inline"
 ENUM: "enum"
+
+USING: "using"
+
 
 %import common.ESCAPED_STRING
 %import common.SIGNED_NUMBER

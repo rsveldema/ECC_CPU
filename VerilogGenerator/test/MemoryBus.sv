@@ -40,11 +40,11 @@ interface MemoryBus;
 	function accept_request();
 		reg[32:0] state = 0;
 		BusPacket f = 0;
-		return f = 0;
 	begin
 		// assert(request_busy)
 		f = request_data;
 		request_busy=0;
+		return f;
 	end
 	endfunction
 	
@@ -52,11 +52,11 @@ interface MemoryBus;
 	function get_response();
 		reg[32:0] state = 0;
 		BusPacket f = 0;
-		return f = 0;
 	begin
 		// assert(response_busy)
 		f = response_data;
 		response_busy=0;
+		return f;
 	end
 	endfunction
 	

@@ -52,6 +52,18 @@ class MyTransformer(Transformer):
         else:
             return ArrayType(tree[1]+"", tree[2])
 
+    def int8_t(self, tree):
+        return Type("int8_t")
+
+    def int16_t(self, tree):
+        return Type("int16_t")
+
+    def int32_t(self, tree):
+        return Type("int32_t")
+
+    def int64_t(self, tree):
+        return Type("int64_t")
+
     def uint8_t(self, tree):
         return Type("uint8_t")
 
@@ -310,14 +322,20 @@ class MyTransformer(Transformer):
         return InterfaceDecl(name, global_decls, methods)
 
     def namespace(self, tree):
-        name = tree[0]
-        global_decls = tree[1]
-        methods = tree[2]
+        if len(tree) == 2:
+            name = tree[0]
+            global_decls = tree[1]
+            methods = None
+        else:
+            name = tree[0]
+            global_decls = tree[1]
+            methods = tree[2]
+
         return Namespace(name, global_decls, methods)
         
     def using_decl(self, tree):
-        name = tree[0] + ""
-        type = tree[1]
+        name = tree[1] + ""
+        type = tree[2]
         return TypeDef(name, type)
 
     def struct_decl(self, tree):

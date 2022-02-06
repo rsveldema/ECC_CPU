@@ -1,8 +1,11 @@
-using instruction_t = uint32_t;
-using memory_address_t = uint64_t;
+
+typedef uint32_t instruction_t;
+
+typedef uint64_t memory_address_t;
 
 typedef instruction_t fetched_instruction_data_t[2];
-using execution_mask_t = uint64_t;
+
+typedef uint64_t execution_mask_t;
 
 `define POINTER_SIZE ($bits(memory_address_t) / 8)
 
@@ -157,7 +160,8 @@ typedef enum {
 	,read_response
 	,write_response
 } BusPacketType;
-using bus_packet_payload_t = uint64_t;
+
+typedef uint64_t bus_packet_payload_t;
 
 
 typedef struct packed {

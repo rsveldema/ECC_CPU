@@ -27,6 +27,8 @@ namespace ecc
 		BusPacket request_data;
 		BusPacket response_data;
 
+		METHOD_SECTION;
+
 		void send_read_request_data(memory_address_t address, const BusID &source)
 		{
 			BusPacket pkt{BusPacketType::read_data, source, address};

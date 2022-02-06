@@ -8,6 +8,8 @@ namespace ecc
 		fetched_instruction_data_t data;
 	};
 
+	METHOD_SECTION;
+
 	fetched_instruction_data_t getInsnData(const BusPacket &pkt)
 	{
 		int64_to_insn_data tmp;

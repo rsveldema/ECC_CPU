@@ -1,6 +1,7 @@
 #pragma once
 
 #define INTERFACE struct
+#define METHOD_SECTION
 
 namespace ecc
 {
@@ -165,7 +166,9 @@ namespace ecc
 		CoreComponentID within_core_id;
 	};
 
-	static 
+	METHOD_SECTION;
+
+	static inline
 	uint32_t count_num_bits64(uint64_t value)
 	{
 		uint32_t c = 0;
