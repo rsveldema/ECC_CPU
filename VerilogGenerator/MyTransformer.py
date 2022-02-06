@@ -1,4 +1,3 @@
-from ast import Return
 from lark import Lark, Transformer
 from Type import Type
 from Break import Break
@@ -8,6 +7,7 @@ from SwitchStmt import CaseStmt, SwitchStmt
 from ReturnStmt import ReturnStmt
 from EnumDecl import EnumDecl
 from ConstantDecl import ConstantDecl
+from DotAccessExpr import DotAccessExpr
 from TypeDef import TypeDef
 from MemberDecl import MemberDecl
 from StructDecl import StructDecl
@@ -95,7 +95,10 @@ class MyTransformer(Transformer):
         return Continue()
 
     def access(self, tree):
-        return tree[0]
+        if len(tree) == 1:
+            return tree[0]
+        else:
+            return DotAccessExpr(tree[0], tree[1]+"")
 
     def access_expr(self, tree):        
         if len(tree) > 1:

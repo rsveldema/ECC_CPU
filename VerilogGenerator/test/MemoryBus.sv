@@ -5,7 +5,7 @@ interface MemoryBus;
 	BusPacket response_data;
 	
 	
-	function send_read_request_data(memory_address_t address, BusID source);
+	function void send_read_request_data(memory_address_t address, BusID source);
 		reg[32:0] state = 0;
 		BusPacket pkt = 0;
 	begin
@@ -15,7 +15,7 @@ interface MemoryBus;
 	endfunction
 	
 	
-	function send_write_request_data(memory_address_t address, BusID source, bus_packet_payload_t value);
+	function void send_write_request_data(memory_address_t address, BusID source, bus_packet_payload_t value);
 		reg[32:0] state = 0;
 		BusPacket pkt = 0;
 	begin
@@ -25,7 +25,7 @@ interface MemoryBus;
 	endfunction
 	
 	
-	function send_read_response(bus_packet_payload_t value, BusID source);
+	function void send_read_response(bus_packet_payload_t value, BusID source);
 		reg[32:0] state = 0;
 		memory_address_t addr = 0;
 		BusPacket pkt = 0;
@@ -37,7 +37,7 @@ interface MemoryBus;
 	endfunction
 	
 	
-	function accept_request();
+	function BusPacket accept_request();
 		reg[32:0] state = 0;
 		BusPacket f = 0;
 	begin
@@ -49,7 +49,7 @@ interface MemoryBus;
 	endfunction
 	
 	
-	function get_response();
+	function BusPacket get_response();
 		reg[32:0] state = 0;
 		BusPacket f = 0;
 	begin
@@ -61,7 +61,7 @@ interface MemoryBus;
 	endfunction
 	
 	
-	function send_request(BusPacket pkt);
+	function void send_request(BusPacket pkt);
 		reg[32:0] state = 0;
 	begin
 		// assert(!(request_busy))
@@ -71,7 +71,7 @@ interface MemoryBus;
 	endfunction
 	
 	
-	function send_response(BusPacket pkt);
+	function void send_response(BusPacket pkt);
 		reg[32:0] state = 0;
 	begin
 		// assert(!(response_busy))

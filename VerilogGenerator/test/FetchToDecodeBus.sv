@@ -3,7 +3,7 @@ interface FetchToDecodeBus;
 	FetchToDecodeBusPacket data;
 	
 	
-	function send(FetchToDecodeBusPacket pkt);
+	function void send(FetchToDecodeBusPacket pkt);
 		reg[32:0] state = 0;
 	begin
 		// assert(!(is_busy))
@@ -13,7 +13,7 @@ interface FetchToDecodeBus;
 	endfunction
 	
 	
-	function recv();
+	function FetchToDecodeBusPacket recv();
 		reg[32:0] state = 0;
 		FetchToDecodeBusPacket v = 0;
 	begin

@@ -6,17 +6,17 @@ typedef union packed {
 } int64_to_insn_data;
 
 
-function getInsnData(BusPacket pkt);
+function fetched_instruction_data_t getInsnData(BusPacket pkt);
 	reg[32:0] state = 0;
 	int64_to_insn_data tmp = 0;
 begin
-	tmp=pkt;
-	return tmp;
+	tmp.value=pkt.payload;
+	return tmp.data;
 end
 endfunction
 
 
-function changesControlFlow(Opcode op);
+function bool changesControlFlow(Opcode op);
 	reg[32:0] state = 0;
 begin
 	case (op)
@@ -86,14 +86,14 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		4:
 			begin
-				if (!(store_bus))
+				if (!(store_bus.can_receive))
 				begin
 					state = 6; // GOTO
 					return;
 				end
-				jmp_retarget = store_bus();
-				fetch_PC=jmp_retarget;
-				exec_mask=jmp_retarget;
+				jmp_retarget = store_bus.recv();
+				fetch_PC=jmp_retarget.newpc;
+				exec_mask=jmp_retarget.exec_mask;
 				state = 5; // GOTO
 				return;
 			end
@@ -137,19 +137,19 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 		10:
 			begin
 				address_fetched = (fetch_PC & ~(7));
-				// memory_bus(address_fetched, memory_bus_id)
+				// memory_bus.send_read_request_data(address_fetched, memory_bus_id)
 				state = 11; // GOTO
 				return;
 			end
 		11:
 			begin
-				if (!(memory_bus))
+				if (!(memory_bus.response_busy))
 				begin
 					state = 13; // GOTO
 					return;
 				end
-				response = memory_bus();
-				// assert((response == BusPacketType::read_response))
+				response = memory_bus.get_response();
+				// assert((response.packet_type == BusPacketType::read_response))
 				address_cached=address_fetched;
 				fetched_cached=getInsnData(response);
 				state = 12; // GOTO
@@ -157,7 +157,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		13:
 			begin
-				// stats()
+				// stats.incFetchedInsns()
 				// CONTEXT_SWITCH()
 				state = 11; // GOTO
 				return;
@@ -203,7 +203,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		17:
 			begin
-				// logger("failed to get insn from local fetcher cache")
+				// logger.error("failed to get insn from local fetcher cache")
 				// abort()
 				state = 16; // GOTO
 				return;
@@ -233,7 +233,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 		19:
 			begin
 				// CONTEXT_SWITCH()
-				if (decode_bus)
+				if (decode_bus.is_busy)
 				begin
 					state = 19; // GOTO
 					return;
@@ -246,7 +246,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 				PC = fetch_PC;
 				fetch_PC+=($bits(instruction_t) / 8);
 				// local_obj FetchToDecodeBusPacket pkt(exec_mask, PC, insn)
-				// decode_bus(pkt)
+				// decode_bus.send(pkt)
 				// CONTEXT_SWITCH()
 				state = 1; // GOTO
 				return;

@@ -81,7 +81,7 @@ class Method:
         ps.println("")
         ps.println("")
         params = self.get_param_str()
-        ps.println(f"function {self.funcname}({params});")
+        ps.println(f"function {self.type.str()} {self.funcname}({params});")
         self.generate_local_vars(ps)         
         self.block.generate(ps)
         ps.println("endfunction")

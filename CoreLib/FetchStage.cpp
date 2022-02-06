@@ -10,10 +10,10 @@ namespace ecc
 
 	METHOD_SECTION;
 
-	fetched_instruction_data_t getInsnData(const BusPacket &pkt)
+	fetched_instruction_data_t getInsnData(uint64_t value)
 	{
 		int64_to_insn_data tmp;
-		tmp.value = pkt.payload;
+		tmp.value = value;
 		return tmp.data;
 	}
 
@@ -94,8 +94,8 @@ namespace ecc
 							BusPacket response = memory_bus.get_response();
 							assert(response.packet_type == BusPacketType::read_response);
 
-							address_cached = address_fetched;
-							fetched_cached = getInsnData(response);
+							address_cached = address_fetched;							
+							fetched_cached = getInsnData(response.payload);
 							break;
 						}
 
