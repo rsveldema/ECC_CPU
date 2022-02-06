@@ -43,6 +43,12 @@ def parseFile(parser, file):
         tree = parser.parse(data)
         return tree
 
+def get_file_name(file: str) -> str:
+    last_slash = file.rfind("/")
+    module_name = file[last_slash+1:]     
+    for remove_ext in [".cpp", ".h"]:
+        module_name = module_name.replace(remove_ext, "")
+    return module_name + ".sv"
 
 def main():
     fp = open("grammar.lark")
@@ -51,45 +57,43 @@ def main():
 
     parser = Lark(grammar, parser='lalr', debug=True)
 
-    with open(output_path + "global_decls.sv", "w") as fp: 
-        ps = PrintStream(fp)
 
-        inc_path = "../CoreLib/include/"
-        includes = ["Defines.h", "Packets.h", "FetchToDecodeBus.h"]
-        for file in includes:
-            tree = parseFile(parser, inc_path + file)
-            ast = createAST(tree)
+    inc_path = "../CoreLib/include/"
+    includes = ["Defines.h", "Packets.h", "FetchToDecodeBus.h", "StoreToFetchBus.h"]
+    for file in includes:
+        tree = parseFile(parser, inc_path + file)
+        ast = createAST(tree)
+        output_filename = get_file_name(file)
+        with open(output_path + output_filename, "w") as fp: 
+            ps = PrintStream(fp)
             ast.generate_decls(ps)
+
         
             
 
 
     files = ["../CoreLib/FetchStage.cpp", "../CoreLib/include/MemoryBus.h"]
     for file in files:
+        module_name = get_file_name(file)
+
         
-        last_slash = file.rfind("/")
-        module_name = file[last_slash+1:]
-     
-        for remove_ext in [".cpp", ".h"]:
-            module_name = module_name.replace(remove_ext, "")
+        tree = parseFile(parser, file)
+        #print(tree)
+
+        ast = createAST(tree)
+        #print(f"AST = ")
+        #ast.pretty()
+
+        methods = ast.lower_ast()
+
+        methods = create_state_switch(methods)
+
+        with open(output_path + module_name, "w") as fp: 
         
-            tree = parseFile(parser, file)
-            #print(tree)
-
-            ast = createAST(tree)
-            #print(f"AST = ")
-            #ast.pretty()
-
-            methods = ast.lower_ast()
-
-            methods = create_state_switch(methods)
-    
-            with open(output_path + module_name + ".sv", "w") as fp: 
-          
-                ps = PrintStream(fp)
-                ast.generate_decls(ps)
-                
-                generate(methods, ps)
-                
+            ps = PrintStream(fp)
+            ast.generate_decls(ps)
+            
+            generate(methods, ps)
+            
 
 main()

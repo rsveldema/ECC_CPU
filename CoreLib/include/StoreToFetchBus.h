@@ -9,9 +9,13 @@
 namespace ecc
 {
 
-	class StoreToFetchBus
+	INTERFACE StoreToFetchBus
 	{
-	public:
+		bool can_receive = false;
+		StoreToFetchPacket data;
+
+		METHOD_SECTION;
+
 		void send(const StoreToFetchPacket& pkt)
 		{
 			assert(!can_receive);
@@ -27,7 +31,5 @@ namespace ecc
 			return v;
 		}
 
-		bool can_receive = false;
-		StoreToFetchPacket data;
 	};
 }

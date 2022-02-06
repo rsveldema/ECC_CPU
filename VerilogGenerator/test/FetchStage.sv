@@ -70,109 +70,109 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 				// local_obj execution_mask_t exec_mask(ALL_THREADS_EXEC_MASK_INT64)
 				address_cached = 'hffffffff;
 				// local_obj fetched_instruction_data_t fetched_cached()
-				state = 21; // GOTO
+				state = 1; // GOTO
 				return;
 			end
-		21:
+		1:
 			begin
 				if (!(have_outstanding_jmp))
 				begin
-					state = 23; // GOTO
+					state = 3; // GOTO
 					return;
 				end
 				have_outstanding_jmp=0;
-				state = 24; // GOTO
+				state = 4; // GOTO
 				return;
 			end
-		24:
+		4:
 			begin
 				if (!(store_bus))
 				begin
-					state = 26; // GOTO
+					state = 6; // GOTO
 					return;
 				end
 				jmp_retarget = store_bus();
 				fetch_PC=jmp_retarget;
 				exec_mask=jmp_retarget;
-				state = 25; // GOTO
+				state = 5; // GOTO
 				return;
 			end
-		26:
+		6:
 			begin
 				// CONTEXT_SWITCH()
-				state = 24; // GOTO
+				state = 4; // GOTO
 				return;
 			end
-		25:
+		5:
 			begin
-				state = 23; // GOTO
+				state = 3; // GOTO
 				return;
 			end
-		23:
+		3:
 			begin
 				if ((address_cached == fetch_PC))
 				begin
 				end
 				else
 				begin
-					state = 27; // GOTO
+					state = 7; // GOTO
 					return;
 				end
-				state = 27; // GOTO
+				state = 7; // GOTO
 				return;
 			end
-		28:
+		8:
 			begin
 				if (((address_cached + ($bits(instruction_t) / 8)) == fetch_PC))
 				begin
 				end
 				else
 				begin
-					state = 29; // GOTO
+					state = 9; // GOTO
 					return;
 				end
-				state = 29; // GOTO
+				state = 9; // GOTO
 				return;
 			end
-		30:
+		10:
 			begin
 				address_fetched = (fetch_PC & ~(7));
 				// memory_bus(address_fetched, memory_bus_id)
-				state = 31; // GOTO
+				state = 11; // GOTO
 				return;
 			end
-		31:
+		11:
 			begin
 				if (!(memory_bus))
 				begin
-					state = 33; // GOTO
+					state = 13; // GOTO
 					return;
 				end
 				response = memory_bus();
 				// assert((response == BusPacketType::read_response))
 				address_cached=address_fetched;
 				fetched_cached=getInsnData(response);
-				state = 32; // GOTO
+				state = 12; // GOTO
 				return;
 			end
-		33:
+		13:
 			begin
 				// stats()
 				// CONTEXT_SWITCH()
-				state = 31; // GOTO
+				state = 11; // GOTO
 				return;
 			end
-		32:
+		12:
 			begin
-				state = 29; // GOTO
+				state = 9; // GOTO
 				return;
 			end
-		29:
+		9:
 			begin
-				state = 27; // GOTO
+				state = 7; // GOTO
 				return;
 			end
-		27:
+		7:
 			begin
 				insn = 0;
 				if ((address_cached == fetch_PC))
@@ -180,78 +180,78 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 				end
 				else
 				begin
-					state = 34; // GOTO
+					state = 14; // GOTO
 					return;
 				end
 				insn=fetched_cached[0];
-				state = 34; // GOTO
+				state = 14; // GOTO
 				return;
 			end
-		35:
+		15:
 			begin
 				if (((address_cached + ($bits(instruction_t) / 8)) == fetch_PC))
 				begin
 				end
 				else
 				begin
-					state = 36; // GOTO
+					state = 16; // GOTO
 					return;
 				end
 				insn=fetched_cached[1];
-				state = 36; // GOTO
+				state = 16; // GOTO
 				return;
 			end
-		37:
+		17:
 			begin
 				// logger("failed to get insn from local fetcher cache")
 				// abort()
-				state = 36; // GOTO
+				state = 16; // GOTO
 				return;
 			end
-		36:
+		16:
 			begin
-				state = 34; // GOTO
+				state = 14; // GOTO
 				return;
 			end
-		34:
+		14:
 			begin
 				opcode = (Opcode'((insn & 'hff)));
 				if (!(changesControlFlow(opcode)))
 				begin
-					state = 38; // GOTO
+					state = 18; // GOTO
 					return;
 				end
 				have_outstanding_jmp=1;
-				state = 38; // GOTO
+				state = 18; // GOTO
 				return;
 			end
-		38:
+		18:
 			begin
-				state = 39; // GOTO
+				state = 19; // GOTO
 				return;
 			end
-		39:
+		19:
 			begin
 				// CONTEXT_SWITCH()
 				if (decode_bus)
 				begin
-					state = 39; // GOTO
+					state = 19; // GOTO
 					return;
 				end
-				state = 40; // GOTO
+				state = 20; // GOTO
 				return;
 			end
-		40:
+		20:
 			begin
 				PC = fetch_PC;
 				fetch_PC+=($bits(instruction_t) / 8);
 				// local_obj FetchToDecodeBusPacket pkt(exec_mask, PC, insn)
 				// decode_bus(pkt)
 				// CONTEXT_SWITCH()
-				state = 21; // GOTO
+				state = 1; // GOTO
 				return;
 			end
-		22:
+		2:
 			begin
 			end
 	endcase
