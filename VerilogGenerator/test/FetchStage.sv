@@ -6,11 +6,11 @@ typedef union packed {
 } int64_to_insn_data;
 
 
-function fetched_instruction_data_t getInsnData(BusPacket pkt);
+function fetched_instruction_data_t getInsnData(uint64_t value);
 	reg[32:0] state = 0;
 	int64_to_insn_data tmp = 0;
 begin
-	tmp.value=pkt.payload;
+	tmp.value=value;
 	return tmp.data;
 end
 endfunction
@@ -151,7 +151,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 				response = memory_bus.get_response();
 				// assert((response.packet_type == BusPacketType::read_response))
 				address_cached=address_fetched;
-				fetched_cached=getInsnData(response);
+				fetched_cached=getInsnData(response.payload);
 				state = 12; // GOTO
 				return;
 			end
