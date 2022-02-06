@@ -1,7 +1,7 @@
 #pragma once
 
 #include <functional>
-
+#include "MemoryBus.h"
 
 
 namespace ecc
@@ -14,7 +14,7 @@ namespace ecc
 	class Multiplexer : public SimComponent
 	{
 	public:
-		using PacketType = typename BusType::Packet;
+		using PacketType = BusPacket;
 		using demultiplexer_func_t = std::function<bool(PacketType&)>;
 
 	private:
@@ -42,7 +42,7 @@ namespace ecc
 			inputs.push_back(Input{ input, func });
 		}
 
-		ecc::ReturnObject run()
+		ReturnObject run()
 		{
 			while (1)
 			{
@@ -53,14 +53,12 @@ namespace ecc
 						auto pkt = in.bus->accept_request();
 						while (out.request_busy)
 						{
-							Task& t = *this;
-							co_await t;
+							CONTEXT_SWITCH();
 						}
 						out.send_request(pkt);
 					}
 					// sending one packet will cost us a cycle (as will testing if an input has a pkt for us to send.
-					Task& t = *this;
-					co_await t;
+					CONTEXT_SWITCH();
 				}
 
 				// we should be able to forward the incoming packet to the source

@@ -12,15 +12,15 @@ namespace ecc
 
 	using execution_mask_t = uint64_t;
 
-	static constexpr unsigned POINTER_SIZE = sizeof(memory_address_t);
-	static constexpr auto INSTRUCTION_SIZE = sizeof(instruction_t);
+	static constexpr uint32_t POINTER_SIZE = sizeof(memory_address_t);
+	static constexpr uint32_t INSTRUCTION_SIZE = sizeof(instruction_t);
 
 	static constexpr memory_address_t CODE_SEGMENT_START = 0;
 	static constexpr memory_address_t DATA_SEGMENT_START = 1024 * 1024;
 
-	static constexpr unsigned VECTOR_MEM_SIZE = 64;
+	static constexpr uint32_t VECTOR_MEM_SIZE = 64;
 
-	static constexpr unsigned NUMBER_OF_VECTOR_THREADS_INT64 = (VECTOR_MEM_SIZE / sizeof(uint64_t));
+	static constexpr uint32_t NUMBER_OF_VECTOR_THREADS_INT64 = (VECTOR_MEM_SIZE / sizeof(uint64_t));
 
 	static constexpr uint64_t ALL_THREADS_EXEC_MASK_INT64 = (1 << NUMBER_OF_VECTOR_THREADS_INT64) - 1;
 

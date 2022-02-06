@@ -3,7 +3,7 @@
 
 namespace ecc
 {
-	ecc::ReturnObject VectorMemoryController::run()
+	ReturnObject VectorMemoryController::run()
 	{
 		while (1)
 		{
@@ -76,7 +76,7 @@ namespace ecc
 							{
 								CONTEXT_SWITCH();
 							}
-							MemoryBus::payload_t payload = arrayData.get(i);
+							bus_packet_payload_t payload = arrayData.get(i);
 							const auto& address = addresses.data[i];
 							toMemory.send_write_request_data(address, src, payload);
 						}

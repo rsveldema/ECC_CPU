@@ -18,8 +18,7 @@ class BinaryExpr:
     def str(self) -> str:
         if self.op == "[]":
             return self.left.str() + "[" + self.right.str() + "]"
-            
-        
+                
         if self.op == "=" or self.op == "+=" or self.op == "-=" or self.op == "|=" or self.op == "&=":
             return self.left.str() + self.op + self.right.str() 
             

@@ -1,46 +1,202 @@
-%Warning-DECLFILENAME: FetchStage.sv:47:11: Filename 'FetchStage' does not match IFACE name: 'FetchToDecodeBus'
-   47 | interface FetchToDecodeBus;
-      |           ^~~~~~~~~~~~~~~~
-                       main.sv:17:40: ... note: In file included from main.sv
-                       ... For warning description see https://verilator.org/warn/DECLFILENAME?v=4.216
-                       ... Use "/* verilator lint_off DECLFILENAME */" and lint_on around source to disable this message.
-%Warning-MULTITOP: FetchStage.sv:52:48: Multiple top level modules
-                                      : ... Suggest see manual; fix the duplicates, or use --top-module to select top.
-                                      : ... Top module 'FetchStage'
-   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
-      |        ^~~~~~~~~~
-                                      : ... Top module 'StoreToFetchBus'
-   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
-      |                                                ^~~~~~~~~~~~~~~
-                                      : ... Top module 'MemoryBus'
-   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
-      |                                                                           ^~~~~~~~~
-%Error-UNSUPPORTED: FetchStage.sv:52:36: Unsupported: Interfaced port on top level module
-   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
-      |                                    ^~~~~~~~~~
-                    main.sv:17:40: ... note: In file included from main.sv
-%Error-UNSUPPORTED: FetchStage.sv:52:64: Unsupported: Interfaced port on top level module
-   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
-      |                                                                ^~~~~~~~~
-                    main.sv:17:40: ... note: In file included from main.sv
-%Error-UNSUPPORTED: FetchStage.sv:52:85: Unsupported: Interfaced port on top level module
-   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
-      |                                                                                     ^~~~~~~~~~
-                    main.sv:17:40: ... note: In file included from main.sv
-%Error: FetchStage.sv:52:19: Parent instance's interface is not found: 'FetchToDecodeBus'
-   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
-      |                   ^~~~~~~~~~~~~~~~
+%Error: global_decls.sv:1:1: syntax error, unexpected IDENTIFIER
+    1 | using instruction_t = uint32_t;
+      | ^~~~~
+        main.sv:11:17: ... note: In file included from main.sv
+%Error: global_decls.sv:4:23: syntax error, unexpected IDENTIFIER, expecting '.' or ';'
+    4 | typedef instruction_t fetched_instruction_data_t[2];
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+        main.sv:11:17: ... note: In file included from main.sv
+%Error: global_decls.sv:142:2: syntax error, unexpected IDENTIFIER, expecting TYPE-IDENTIFIER
+  142 |  execution_mask_t exec_mask;
+      |  ^~~~~~~~~~~~~~~~
+        main.sv:11:17: ... note: In file included from main.sv
+%Error: global_decls.sv:149:2: syntax error, unexpected IDENTIFIER, expecting TYPE-IDENTIFIER
+  149 |  execution_mask_t exec_mask;
+      |  ^~~~~~~~~~~~~~~~
+        main.sv:11:17: ... note: In file included from main.sv
+%Error: global_decls.sv:160:1: syntax error, unexpected IDENTIFIER
+  160 | using bus_packet_payload_t = uint64_t;
+      | ^~~~~
+        main.sv:11:17: ... note: In file included from main.sv
+%Error: global_decls.sv:166:2: syntax error, unexpected IDENTIFIER, expecting TYPE-IDENTIFIER
+  166 |  memory_address_t address;
+      |  ^~~~~~~~~~~~~~~~
+        main.sv:11:17: ... note: In file included from main.sv
+%Error: FetchStage.sv:5:2: syntax error, unexpected IDENTIFIER, expecting TYPE-IDENTIFIER
+    5 |  fetched_instruction_data_t data;
+      |  ^~~~~~~~~~~~~~~~~~~~~~~~~~
         main.sv:17:40: ... note: In file included from main.sv
-%Error: FetchStage.sv:52:48: Cannot find file containing interface: 'StoreToFetchBus'
-   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
-      |                                                ^~~~~~~~~~~~~~~
+%Error: FetchStage.sv:9:32: syntax error, unexpected IDENTIFIER, expecting ')'
+    9 | function getInsnData(BusPacket pkt);
+      |                                ^~~
         main.sv:17:40: ... note: In file included from main.sv
-%Error: FetchStage.sv:52:75: Cannot find file containing interface: 'MemoryBus'
-   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
-      |                                                                           ^~~~~~~~~
+%Error: FetchStage.sv:11:2: syntax error, unexpected IDENTIFIER
+   11 |  int64_to_insn_data tmp = 0;
+      |  ^~~~~~~~~~~~~~~~~~
         main.sv:17:40: ... note: In file included from main.sv
-%Error: Internal Error: FetchStage.sv:52:48: ../V3LinkDot.cpp:2286: Unlinked interface
-   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
-      |                                                ^~~~~~~~~~~~~~~
-                        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:21:14: syntax error, unexpected '='
+   21 |  return true = 0;
+      |              ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:22:15: syntax error, unexpected '='
+   22 |  return false = 0;
+      |               ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:23:15: syntax error, unexpected '='
+   23 |  return false = 0;
+      |               ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:48:28: syntax error, unexpected '=', expecting ',' or ';'
+   48 |  memory_address_t fetch_PC = 0;
+      |                            ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:49:29: syntax error, unexpected '=', expecting ',' or ';'
+   49 |  execution_mask_t exec_mask = 0;
+      |                             ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:50:34: syntax error, unexpected '=', expecting ',' or ';'
+   50 |  memory_address_t address_cached = 0;
+      |                                  ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:51:44: syntax error, unexpected '=', expecting ',' or ';'
+   51 |  fetched_instruction_data_t fetched_cached = 0;
+      |                                            ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:52:34: syntax error, unexpected '=', expecting ',' or ';'
+   52 |  StoreToFetchPacket jmp_retarget = 0;
+      |                                  ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:53:35: syntax error, unexpected '=', expecting ',' or ';'
+   53 |  memory_address_t address_fetched = 0;
+      |                                   ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:54:21: syntax error, unexpected '=', expecting ',' or ';'
+   54 |  BusPacket response = 0;
+      |                     ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:55:21: syntax error, unexpected '=', expecting ',' or ';'
+   55 |  instruction_t insn = 0;
+      |                     ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:57:22: syntax error, unexpected '=', expecting ',' or ';'
+   57 |  memory_address_t PC = 0;
+      |                      ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:58:29: syntax error, unexpected '=', expecting ',' or ';'
+   58 |  FetchToDecodeBusPacket pkt = 0;
+      |                             ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:64:28: syntax error, unexpected IDENTIFIER, expecting ')'
+   64 |  task run(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
+      |                            ^~~~~~~~~~
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:68:26: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+   68 |     have_outstanding_jmp = 0;
+      |                          ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:80:12: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+   80 |      state = 3;  
+      |            ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:83:25: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+   83 |     have_outstanding_jmp=0;
+      |                         ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:91:12: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+   91 |      state = 6;  
+      |            ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:94:18: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+   94 |     jmp_retarget = store_bus();
+      |                  ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:103:11: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  103 |     state = 4;  
+      |           ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:108:11: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  108 |     state = 3;  
+      |           ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:118:12: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  118 |      state = 7;  
+      |            ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:121:11: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  121 |     state = 7;  
+      |           ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:131:12: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  131 |      state = 9;  
+      |            ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:134:11: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  134 |     state = 9;  
+      |           ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:139:21: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  139 |     address_fetched = (fetch_PC & ~(7));
+      |                     ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:148:12: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  148 |      state = 13;  
+      |            ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:151:14: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  151 |     response = memory_bus();
+      |              ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:162:11: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  162 |     state = 11;  
+      |           ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:167:11: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  167 |     state = 9;  
+      |           ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:172:11: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  172 |     state = 7;  
+      |           ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:177:10: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  177 |     insn = 0;
+      |          ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:183:12: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  183 |      state = 14;  
+      |            ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:186:9: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  186 |     insn=fetched_cached[0];
+      |         ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:197:12: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  197 |      state = 16;  
+      |            ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:200:9: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  200 |     insn=fetched_cached[1];
+      |         ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:208:11: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  208 |     state = 16;  
+      |           ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:213:11: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  213 |     state = 14;  
+      |           ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:218:12: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  218 |     opcode = (Opcode'((insn & 'hff)));
+      |            ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:221:12: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  221 |      state = 18;  
+      |            ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:224:25: syntax error, unexpected '=', expecting IDENTIFIER or randomize
+  224 |     have_outstanding_jmp=1;
+      |                         ^
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: Exiting due to too many errors encountered; --error-limit=50
 make: *** [Makefile:3: all] Error 1

@@ -10,6 +10,8 @@ global_methods: method*
 
 global_decl: using_decl | static_decl | enum_decl | struct_decl | union_decl | interface_decl | local_decl ";"
 
+using_decl: "using" IDENT "=" type ";"
+
 struct_decl: "struct" IDENT "{" member_decl* "}" ";"
 
 union_decl: "union" IDENT "{" member_decl* "}" ";"
@@ -19,7 +21,6 @@ interface_decl: "INTERFACE" IDENT "{" global_decls global_methods "}" ";"
 
 member_decl: type IDENT ";"
 
-using_decl: USING IDENT "=" type ";"
 
 static_decl: STATIC "constexpr" type IDENT "=" expr ";"
 
@@ -149,9 +150,20 @@ sizeof_term: "sizeof" "(" expr ")"
 qual_ident: IDENT
 
 type: ("const")? ( booltype
-|                  user_defined_type
-|                  autotype)
+| uint8_t
+| uint16_t
+| uint32_t
+| uint64_t
+| user_defined_type
+| autotype)
 
+uint8_t: "uint8_t"
+
+uint16_t: "uint16_t"
+
+uint32_t: "uint32_t"
+
+uint64_t: "uint64_t"
 
 user_defined_type: qual_ident_type ("<" IDENT "," expr ">")? ("&")?
 
@@ -177,7 +189,6 @@ COMMENT: "//" /[^\n]*/ _NEWLINE
 
 MULTILINE_COMMENT: /\/\*.*?\*\//s
 
-USING: "using"
 STATIC: "static"
 ENUM: "enum"
 

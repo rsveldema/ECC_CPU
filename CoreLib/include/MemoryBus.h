@@ -17,9 +17,9 @@ namespace ecc
 	// simple memory bus that allows sending requests and receiving replies.	 
 	INTERFACE MemoryBus
 	{
-		using Type = BusPacketType;
-		using Packet = BusPacket;
-		using payload_t = bus_packet_payload_t;
+	//	using Type = BusPacketType;
+	//	using Packet = BusPacket;
+	//	using payload_t = bus_packet_payload_t;
 
 		bool request_busy = false;
 		bool response_busy = false;
@@ -29,49 +29,49 @@ namespace ecc
 
 		void send_read_request_data(memory_address_t address, const BusID &source)
 		{
-			Packet pkt{Type::read_data, source, address};
+			BusPacket pkt{BusPacketType::read_data, source, address};
 			send_request(pkt);
 		}
 
 		void send_write_request_data(memory_address_t address,
 									 const BusID &source,
-									 const payload_t &value)
+									 const bus_packet_payload_t &value)
 		{
-			Packet pkt{Type::write_data, source, address, value};
+			BusPacket pkt{BusPacketType::write_data, source, address, value};
 			send_request(pkt);
 		}
 
-		void send_read_response(const payload_t &value, const BusID &source)
+		void send_read_response(const bus_packet_payload_t &value, const BusID &source)
 		{
 			memory_address_t addr = 0;
-			Packet pkt{Type::read_response, source, addr, value};
+			BusPacket pkt{BusPacketType::read_response, source, addr, value};
 			send_response(pkt);
 		}
 
-		Packet accept_request()
+		BusPacket accept_request()
 		{
 			assert(request_busy);
-			const Packet f = request_data;
+			const BusPacket f = request_data;
 			request_busy = false;
 			return f;
 		}
 
-		Packet get_response()
+		BusPacket get_response()
 		{
 			assert(response_busy);
-			const Packet f = response_data;
+			const BusPacket f = response_data;
 			response_busy = false;
 			return f;
 		}
 
-		void send_request(const Packet &pkt)
+		void send_request(const BusPacket &pkt)
 		{
 			assert(!request_busy);
 			request_data = pkt;
 			request_busy = true;
 		}
 
-		void send_response(const Packet &pkt)
+		void send_response(const BusPacket &pkt)
 		{
 			assert(!response_busy);
 			response_data = pkt;

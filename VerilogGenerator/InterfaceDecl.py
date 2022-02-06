@@ -17,10 +17,16 @@ class InterfaceDecl:
         self.methods = methods
         self.decls = decls
                   
-            
+
     def generate_decl(self, ps):
+        ps.println("interface " + self.name + ";")
+        ps.up()
         for k in self.decls:
-            k.generate_decl(ps)
+            k.generate_decl(ps)            
+        for k in self.methods:
+            k.generate(ps)
+        ps.down()
+        ps.println("endinterface;")
             
     def pretty(self):
         print("interface " + self.name + "{")

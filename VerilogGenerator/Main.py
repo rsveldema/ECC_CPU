@@ -65,7 +65,9 @@ def main():
         
         last_slash = file.rfind("/")
         module_name = file[last_slash+1:]
-        module_name = module_name.replace(".cpp", "")
+     
+        for remove_ext in [".cpp", ".h"]:
+            module_name = module_name.replace(remove_ext, "")
         
         with open(output_path + module_name + ".sv", "w") as fp: 
             ps = PrintStream(fp)

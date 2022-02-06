@@ -18,6 +18,9 @@ class Type:
         ret = ret.replace("::", "__")
         return ret
 
+    def generate(self):
+        return self.str()
+
     def get_num_bits(self) -> int:
         if self.name == "bool":
             return 1

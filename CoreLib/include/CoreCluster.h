@@ -25,12 +25,12 @@ namespace ecc
 				cores.emplace_back(std::make_unique<Core>(registry, core_id, globalStats));
 
 				main_memory_data_access_multiplexer.addInput(&cores[i]->getExternalDataBus(),
-					[core_id](const MemoryBus::Packet& pkt) {
+					[core_id](const BusPacket& pkt) {
 						return pkt.source.core_id == core_id;
 					});
 
 				main_memory_insn_access_multiplexer.addInput(&cores[i]->getExternalInsnBus(),
-					[core_id](const MemoryBus::Packet& pkt) {
+					[core_id](const BusPacket& pkt) {
 						return pkt.source.core_id == core_id;
 					});
 

@@ -35,7 +35,10 @@ class LocalDecl:
             return f"{self.type.str()} {self.var}"
             
     def generate_decl(self, ps: PrintStream):
-        ps.println(f"{str()}")
+        if self.init_expr:
+            ps.println(f"{self.type.generate()} {self.var} = {self.init_expr.str()};")
+        else:
+            ps.println(f"{self.type.generate()} {self.var};")
 
     def getLocalDecls(self) -> List:
         return [self]

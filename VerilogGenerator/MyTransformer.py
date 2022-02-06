@@ -41,6 +41,8 @@ class MyTransformer(Transformer):
         #args: (expr ("," expr)*)?
         return ret
     
+
+
     def type(self, tree):
         return tree[0]
 
@@ -49,6 +51,18 @@ class MyTransformer(Transformer):
             return Type(tree[0])
         else:
             return ArrayType(tree[1]+"", tree[2])
+
+    def uint8_t(self, tree):
+        return Type("uint8_t")
+
+    def uint16_t(self, tree):
+        return Type("uint16_t")
+
+    def uint32_t(self, tree):
+        return Type("uint32_t")
+
+    def uint64_t(self, tree):
+        return Type("uint64_t")
 
     def booltype(self, tree):
         return Type("bool")
@@ -302,8 +316,8 @@ class MyTransformer(Transformer):
         return Namespace(name, global_decls, methods)
         
     def using_decl(self, tree):
-        name = tree[1] + ""
-        type = tree[2]
+        name = tree[0] + ""
+        type = tree[1]
         return TypeDef(name, type)
 
     def struct_decl(self, tree):

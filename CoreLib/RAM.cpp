@@ -13,14 +13,14 @@ namespace ecc
 
 				switch (pkt.packet_type)
 				{
-				case MemoryBus::Type::read_data:
+				case BusPacketType::read_data:
 				{
 					const auto address = pkt.address;
 					assert(address >= 0);
 					assert(address < (storage.size() - 8));
 
-					auto* ptr = reinterpret_cast<MemoryBus::payload_t*>(storage.data() + address);
-					MemoryBus::payload_t ret = *ptr;
+					auto* ptr = reinterpret_cast<bus_packet_payload_t*>(storage.data() + address);
+					bus_packet_payload_t ret = *ptr;
 
 					for (uint64_t i = 0; i < config.read_latency.cycles; i++)
 					{
@@ -31,7 +31,7 @@ namespace ecc
 					break;
 				}
 
-				case MemoryBus::Type::write_data:
+				case BusPacketType::write_data:
 				{
 					const auto address = pkt.address;
 
@@ -42,7 +42,7 @@ namespace ecc
 						CONTEXT_SWITCH();
 					}
 
-					auto* dest_ptr = reinterpret_cast<MemoryBus::payload_t*>(storage.data() + address);
+					auto* dest_ptr = reinterpret_cast<bus_packet_payload_t*>(storage.data() + address);
 
 					*dest_ptr = value;
 					break;
