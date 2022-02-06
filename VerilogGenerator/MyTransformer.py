@@ -11,7 +11,9 @@ from ConstantDecl import ConstantDecl
 from TypeDef import TypeDef
 from MemberDecl import MemberDecl
 from StructDecl import StructDecl
+from UnionDecl import UnionDecl
 from ArrayType import ArrayType
+from InterfaceDecl import InterfaceDecl
 from WhileStmt import WhileStmt
 from LiteralExpr import LiteralExpr
 from BinaryExpr import BinaryExpr
@@ -212,6 +214,10 @@ class MyTransformer(Transformer):
         expr = tree[2]
         return BinaryExpr(op, var, expr)
 
+
+    def logical_not_expr(self, tree):
+        return UnaryExpr("!", tree[0])
+
     def bit_not_expr(self, tree):
         return UnaryExpr("~", tree[0])
 
@@ -230,7 +236,9 @@ class MyTransformer(Transformer):
         return IfStmt(expr, if_code, else_code)
 
     def local_decl(self, tree):
-        return LocalDecl(tree[0], tree[1] + "", tree[2])
+        if len(tree) == 3:
+            return LocalDecl(tree[0], tree[1] + "", tree[2])
+        return LocalDecl(tree[0], tree[1] + "", None)
 
     def object_init(self, tree):
         return ObjectDecl(tree[0], tree[1] + "", tree[2])
@@ -280,6 +288,13 @@ class MyTransformer(Transformer):
     def global_decls(self, tree):
         return tree[0:]
 
+
+    def interface_decl(self, tree):
+        name = tree[0]
+        global_decls = tree[1]
+        methods = tree[2]
+        return InterfaceDecl(name, global_decls, methods)
+
     def namespace(self, tree):
         name = tree[0]
         global_decls = tree[1]
@@ -295,6 +310,11 @@ class MyTransformer(Transformer):
         name = tree[0]
         members = tree[1:]
         return StructDecl(name, members)
+    
+    def union_decl(self, tree):
+        name = tree[0]
+        members = tree[1:]
+        return UnionDecl(name, members)
 
     def member_decl(self, tree):
         type = tree[0]

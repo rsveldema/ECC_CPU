@@ -1,11 +1,8 @@
 
-typedef uint32_t instruction_t;
 
-typedef uint64_t memory_address_t;
 
 typedef instruction_t fetched_instruction_data_t[2];
 
-typedef uint64_t execution_mask_t;
 
 `define POINTER_SIZE ($bits(memory_address_t) / 8)
 
@@ -135,20 +132,20 @@ typedef enum {
 } StorageStageOpcode;
 
 
-typedef struct {
+typedef struct packed {
 	CoreID core_id;
 	CoreComponentID within_core_id;
 } BusID;
 
 
-typedef struct {
+typedef struct packed {
 	execution_mask_t exec_mask;
 	memory_address_t PC;
 	instruction_t insn;
 } FetchToDecodeBusPacket;
 
 
-typedef struct {
+typedef struct packed {
 	execution_mask_t exec_mask;
 	memory_address_t newpc;
 } StoreToFetchPacket;
@@ -161,10 +158,9 @@ typedef enum {
 	,write_response
 } BusPacketType;
 
-typedef uint64_t bus_packet_payload_t;
 
 
-typedef struct {
+typedef struct packed {
 	BusPacketType packet_type;
 	BusID source;
 	memory_address_t address;

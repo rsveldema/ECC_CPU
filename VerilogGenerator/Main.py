@@ -10,7 +10,7 @@ def preprocess(lines):
     for l in lines:
         k = l.strip()
         if k.startswith("#"):
-            continue
+            l = "// " + l
         
         result += l
     return result
@@ -36,6 +36,7 @@ def parseInclude(parser, file):
     with open(file) as fp:
         lines = fp.readlines()
         data = preprocess(lines)
+        print("PARSING: " + file)
         tree = parser.parse(data)
         return tree
 
@@ -59,7 +60,7 @@ def main():
             
 
 
-    files = ["../CoreLib/FetchStage.cpp"]
+    files = ["../CoreLib/FetchStage.cpp", "../CoreLib/include/MemoryBus.h"]
     for file in files:
         
         last_slash = file.rfind("/")
@@ -72,6 +73,7 @@ def main():
             with open(file) as fp:
                 lines = fp.readlines()
                 data = preprocess(lines)
+                print("PARSING: " + file)
                 tree = parser.parse(data)
                 #print(tree)
 
@@ -82,6 +84,8 @@ def main():
                 methods = ast.lower_ast()
 
                 methods = create_state_switch(methods)
+                
+                ast.generate_decls(ps)
                 
                 generate(methods, ps)
                 

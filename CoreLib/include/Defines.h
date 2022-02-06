@@ -1,5 +1,7 @@
 #pragma once
 
+#define INTERFACE struct
+
 namespace ecc
 {
 	using instruction_t = uint32_t;

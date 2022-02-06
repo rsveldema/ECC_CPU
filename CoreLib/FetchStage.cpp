@@ -2,12 +2,15 @@
 
 namespace ecc
 {
-	fetched_instruction_data_t getInsnData(const BusPacket& pkt)
+	union int64_to_insn_data 
 	{
-		union {
-			uint64_t value;
-			fetched_instruction_data_t data;
-		} tmp;
+		uint64_t value;
+		fetched_instruction_data_t data;
+	};
+
+	fetched_instruction_data_t getInsnData(const BusPacket &pkt)
+	{
+		int64_to_insn_data tmp;
 		tmp.value = pkt.payload;
 		return tmp.data;
 	}
@@ -24,20 +27,21 @@ namespace ecc
 		case Opcode::JMP_GREATER_EQUAL:
 		case Opcode::JMP_LOWER:
 		case Opcode::JMP_LOWER_EQUAL:
-		case Opcode::LOAD_RESTORE_PC: {
+		case Opcode::LOAD_RESTORE_PC:
+		{
 			return true;
 		}
-		default: {
+		default:
+		{
 			return false;
 		}
 		}
 		return false;
 	}
 
-
-	ReturnObject FetchStage::run(FetchToDecodeBus& decode_bus,
-								 StoreToFetchBus& store_bus,
-								 MemoryBus& memory_bus)
+	ReturnObject FetchStage::run(FetchToDecodeBus &decode_bus,
+								 StoreToFetchBus &store_bus,
+								 MemoryBus &memory_bus)
 	{
 		bool have_outstanding_jmp = false;
 		memory_address_t fetch_PC = 0;
@@ -117,7 +121,7 @@ namespace ecc
 				}
 			}
 
-			//logger.debug("[FETCH] received response for address " + std::to_string(fetch_PC));
+			// logger.debug("[FETCH] received response for address " + std::to_string(fetch_PC));
 
 			Opcode opcode = static_cast<Opcode>(insn & 0xff);
 			if (changesControlFlow(opcode))

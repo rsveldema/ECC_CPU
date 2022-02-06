@@ -1,5 +1,26 @@
+
+
+typedef union packed {
+	uint64_t value;
+	fetched_instruction_data_t data;
+} int64_to_insn_data;
+
+
+function getInsnData(BusPacket pkt);
+	reg[32:0] state = 0;
+	int64_to_insn_data tmp = 0;
+begin
+	tmp=pkt;
+	return tmp;
+end
+endfunction
+
+
 function changesControlFlow(Opcode op);
 	reg[32:0] state = 0;
+	return true = 0;
+	return false = 0;
+	return false = 0;
 begin
 	case (op)
 		HALT,
@@ -12,14 +33,11 @@ begin
 		JMP_LOWER_EQUAL,
 		LOAD_RESTORE_PC:
 			begin
-				return 1;
 			end
 		default:
 			begin
-				return 0;
 			end
 	endcase
-	return 0;
 end
 endfunction
 
@@ -41,6 +59,8 @@ module FetchStage;
 
 
 
+	
+	
 	task run(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
 	case (state)
 		0:

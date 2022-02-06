@@ -12,13 +12,18 @@ class LocalDecl:
         self.init_expr = init_expr
 
     def generate(self, ps: PrintStream):
-        ps.println(f"{self.var} = {self.init_expr.str()};")
+        if self.init_expr:
+            ps.println(f"{self.var} = {self.init_expr.str()};")
         
+     
     def lower_ast(self, state: LowerState):
         assert isinstance(self.var, str)
+        lowered = None
+        if self.init_expr:
+            lowered = self.init_expr.lower_ast(state)
         return LocalDecl(self.type.lower_ast(state), 
                          self.var, 
-                         self.init_expr.lower_ast(state))
+                         lowered)
     
     def pretty(self):
         print(f"{self.str()}")
@@ -29,6 +34,8 @@ class LocalDecl:
         else:
             return f"{self.type.str()} {self.var}"
             
+    def generate_decl(self, ps: PrintStream):
+        ps.println(f"{str()}")
 
     def getLocalDecls(self) -> List:
         return [self]

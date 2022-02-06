@@ -5,7 +5,7 @@ from LowerState import LowerState
 from MemberDecl import MemberDecl
 
 
-class StructDecl(GlobalDecl):
+class UnionDecl(GlobalDecl):
     def __init__(self, name:str, members: List[MemberDecl]) -> None:
         self.name = name
         self.members = members
@@ -16,7 +16,7 @@ class StructDecl(GlobalDecl):
     def generate_decl(self, ps: PrintStream):
         ps.println("")
         ps.println("")
-        ps.println("typedef struct packed {")
+        ps.println("typedef union packed {")
         ps.up()
         for m in self.members:
             m.generate_decl(ps)

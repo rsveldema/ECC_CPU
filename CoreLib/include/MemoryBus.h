@@ -11,14 +11,12 @@
 #include "VectorValue.h"
 #include "Packets.h"
 
+
 namespace ecc
 {
-
-	/** simple memory bus that allows sending requests and receiving replies.
-	 */
-	class MemoryBus
+	// simple memory bus that allows sending requests and receiving replies.	 
+	INTERFACE MemoryBus
 	{
-	public:
 		using Type = BusPacketType;
 		using Packet = BusPacket;
 		using payload_t = bus_packet_payload_t;
@@ -26,8 +24,8 @@ namespace ecc
 		bool request_busy = false;
 		bool response_busy = false;
 
-		Packet request_data;
-		Packet response_data;
+		BusPacket request_data;
+		BusPacket response_data;
 
 		void send_read_request_data(memory_address_t address, const BusID &source)
 		{
@@ -52,6 +50,7 @@ namespace ecc
 
 		Packet accept_request()
 		{
+			assert(request_busy);
 			const Packet f = request_data;
 			request_busy = false;
 			return f;
@@ -74,6 +73,7 @@ namespace ecc
 
 		void send_response(const Packet &pkt)
 		{
+			assert(!response_busy);
 			response_data = pkt;
 			response_busy = true;
 		}

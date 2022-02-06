@@ -1,5 +1,46 @@
-%Error: FetchStage.sv:3:2: syntax error, unexpected IDENTIFIER
-    3 |  bool have_outstanding_jmp = 0;
-      |  ^~~~
-%Error: Exiting due to 1 error(s)
+%Warning-DECLFILENAME: FetchStage.sv:47:11: Filename 'FetchStage' does not match IFACE name: 'FetchToDecodeBus'
+   47 | interface FetchToDecodeBus;
+      |           ^~~~~~~~~~~~~~~~
+                       main.sv:17:40: ... note: In file included from main.sv
+                       ... For warning description see https://verilator.org/warn/DECLFILENAME?v=4.216
+                       ... Use "/* verilator lint_off DECLFILENAME */" and lint_on around source to disable this message.
+%Warning-MULTITOP: FetchStage.sv:52:48: Multiple top level modules
+                                      : ... Suggest see manual; fix the duplicates, or use --top-module to select top.
+                                      : ... Top module 'FetchStage'
+   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
+      |        ^~~~~~~~~~
+                                      : ... Top module 'StoreToFetchBus'
+   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
+      |                                                ^~~~~~~~~~~~~~~
+                                      : ... Top module 'MemoryBus'
+   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
+      |                                                                           ^~~~~~~~~
+%Error-UNSUPPORTED: FetchStage.sv:52:36: Unsupported: Interfaced port on top level module
+   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
+      |                                    ^~~~~~~~~~
+                    main.sv:17:40: ... note: In file included from main.sv
+%Error-UNSUPPORTED: FetchStage.sv:52:64: Unsupported: Interfaced port on top level module
+   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
+      |                                                                ^~~~~~~~~
+                    main.sv:17:40: ... note: In file included from main.sv
+%Error-UNSUPPORTED: FetchStage.sv:52:85: Unsupported: Interfaced port on top level module
+   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
+      |                                                                                     ^~~~~~~~~~
+                    main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:52:19: Parent instance's interface is not found: 'FetchToDecodeBus'
+   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
+      |                   ^~~~~~~~~~~~~~~~
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:52:48: Cannot find file containing interface: 'StoreToFetchBus'
+   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
+      |                                                ^~~~~~~~~~~~~~~
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: FetchStage.sv:52:75: Cannot find file containing interface: 'MemoryBus'
+   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
+      |                                                                           ^~~~~~~~~
+        main.sv:17:40: ... note: In file included from main.sv
+%Error: Internal Error: FetchStage.sv:52:48: ../V3LinkDot.cpp:2286: Unlinked interface
+   52 | module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
+      |                                                ^~~~~~~~~~~~~~~
+                        main.sv:17:40: ... note: In file included from main.sv
 make: *** [Makefile:3: all] Error 1

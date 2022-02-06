@@ -1,6 +1,6 @@
 start: include* namespace
 
-include: "#" "include"  (string | "<" IDENT "." IDENT ">")
+include: "#include"  (string | "<" IDENT "." IDENT ">")
 
 namespace:  "namespace" IDENT "{" global_decls global_methods "}"
 
@@ -8,9 +8,14 @@ global_decls: global_decl*
 
 global_methods: method*
 
-global_decl: using_decl | static_decl | enum_decl | struct_decl
+global_decl: using_decl | static_decl | enum_decl | struct_decl | union_decl | interface_decl | local_decl ";"
 
 struct_decl: "struct" IDENT "{" member_decl* "}" ";"
+
+union_decl: "union" IDENT "{" member_decl* "}" ";"
+
+interface_decl: "INTERFACE" IDENT "{" global_decls global_methods "}" ";"
+
 
 member_decl: type IDENT ";"
 
@@ -74,7 +79,7 @@ while_stmt: "while" "(" expr ")" block
 
 assign_stmt:   access some_assign_op expr ";"
 
-local_decl: type IDENT "=" expr 
+local_decl: type IDENT ("=" expr)?
 
 object_init: type IDENT "(" args ")" ";"
 |            type IDENT "{" args "}" ";"
@@ -117,10 +122,13 @@ term: "(" expr ")"
 | access_expr
 | hex_number_expr
 | bit_not_expr
+| logical_not_expr
 | static_cast
 
 
 bit_not_expr: "~" term
+
+logical_not_expr: "!" term
 
 hex_number_expr: HEX_NUMBER
 
@@ -144,6 +152,7 @@ type: ("const")? ( booltype
 |                  user_defined_type
 |                  autotype)
 
+
 user_defined_type: qual_ident_type ("<" IDENT "," expr ">")? ("&")?
 
 qual_ident_type: qual_ident
@@ -166,6 +175,8 @@ _NEWLINE: "\n"
 
 COMMENT: "//" /[^\n]*/ _NEWLINE
 
+MULTILINE_COMMENT: /\/\*.*?\*\//s
+
 USING: "using"
 STATIC: "static"
 ENUM: "enum"
@@ -176,4 +187,5 @@ ENUM: "enum"
 
 
 %ignore COMMENT
+%ignore MULTILINE_COMMENT
 %ignore WS

@@ -78,6 +78,8 @@ class Method:
         return params
 
     def generate_function(self, ps:PrintStream):
+        ps.println("")
+        ps.println("")
         params = self.get_param_str()
         ps.println(f"function {self.funcname}({params});")
         self.generate_local_vars(ps)         
@@ -107,6 +109,8 @@ class Method:
         
         params = self.get_param_str()
 
+        ps.println("")
+        ps.println("")
         ps.println(f"task {task_name}({params});")            
         self.block.generate(ps)
         ps.println("endtask")
