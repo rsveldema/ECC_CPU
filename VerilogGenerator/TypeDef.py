@@ -13,9 +13,5 @@ class TypeDef(GlobalDecl):
     
     def generate_decl(self, ps:PrintStream):
         ps.println("")
-        
-        if isinstance(self.type, ArrayType):
-            ps.println("typedef " + self.type.name + " " + self.name + f"[{self.type.num_elts.str()}];")
-        else:
-            ps.println("typedef " + self.type.str() + " " + self.name + ";")
+        ps.println("typedef " + self.type.str() + " " + self.name + ";")
         

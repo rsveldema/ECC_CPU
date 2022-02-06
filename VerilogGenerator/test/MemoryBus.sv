@@ -6,7 +6,6 @@ interface MemoryBus;
 	
 	
 	function void send_read_request_data(memory_address_t address, BusID source);
-		reg[32:0] state = 0;
 		BusPacket pkt = 0;
 	begin
 		// local_obj BusPacket pkt(BusPacketType::read_data, source, address)
@@ -16,7 +15,6 @@ interface MemoryBus;
 	
 	
 	function void send_write_request_data(memory_address_t address, BusID source, bus_packet_payload_t value);
-		reg[32:0] state = 0;
 		BusPacket pkt = 0;
 	begin
 		// local_obj BusPacket pkt(BusPacketType::write_data, source, address, value)
@@ -26,7 +24,6 @@ interface MemoryBus;
 	
 	
 	function void send_read_response(bus_packet_payload_t value, BusID source);
-		reg[32:0] state = 0;
 		memory_address_t addr = 0;
 		BusPacket pkt = 0;
 	begin
@@ -38,7 +35,6 @@ interface MemoryBus;
 	
 	
 	function BusPacket accept_request();
-		reg[32:0] state = 0;
 		BusPacket f = 0;
 	begin
 		// assert(request_busy)
@@ -50,7 +46,6 @@ interface MemoryBus;
 	
 	
 	function BusPacket get_response();
-		reg[32:0] state = 0;
 		BusPacket f = 0;
 	begin
 		// assert(response_busy)
@@ -62,7 +57,6 @@ interface MemoryBus;
 	
 	
 	function void send_request(BusPacket pkt);
-		reg[32:0] state = 0;
 	begin
 		// assert(!(request_busy))
 		request_data=pkt;
@@ -72,7 +66,6 @@ interface MemoryBus;
 	
 	
 	function void send_response(BusPacket pkt);
-		reg[32:0] state = 0;
 	begin
 		// assert(!(response_busy))
 		response_data=pkt;

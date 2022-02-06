@@ -4,7 +4,6 @@ interface StoreToFetchBus;
 	
 	
 	function void send(StoreToFetchPacket pkt);
-		reg[32:0] state = 0;
 	begin
 		// assert(!(can_receive))
 		data=pkt;
@@ -14,7 +13,6 @@ interface StoreToFetchBus;
 	
 	
 	function StoreToFetchPacket recv();
-		reg[32:0] state = 0;
 		StoreToFetchPacket v = 0;
 	begin
 		// assert(can_receive)

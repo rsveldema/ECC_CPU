@@ -3,7 +3,7 @@ typedef uint32_t instruction_t;
 
 typedef uint64_t memory_address_t;
 
-typedef instruction_t fetched_instruction_data_t[2];
+typedef instruction_t[(2) - 1:0] fetched_instruction_data_t;
 
 typedef uint64_t execution_mask_t;
 

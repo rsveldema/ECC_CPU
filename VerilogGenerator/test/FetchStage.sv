@@ -7,7 +7,6 @@ typedef union packed {
 
 
 function fetched_instruction_data_t getInsnData(uint64_t value);
-	reg[32:0] state = 0;
 	int64_to_insn_data tmp = 0;
 begin
 	tmp.value=value;
@@ -17,7 +16,6 @@ endfunction
 
 
 function bool changesControlFlow(Opcode op);
-	reg[32:0] state = 0;
 begin
 	case (op)
 		HALT,

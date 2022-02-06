@@ -8,4 +8,4 @@ class ArrayType(Type):
         self.num_elts = num_elts
         
     def str(self) -> str:
-        return "ARRAYTYPE"
+        return super().str() + f"[({self.num_elts.str()}) - 1:0]"
