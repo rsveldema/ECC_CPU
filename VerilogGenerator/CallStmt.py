@@ -15,7 +15,7 @@ class CallStmt(Statement):
         return CallStmt(ce.func, ce.args)
     
     def generate(self, ps: PrintStream):
-        ps.println("// " + self.call_expr.str())
+        ps.println("" + self.call_expr.str() + ";")
         
     def pretty(self):
         print(f"{self.str()};")

@@ -139,3 +139,19 @@ typedef struct packed {
 	CoreID core_id;
 	CoreComponentID within_core_id;
 } BusID;
+
+
+function uint32_t count_num_bits64(uint64_t value);
+	uint32_t c;
+	uint64_t f;
+begin
+	c = 0;
+	f = value;
+	for (uint32_t i = 0; (i < 64); i=(i + 1))
+		begin
+			c+=(uint32_t'((f & 1)));
+			f=(f >> 1);
+		end
+	return c;
+end
+endfunction

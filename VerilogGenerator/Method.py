@@ -60,7 +60,7 @@ class Method:
             ps.println("reg[32:0] state = 0;")
         for k in self.block.getLocalDecls():
             #num_bits = k.get_num_bits()
-            ps.println(f"{k.type.str()} {k.var} = 0;")
+            ps.println(f"{k.type.str()} {k.var};")
         ps.down()
         
     def generate(self, ps:PrintStream):

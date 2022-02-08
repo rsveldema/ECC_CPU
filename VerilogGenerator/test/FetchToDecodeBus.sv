@@ -1,11 +1,18 @@
 interface FetchToDecodeBus;
-	bool is_busy = false;
+	bool is_busy;
 	FetchToDecodeBusPacket data;
 	
 	
-	function void send(FetchToDecodeBusPacket pkt);
+	function void init_fetch_to_decode_bus();
 	begin
-		// assert(!(is_busy))
+		is_busy=0;
+	end
+	endfunction
+	
+	
+	function void send(input FetchToDecodeBusPacket pkt);
+	begin
+		assert(!(is_busy));
 		data=pkt;
 		is_busy=1;
 	end
@@ -13,9 +20,9 @@ interface FetchToDecodeBus;
 	
 	
 	function FetchToDecodeBusPacket recv();
-		FetchToDecodeBusPacket v = 0;
 	begin
-		// assert(is_busy)
+		FetchToDecodeBusPacket v;
+		assert(is_busy);
 		v = data;
 		is_busy=0;
 		return v;

@@ -1,4 +1,5 @@
-from lark import Lark, Transformer
+from lark import Lark, Token, Transformer
+from ForStmt import ForStmt
 from Type import Type
 from Break import Break
 from Continue import Continue
@@ -281,11 +282,24 @@ class MyTransformer(Transformer):
                 b.insns.append(p)
         return b
 
+    def is_token(k, s):
+        if isinstance(k, Token):
+            return s == (k + "")
+        return False
+
     def method(self, tree):
-        type = tree[0] 
-        func = tree[1]
-        params = tree[2]
-        block = tree[3]
+        start = 0
+
+        if MyTransformer.is_token(tree[start], "static"):
+            start += 1
+
+        if MyTransformer.is_token(tree[start], "inline"):
+            start += 1
+
+        type = tree[start] 
+        func = tree[start + 1]
+        params = tree[start + 2]
+        block = tree[start + 3]
         return Method(type, func, params, block)
     
     def params(self, tree):
@@ -294,6 +308,18 @@ class MyTransformer(Transformer):
     def param(self, tree):
         return LocalDecl(tree[0], tree[1] + "", None)
     
+    def for_stmt(self, tree):
+        decl = tree[0]
+        expr = tree[1]
+        inc = tree[2]
+        blk = tree[3]
+        return ForStmt(decl, expr, inc, blk)
+
+    def inc_stmt(self, tree):
+        lhs = Ident(tree[0] + "")
+        lhs2 = Ident(tree[0] + "")
+        return BinaryExpr("=", lhs, BinaryExpr("+", lhs2, LiteralExpr("1")))
+
     def enum_decl(self, tree):
         name = tree[1] + ""
         type = tree[2]

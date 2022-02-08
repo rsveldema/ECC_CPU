@@ -39,7 +39,6 @@ block: "{" stmt* "}"
 
 
 stmt: local_decl ";"
-|     object_init
 |     while_stmt
 |     block
 |     if_stmt
@@ -82,9 +81,6 @@ while_stmt: "while" "(" expr ")" block
 assign_stmt:   access some_assign_op expr ";"
 
 local_decl: type IDENT ("=" expr)?
-
-object_init: type IDENT "(" args ")" ";"
-|            type IDENT "{" args "}" ";"
 
 some_assign_op: assign_op | assign_add
 

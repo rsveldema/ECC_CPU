@@ -173,9 +173,9 @@ namespace ecc
 	{
 		uint32_t c = 0;
 		uint64_t f = value;
-		for (unsigned i = 0; i < 64; i++)
+		for (uint32_t i = 0; i < 64; i++)
 		{
-			c += (f & 1);
+			c += static_cast<uint32_t>(f & 1);
 
 			f = f >> 1;
 		}

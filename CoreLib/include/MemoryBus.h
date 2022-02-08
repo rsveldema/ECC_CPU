@@ -21,17 +21,23 @@ namespace ecc
 	//	using Packet = BusPacket;
 	//	using payload_t = bus_packet_payload_t;
 
-		bool request_busy = false;
-		bool response_busy = false;
+		bool request_busy;
+		bool response_busy;
 
 		BusPacket request_data;
 		BusPacket response_data;
 
 		METHOD_SECTION;
 
+		void init_memory_bus()
+		{
+			request_busy = false;
+			response_busy = false;
+		}
+
 		void send_read_request_data(memory_address_t address, const BusID &source)
 		{
-			BusPacket pkt{BusPacketType::read_data, source, address};
+			BusPacket pkt = create_bus_packet(BusPacketType::bus_read_data, source, address, 0);
 			send_request(pkt);
 		}
 
@@ -39,14 +45,14 @@ namespace ecc
 									 const BusID &source,
 									 const bus_packet_payload_t &value)
 		{
-			BusPacket pkt{BusPacketType::write_data, source, address, value};
+			BusPacket pkt = create_bus_packet(BusPacketType::bus_write_data, source, address, value);
 			send_request(pkt);
 		}
 
 		void send_read_response(const bus_packet_payload_t &value, const BusID &source)
 		{
 			memory_address_t addr = 0;
-			BusPacket pkt{BusPacketType::read_response, source, addr, value};
+			BusPacket pkt = create_bus_packet(BusPacketType::bus_read_response, source, addr, value);
 			send_response(pkt);
 		}
 

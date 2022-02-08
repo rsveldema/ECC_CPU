@@ -1,43 +1,51 @@
 interface MemoryBus;
-	bool request_busy = false;
-	bool response_busy = false;
+	bool request_busy;
+	bool response_busy;
 	BusPacket request_data;
 	BusPacket response_data;
 	
 	
-	function void send_read_request_data(memory_address_t address, BusID source);
-		BusPacket pkt = 0;
+	function void init_memory_bus();
 	begin
-		// local_obj BusPacket pkt(BusPacketType::read_data, source, address)
-		// send_request(pkt)
+		request_busy=0;
+		response_busy=0;
+	end
+	endfunction
+	
+	
+	function void send_read_request_data(memory_address_t address, BusID source);
+		BusPacket pkt;
+	begin
+		pkt = create_bus_packet(BusPacketType::bus_read_data, source, address, 0);
+		send_request(pkt);
 	end
 	endfunction
 	
 	
 	function void send_write_request_data(memory_address_t address, BusID source, bus_packet_payload_t value);
-		BusPacket pkt = 0;
+		BusPacket pkt;
 	begin
-		// local_obj BusPacket pkt(BusPacketType::write_data, source, address, value)
-		// send_request(pkt)
+		pkt = create_bus_packet(BusPacketType::bus_write_data, source, address, value);
+		send_request(pkt);
 	end
 	endfunction
 	
 	
 	function void send_read_response(bus_packet_payload_t value, BusID source);
-		memory_address_t addr = 0;
-		BusPacket pkt = 0;
+		memory_address_t addr;
+		BusPacket pkt;
 	begin
 		addr = 0;
-		// local_obj BusPacket pkt(BusPacketType::read_response, source, addr, value)
-		// send_response(pkt)
+		pkt = create_bus_packet(BusPacketType::bus_read_response, source, addr, value);
+		send_response(pkt);
 	end
 	endfunction
 	
 	
 	function BusPacket accept_request();
-		BusPacket f = 0;
+		BusPacket f;
 	begin
-		// assert(request_busy)
+		assert(request_busy);
 		f = request_data;
 		request_busy=0;
 		return f;
@@ -46,9 +54,9 @@ interface MemoryBus;
 	
 	
 	function BusPacket get_response();
-		BusPacket f = 0;
+		BusPacket f;
 	begin
-		// assert(response_busy)
+		assert(response_busy);
 		f = response_data;
 		response_busy=0;
 		return f;
@@ -58,7 +66,7 @@ interface MemoryBus;
 	
 	function void send_request(BusPacket pkt);
 	begin
-		// assert(!(request_busy))
+		assert(!(request_busy));
 		request_data=pkt;
 		request_busy=1;
 	end
@@ -67,7 +75,7 @@ interface MemoryBus;
 	
 	function void send_response(BusPacket pkt);
 	begin
-		// assert(!(response_busy))
+		assert(!(response_busy));
 		response_data=pkt;
 		response_busy=1;
 	end

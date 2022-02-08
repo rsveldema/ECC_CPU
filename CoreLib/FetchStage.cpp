@@ -47,10 +47,10 @@ namespace ecc
 	{
 		bool have_outstanding_jmp = false;
 		memory_address_t fetch_PC = 0;
-		execution_mask_t exec_mask(ALL_THREADS_EXEC_MASK_INT64);
+		execution_mask_t exec_mask = ALL_THREADS_EXEC_MASK_INT64;
 
 		memory_address_t address_cached = 0xffffffff;
-		fetched_instruction_data_t fetched_cached{};
+		fetched_instruction_data_t fetched_cached;
 
 		while (1)
 		{
@@ -92,7 +92,7 @@ namespace ecc
 						if (memory_bus.response_busy)
 						{
 							BusPacket response = memory_bus.get_response();
-							assert(response.packet_type == BusPacketType::read_response);
+							assert(response.packet_type == BusPacketType::bus_read_response);
 
 							address_cached = address_fetched;							
 							fetched_cached = getInsnData(response.payload);
@@ -138,7 +138,7 @@ namespace ecc
 
 			const memory_address_t PC = fetch_PC;
 			fetch_PC += sizeof(instruction_t);
-			FetchToDecodeBusPacket pkt{exec_mask, PC, insn};
+			FetchToDecodeBusPacket pkt = create_fetch_decode_packet(exec_mask, PC, insn);
 			decode_bus.send(pkt);
 
 			CONTEXT_SWITCH();

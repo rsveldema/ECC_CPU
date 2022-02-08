@@ -30,7 +30,7 @@ class LocalDecl:
         
     def str(self):
         if self.init_expr:
-            return f"local {self.type.str()} {self.var} {self.init_expr.str()}"
+            return f"{self.type.str()} {self.var} = {self.init_expr.str()}"
         else:
             return f"{self.type.str()} {self.var}"
             

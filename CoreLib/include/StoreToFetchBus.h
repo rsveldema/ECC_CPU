@@ -4,17 +4,22 @@
 #include <cassert>
 
 #include "MachineInfo.h"
-#include <Packets.h>
+#include "Packets.h"
 
 namespace ecc
 {
 
 	INTERFACE StoreToFetchBus
 	{
-		bool can_receive = false;
+		bool can_receive;
 		StoreToFetchPacket data;
 
 		METHOD_SECTION;
+
+		void init_store_to_fetch_bus()
+		{
+			can_receive = false;
+		}
 
 		void send(const StoreToFetchPacket& pkt)
 		{

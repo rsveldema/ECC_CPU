@@ -14,10 +14,15 @@ namespace ecc
 
 	INTERFACE FetchToDecodeBus
 	{
-		bool is_busy = false;
+		bool is_busy;
 		FetchToDecodeBusPacket data;
 
 		METHOD_SECTION;
+
+		void init_fetch_to_decode_bus()
+		{
+			is_busy = false;
+		}
 
 		void send(const FetchToDecodeBusPacket& pkt)
 		{

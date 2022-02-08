@@ -7,7 +7,7 @@ typedef union packed {
 
 
 function fetched_instruction_data_t getInsnData(uint64_t value);
-	int64_to_insn_data tmp = 0;
+	int64_to_insn_data tmp;
 begin
 	tmp.value=value;
 	return tmp.data;
@@ -42,18 +42,18 @@ endfunction
 
 module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
 	reg[32:0] state = 0;
-	bool have_outstanding_jmp = 0;
-	memory_address_t fetch_PC = 0;
-	execution_mask_t exec_mask = 0;
-	memory_address_t address_cached = 0;
-	fetched_instruction_data_t fetched_cached = 0;
-	StoreToFetchPacket jmp_retarget = 0;
-	memory_address_t address_fetched = 0;
-	BusPacket response = 0;
-	instruction_t insn = 0;
-	Opcode opcode = 0;
-	memory_address_t PC = 0;
-	FetchToDecodeBusPacket pkt = 0;
+	bool have_outstanding_jmp;
+	memory_address_t fetch_PC;
+	execution_mask_t exec_mask;
+	memory_address_t address_cached;
+	fetched_instruction_data_t fetched_cached;
+	StoreToFetchPacket jmp_retarget;
+	memory_address_t address_fetched;
+	BusPacket response;
+	instruction_t insn;
+	Opcode opcode;
+	memory_address_t PC;
+	FetchToDecodeBusPacket pkt;
 
 
 
@@ -65,9 +65,8 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			begin
 				have_outstanding_jmp = 0;
 				fetch_PC = 0;
-				// local_obj execution_mask_t exec_mask(ALL_THREADS_EXEC_MASK_INT64)
+				exec_mask = ALL_THREADS_EXEC_MASK_INT64;
 				address_cached = 'hffffffff;
-				// local_obj fetched_instruction_data_t fetched_cached()
 				state = 1; // GOTO
 				return;
 			end
@@ -97,7 +96,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		6:
 			begin
-				// CONTEXT_SWITCH()
+				CONTEXT_SWITCH();
 				state = 4; // GOTO
 				return;
 			end
@@ -135,7 +134,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 		10:
 			begin
 				address_fetched = (fetch_PC & ~(7));
-				// memory_bus.send_read_request_data(address_fetched, memory_bus_id)
+				memory_bus.send_read_request_data(address_fetched, memory_bus_id);
 				state = 11; // GOTO
 				return;
 			end
@@ -147,7 +146,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 					return;
 				end
 				response = memory_bus.get_response();
-				// assert((response.packet_type == BusPacketType::read_response))
+				assert((response.packet_type == BusPacketType::bus_read_response));
 				address_cached=address_fetched;
 				fetched_cached=getInsnData(response.payload);
 				state = 12; // GOTO
@@ -155,8 +154,8 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		13:
 			begin
-				// stats.incFetchedInsns()
-				// CONTEXT_SWITCH()
+				stats.incFetchedInsns();
+				CONTEXT_SWITCH();
 				state = 11; // GOTO
 				return;
 			end
@@ -201,8 +200,8 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		17:
 			begin
-				// logger.error("failed to get insn from local fetcher cache")
-				// abort()
+				logger.error("failed to get insn from local fetcher cache");
+				abort();
 				state = 16; // GOTO
 				return;
 			end
@@ -230,7 +229,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		19:
 			begin
-				// CONTEXT_SWITCH()
+				CONTEXT_SWITCH();
 				if (decode_bus.is_busy)
 				begin
 					state = 19; // GOTO
@@ -243,9 +242,9 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			begin
 				PC = fetch_PC;
 				fetch_PC+=($bits(instruction_t) / 8);
-				// local_obj FetchToDecodeBusPacket pkt(exec_mask, PC, insn)
-				// decode_bus.send(pkt)
-				// CONTEXT_SWITCH()
+				pkt = create_fetch_decode_packet(exec_mask, PC, insn);
+				decode_bus.send(pkt);
+				CONTEXT_SWITCH();
 				state = 1; // GOTO
 				return;
 			end
