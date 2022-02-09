@@ -7,19 +7,19 @@ typedef instruction_t[(2) - 1:0] fetched_instruction_data_t;
 
 typedef uint64_t execution_mask_t;
 
-`define POINTER_SIZE ($bits(memory_address_t) / 8)
+parameter POINTER_SIZE = ($bits(memory_address_t) / 8);
 
-`define INSTRUCTION_SIZE ($bits(instruction_t) / 8)
+parameter INSTRUCTION_SIZE = ($bits(instruction_t) / 8);
 
-`define CODE_SEGMENT_START 0
+parameter CODE_SEGMENT_START = 0;
 
-`define DATA_SEGMENT_START (1024 * 1024)
+parameter DATA_SEGMENT_START = (1024 * 1024);
 
-`define VECTOR_MEM_SIZE 64
+parameter VECTOR_MEM_SIZE = 64;
 
-`define NUMBER_OF_VECTOR_THREADS_INT64 (VECTOR_MEM_SIZE / ($bits(uint64_t) / 8))
+parameter NUMBER_OF_VECTOR_THREADS_INT64 = (VECTOR_MEM_SIZE / ($bits(uint64_t) / 8));
 
-`define ALL_THREADS_EXEC_MASK_INT64 ((1 << NUMBER_OF_VECTOR_THREADS_INT64) - 1)
+parameter ALL_THREADS_EXEC_MASK_INT64 = ((1 << NUMBER_OF_VECTOR_THREADS_INT64) - 1);
 
 
 typedef enum {
@@ -40,13 +40,13 @@ typedef enum {
 	,MAX_REG_ID
 } RegisterID;
 
-`define MACHINE_FLAGS_MASK_HALT (1 << 0)
+parameter MACHINE_FLAGS_MASK_HALT = (1 << 0);
 
-`define FLAGS_MASK_EQ (1 << 1)
+parameter FLAGS_MASK_EQ = (1 << 1);
 
-`define FLAGS_MASK_GT (1 << 2)
+parameter FLAGS_MASK_GT = (1 << 2);
 
-`define FLAGS_MASK_LT (1 << 3)
+parameter FLAGS_MASK_LT = (1 << 3);
 
 
 typedef enum {
@@ -139,6 +139,18 @@ typedef struct packed {
 	CoreID core_id;
 	CoreComponentID within_core_id;
 } BusID;
+
+
+function BusID createBusID(input CoreID core_id, input CoreComponentID within_id);
+begin
+	BusID ret;
+begin
+	ret.core_id=core_id;
+	ret.within_core_id=within_id;
+	return ret;
+end
+end
+endfunction
 
 
 function uint32_t count_num_bits64(input uint64_t value);

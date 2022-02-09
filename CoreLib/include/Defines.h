@@ -168,6 +168,16 @@ namespace ecc
 
 	METHOD_SECTION;
 
+
+	static inline
+	BusID createBusID(CoreID core_id, CoreComponentID within_id)
+	{
+		BusID ret;
+		ret.core_id = core_id;
+		ret.within_core_id = within_id;
+		return ret;
+	}
+
 	static inline
 	uint32_t count_num_bits64(uint64_t value)
 	{

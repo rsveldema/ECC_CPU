@@ -20,14 +20,6 @@ namespace ecc
 		ExecuteStageOpcode opcode;
 	};
 
-
-
-
-	static BusID createBusID(CoreID core_id, CoreComponentID within_id)
-	{
-		return { core_id, within_id };
-	}
-
 	extern std::map<std::string, InstructionInfo> insnInfo;
 	extern std::map<std::string, RegisterID> regnames;
 	extern std::map<std::string, ExecuteStageInsnInfo> execInsnInfo;

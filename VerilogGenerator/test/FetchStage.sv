@@ -44,7 +44,7 @@ end
 endfunction
 
 
-module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
+module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus, BusID memory_bus_id);
 	reg[32:0] state = 0;
 	bool have_outstanding_jmp;
 	memory_address_t fetch_PC;
@@ -158,7 +158,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		13:
 			begin
-				incFetchedInsns();
+				incFetchedInsnWait();
 				CONTEXT_SWITCH();
 				state = 11; // GOTO
 				return;
