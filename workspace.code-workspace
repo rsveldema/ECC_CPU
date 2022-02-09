@@ -13,5 +13,9 @@
 			"path": "VerilogGenerator"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"*.tcc": "cpp"
+		}
+	}
 }

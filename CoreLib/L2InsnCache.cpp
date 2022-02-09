@@ -15,7 +15,7 @@ namespace ecc
 				// translates from an InsnCachePacket to to an RawDataPacket
 				memory_address_t addr = pkt.address;
 				BusPacket rawPkt{
-					.packet_type = BusPacketType::bus_read_data,
+					.packet_type = bus_read_data,
 					.source = pkt.source,
 					.address = addr,
 					.payload = pkt.address
@@ -29,7 +29,7 @@ namespace ecc
 				auto pkt = toMemory.get_response();
 			
 				BusPacket insn_cache_pkt{
-					.packet_type = BusPacketType::bus_read_response,
+					.packet_type = bus_read_response,
 					.source = pkt.source,
 					.address = pkt.address,
 					.payload = pkt.payload

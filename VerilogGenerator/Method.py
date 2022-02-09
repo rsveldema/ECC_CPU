@@ -1,3 +1,4 @@
+from DotAccessExpr import DotAccessExpr
 from PrintStream import PrintStream
 from LowerState import LowerState
 from Block import Block
@@ -45,8 +46,11 @@ class Method:
         return sw
     
     def is_function(self):
-        return self.funcname.find("::") < 0
-    
+        if isinstance(self.funcname, DotAccessExpr):
+            return False
+        return True
+
+
     def toStateSwitch(self):
         if self.is_function():
             return self
@@ -69,30 +73,33 @@ class Method:
         else:
             self.generate_module(ps)
 
-    def get_param_str(self):        
+    def get_param_str(self, prefix):
         params = ""
-        comma = ""
+        comma = prefix
         for k in self.params:
             params += comma
             params += k.str()
-            comma = ", "
+            comma = ", " + prefix
         return params
 
     def generate_function(self, ps:PrintStream):
         ps.println("")
         ps.println("")
-        params = self.get_param_str()
-        ps.println(f"function {self.type.str()} {self.funcname}({params});")
+        params = self.get_param_str("input ")
+        ps.println(f"function {self.type.str()} {self.funcname.str()}({params});")       
+        ps.println("begin")
         self.generate_local_vars(ps)         
         self.block.generate(ps)
+        ps.println("end")
         ps.println("endfunction")
         
         
     def generate_module(self, ps:PrintStream):
-        module_name = self.funcname.split("::")[0]
-        task_name = self.funcname.split("::")[1]
+        da: DotAccessExpr = self.funcname
+        module_name = da.left.str()        
+        task_name = da.member
         
-        params = self.get_param_str()
+        params = self.get_param_str("")
 
         ps.println("")
         ps.println("")

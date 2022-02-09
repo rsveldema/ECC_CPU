@@ -9,12 +9,12 @@ int main(int argc, char **argv, char **env)
     auto *tb = new Vmain{contextp};
     while (!contextp->gotFinish())
     {
-		tb->i_clk = 1;
-		tb->eval();
-		tb->i_clk = 0;
+		//tb->i_clk = 1;
+		//tb->eval();
+		//tb->i_clk = 0;
 		tb->eval();
     }
-    delete top;
+    delete tb;
     delete contextp;
     return 0;
 }

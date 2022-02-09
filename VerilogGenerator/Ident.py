@@ -11,9 +11,6 @@ class Ident(Expr):
     
     def const_expr(self):
         s = self.str()
-        ix = s.find("::")
-        if ix > 0:
-            return s[ix+2:]
         return s
     
     def str(self) -> str:

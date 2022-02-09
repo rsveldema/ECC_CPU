@@ -20,7 +20,7 @@ namespace Insns
 
 		uint32_t getEncodedInstruction() override
 		{
-			return ((uint32_t)ecc::Opcode::MOVE_REG_BLOCK_INDEX) | ((uint32_t)dst << 8) | ((uint32_t)src << 16);
+			return ((uint32_t)ecc::Opcode::INSN_OPCODE_MOVE_REG_BLOCK_INDEX) | ((uint32_t)dst << 8) | ((uint32_t)src << 16);
 		}
 
 

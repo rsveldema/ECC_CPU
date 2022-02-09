@@ -18,7 +18,7 @@ namespace ecc
 		memory_address_t newpc;
 	};
 
-	enum class BusPacketType : uint8_t
+	enum BusPacketType : uint8_t
 	{
 		bus_read_data,
 		bus_write_data,

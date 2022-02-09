@@ -11,7 +11,7 @@ namespace Insns
 
 		uint32_t getEncodedInstruction() override
 		{
-			return (uint32_t)ecc::Opcode::HALT;
+			return (uint32_t)ecc::Opcode::INSN_OPCODE_HALT;
 		}
 	};
 }

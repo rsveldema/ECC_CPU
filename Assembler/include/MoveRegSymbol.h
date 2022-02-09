@@ -24,7 +24,7 @@ namespace Insns
 
 		uint32_t getEncodedInstruction()override
 		{
-			return (uint32_t)(((uint32_t)ecc::Opcode::MOVE_PCREL_REG_CONST16) | ((uint32_t)dest << 8) | ((uint32_t)src << 16));
+			return (uint32_t)(((uint32_t)ecc::Opcode::INSN_OPCODE_MOVE_PCREL_REG_CONST16) | ((uint32_t)dest << 8) | ((uint32_t)src << 16));
 		}
 
 		void link(const Linker* linker) override;

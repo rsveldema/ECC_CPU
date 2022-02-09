@@ -6,27 +6,30 @@ typedef union packed {
 } int64_to_insn_data;
 
 
-function fetched_instruction_data_t getInsnData(uint64_t value);
+function fetched_instruction_data_t getInsnData(input uint64_t value);
+begin
 	int64_to_insn_data tmp;
 begin
 	tmp.value=value;
 	return tmp.data;
 end
+end
 endfunction
 
 
-function bool changesControlFlow(Opcode op);
+function bool changesControlFlow(input Opcode op);
+begin
 begin
 	case (op)
-		HALT,
-		JMP_ALWAYS,
-		JMP_EQUAL,
-		JMP_NOT_EQUAL,
-		JMP_GREATER,
-		JMP_GREATER_EQUAL,
-		JMP_LOWER,
-		JMP_LOWER_EQUAL,
-		LOAD_RESTORE_PC:
+		Opcode.INSN_OPCODE_HALT,
+		Opcode.INSN_OPCODE_JMP_ALWAYS,
+		Opcode.INSN_OPCODE_JMP_EQUAL,
+		Opcode.INSN_OPCODE_JMP_NOT_EQUAL,
+		Opcode.INSN_OPCODE_JMP_GREATER,
+		Opcode.INSN_OPCODE_JMP_GREATER_EQUAL,
+		Opcode.INSN_OPCODE_JMP_LOWER,
+		Opcode.INSN_OPCODE_JMP_LOWER_EQUAL,
+		Opcode.INSN_OPCODE_LOAD_RESTORE_PC:
 			begin
 				return 1;
 			end
@@ -36,6 +39,7 @@ begin
 			end
 	endcase
 	return 0;
+end
 end
 endfunction
 
@@ -146,7 +150,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 					return;
 				end
 				response = memory_bus.get_response();
-				assert((response.packet_type == BusPacketType::bus_read_response));
+				assert((response.packet_type == bus_read_response));
 				address_cached=address_fetched;
 				fetched_cached=getInsnData(response.payload);
 				state = 12; // GOTO

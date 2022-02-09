@@ -13,7 +13,7 @@ namespace ecc
 
 				switch (pkt.packet_type)
 				{
-				case BusPacketType::bus_read_data:
+				case bus_read_data:
 				{
 					const auto address = pkt.address;
 					assert(address >= 0);
@@ -31,7 +31,7 @@ namespace ecc
 					break;
 				}
 
-				case BusPacketType::bus_write_data:
+				case bus_write_data:
 				{
 					const auto address = pkt.address;
 

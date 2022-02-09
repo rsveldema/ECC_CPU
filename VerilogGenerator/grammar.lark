@@ -25,11 +25,11 @@ member_decl: type IDENT ";"
 
 static_decl: STATIC "constexpr" type IDENT "=" expr ";"
 
-enum_decl: ENUM "class" IDENT ":" type "{" IDENT ("," IDENT)* "}" ";"
+enum_decl: ENUM IDENT ":" type "{" IDENT ("," IDENT)* "}" ";"
 
 
 
-method: (STATIC | INLINE)* type IDENT "(" params ")" block
+method: (STATIC | INLINE)* type qual_ident "(" params ")" block
 
 params: (param ("," param)*)?
 
@@ -144,7 +144,7 @@ array_access: qual_ident  "[" expr "]"
 
 sizeof_term: "sizeof" "(" expr ")"
 
-qual_ident: IDENT
+qual_ident: IDENT ("::" IDENT)?
 
 type: ("const")? ( booltype
 | uint8_t
@@ -185,7 +185,7 @@ autotype: "auto"
 
 string : ESCAPED_STRING
 
-IDENT: ("a".."z"|"A".."Z"|"_")("a".."z"|"A".."Z"|"_"|"0".."9"|"::")*
+IDENT: ("a".."z"|"A".."Z"|"_")("a".."z"|"A".."Z"|"_"|"0".."9")*
 
 NUMBER: ("0".."9")+
 

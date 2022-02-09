@@ -107,7 +107,12 @@ class MyTransformer(Transformer):
         return tree[0]
 
     def qual_ident(self, tree):
-        return Ident(tree[0] + "")
+        base = Ident(tree[0] + "")
+
+        if len(tree) == 2:
+            return DotAccessExpr(base, tree[1] + "")
+
+        return base
 
     def array_access(self, tree):
         return BinaryExpr("[]", tree[0], tree[1])

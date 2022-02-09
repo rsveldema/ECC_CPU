@@ -26,7 +26,7 @@ namespace ecc
 	static constexpr uint64_t ALL_THREADS_EXEC_MASK_INT64 = (1 << NUMBER_OF_VECTOR_THREADS_INT64) - 1;
 
 
-	enum class RegisterID : uint8_t
+	enum RegisterID : uint8_t
 	{
 		REG_R0,
 		REG_R1,
@@ -55,82 +55,82 @@ namespace ecc
 	static constexpr uint64_t FLAGS_MASK_GT = (1 << 2);
 	static constexpr uint64_t FLAGS_MASK_LT = (1 << 3);
 
-	enum class CoreID : uint8_t
+	enum CoreID : uint8_t
 	{
-		Core0,
-		Core1,
-		Core2,
-		Core3,
-		Core4,
-		Core5,
-		Core6,
-		Core7
+		CORE_ID_Core0,
+		CORE_ID_Core1,
+		CORE_ID_Core2,
+		CORE_ID_Core3,
+		CORE_ID_Core4,
+		CORE_ID_Core5,
+		CORE_ID_Core6,
+		CORE_ID_Core7
 	};
 
-	enum class CoreComponentID : uint8_t
+	enum CoreComponentID : uint8_t
 	{
-		FETCH,
-		DECODE,
-		EXECUTE,
-		STORE
+		COMPONENT_TYPE_FETCH,
+		COMPONENT_TYPE_DECODE,
+		COMPONENT_TYPE_EXECUTE,
+		COMPONENT_TYPE_STORE
 	};
 
 
-	enum class Opcode : uint8_t
+	enum Opcode : uint8_t
 	{
-		NOP,
-		HALT,
+		INSN_OPCODE_NOP,
+		INSN_OPCODE_HALT,
 
-		MOVE_REG_BLOCK_INDEX,
+		INSN_OPCODE_MOVE_REG_BLOCK_INDEX,
 
-		MOVE_REG_REG, // rX = rY
+		INSN_OPCODE_MOVE_REG_REG, // rX = rY
 
-		MOVE_REG_CPU_ID,  // rX = <CPU_ID> (32 bit)
+		INSN_OPCODE_MOVE_REG_CPU_ID,  // rX = <CPU_ID> (32 bit)
 
-		MOVE_REG_TIMESTAMP,  // rX = <TIMESTAMP> (64 bit)
+		INSN_OPCODE_MOVE_REG_TIMESTAMP,  // rX = <TIMESTAMP> (64 bit)
 
-		MOVE_REG_CONST16,  // rX = CONST (16 bit)
+		INSN_OPCODE_MOVE_REG_CONST16,  // rX = CONST (16 bit)
 
-		MOVE_R0_CONST24A,  // r0  = CONST (24 bit)
-		MOVE_R0_CONST24B,   // r0 |= CONST << 24 bit
-		MOVE_R0_CONST24C,   // r0 |= CONST << 48 (64 - 48 = 16 bits)
+		INSN_OPCODE_MOVE_R0_CONST24A,  // r0  = CONST (24 bit)
+		INSN_OPCODE_MOVE_R0_CONST24B,   // r0 |= CONST << 24 bit
+		INSN_OPCODE_MOVE_R0_CONST24C,   // r0 |= CONST << 48 (64 - 48 = 16 bits)
 
-		LOAD_REG_CONST_REG,       // rX = [rY + offset] 
-		STORE_REG_CONST_REG,  // [rY + offset] = rX
+		INSN_OPCODE_LOAD_REG_CONST_REG,       // rX = [rY + offset] 
+		INSN_OPCODE_STORE_REG_CONST_REG,  // [rY + offset] = rX
 
-		CMP_REG_REG,        // flags = rX <> rY
+		INSN_OPCODE_CMP_REG_REG,        // flags = rX <> rY
 
-		ADD_REG_REG_REG,     // rX = rY + rZ
-		ADD_REG_REG_CONST,   // rX = rY + const
+		INSN_OPCODE_ADD_REG_REG_REG,     // rX = rY + rZ
+		INSN_OPCODE_ADD_REG_REG_CONST,   // rX = rY + const
 
-		RSHIFT_REG_REG_REG,     // rX = rY << rZ
-		RSHIFT_REG_REG_CONST,   // rX = rY << const
+		INSN_OPCODE_RSHIFT_REG_REG_REG,     // rX = rY << rZ
+		INSN_OPCODE_RSHIFT_REG_REG_CONST,   // rX = rY << const
 
-		L_SSHIFT_REG_REG_REG,     // rX = rY >>> rZ
-		L_SSHIFT_REG_REG_CONST,   // rX = rY >>> const
+		INSN_OPCODE_L_SSHIFT_REG_REG_REG,     // rX = rY >>> rZ
+		INSN_OPCODE_L_SSHIFT_REG_REG_CONST,   // rX = rY >>> const
 
-		L_USHIFT_REG_REG_REG,     // rX = rY >> rZ
-		L_USHIFT_REG_REG_CONST,   // rX = rY >> const
+		INSN_OPCODE_L_USHIFT_REG_REG_REG,     // rX = rY >> rZ
+		INSN_OPCODE_L_USHIFT_REG_REG_CONST,   // rX = rY >> const
 
-		MUL_REG_REG_REG,     // rX = rY * rZ
-		MUL_REG_REG_CONST,   // rX = rY * const
+		INSN_OPCODE_MUL_REG_REG_REG,     // rX = rY * rZ
+		INSN_OPCODE_MUL_REG_REG_CONST,   // rX = rY * const
 
-		DIV_REG_REG_REG,     // rX = rY / rZ
-		DIV_REG_REG_CONST,   // rX = rY / const
+		INSN_OPCODE_DIV_REG_REG_REG,     // rX = rY / rZ
+		INSN_OPCODE_DIV_REG_REG_CONST,   // rX = rY / const
 
-		JMP_ALWAYS,         // PC += CONST 
-		JMP_EQUAL,
-		JMP_NOT_EQUAL,
-		JMP_LOWER,
-		JMP_LOWER_EQUAL,
-		JMP_GREATER,
-		JMP_GREATER_EQUAL,
+		INSN_OPCODE_JMP_ALWAYS,         // PC += CONST 
+		INSN_OPCODE_JMP_EQUAL,
+		INSN_OPCODE_JMP_NOT_EQUAL,
+		INSN_OPCODE_JMP_LOWER,
+		INSN_OPCODE_JMP_LOWER_EQUAL,
+		INSN_OPCODE_JMP_GREATER,
+		INSN_OPCODE_JMP_GREATER_EQUAL,
 
-		LOAD_RESTORE_PC,     // PC = [rX + offset]
-		MOVE_PCREL_REG_CONST16
+		INSN_OPCODE_LOAD_RESTORE_PC,     // PC = [rX + offset]
+		INSN_OPCODE_MOVE_PCREL_REG_CONST16
 	};
 
-	enum class ExecuteStageOpcode : uint8_t
+	enum ExecuteStageOpcode : uint8_t
 	{
 		EXEC_NOP,
 		EXEC_MOVE_REG_VALUE,
@@ -149,7 +149,7 @@ namespace ecc
 		EXEC_HALT
 	};
 
-	enum class StorageStageOpcode : uint8_t
+	enum StorageStageOpcode : uint8_t
 	{
 		STORAGE_NOP,
 		STORAGE_STORE_VALUE_INTO_REG,

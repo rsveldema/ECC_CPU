@@ -20,7 +20,7 @@ namespace Insns
 
 		uint32_t getEncodedInstruction() override
 		{
-			return ((uint32_t)ecc::Opcode::LOAD_REG_CONST_REG) | ((uint32_t)dest << 8) | ((uint32_t)base << 16) | ((uint32_t)offset << 24);
+			return ((uint32_t)ecc::Opcode::INSN_OPCODE_LOAD_REG_CONST_REG) | ((uint32_t)dest << 8) | ((uint32_t)base << 16) | ((uint32_t)offset << 24);
 		}
 
 		void link(const Linker* linker) override

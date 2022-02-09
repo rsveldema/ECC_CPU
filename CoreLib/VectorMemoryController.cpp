@@ -32,10 +32,10 @@ namespace ecc
 					switch (pkt->type)
 					{
 					default: abort();
-					case VecBusPacketType::read_vec64:
+					case VEC_BUS_PKT_TYPE_read_vec64:
 					{
 						VecBusPacket reply{
-							.type = VecBusPacketType::read_response_vec64
+							.type = VEC_BUS_PKT_TYPE_read_response_vec64
 						};
 
 						for (unsigned i = 0; i < addresses.data.size(); i++)
@@ -66,7 +66,7 @@ namespace ecc
 						break;
 					}
 
-					case VecBusPacketType::write_vec64:
+					case VEC_BUS_PKT_TYPE_write_vec64:
 					{
 						const auto& arrayData = pkt->payload;
 

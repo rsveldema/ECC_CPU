@@ -10,48 +10,46 @@
 #include "MachineInfo.h"
 #include "VectorValue.h"
 
-
 namespace ecc
 {
-		enum class VecBusPacketType
-		{
-			read_vec64,
-			write_vec64,
-			read_response_vec64,
-			write_response_vec64
-		};
+	enum VecBusPacketType
+	{
+		VEC_BUS_PKT_TYPE_read_vec64,
+		VEC_BUS_PKT_TYPE_write_vec64,
+		VEC_BUS_PKT_TYPE_read_response_vec64,
+		VEC_BUS_PKT_TYPE_write_response_vec64
+	};
 
-		using vec_bus_payload_t = VectorValue;
+	using vec_bus_payload_t = VectorValue;
 
-		struct VecBusPacket
-		{
-			VecBusPacketType type;
-			BusID source;
-			VectorValue address;
-			vec_bus_payload_t payload;
-		};
+	struct VecBusPacket
+	{
+		VecBusPacketType type;
+		BusID source;
+		VectorValue address;
+		vec_bus_payload_t payload;
+	};
 
 	/** simple memory bus that allows sending requests and receiving replies.
-	*/
+	 */
 	class VecMemoryBus
 	{
 	public:
-
 		std::queue<VecBusPacket> request_queue;
 		std::queue<VecBusPacket> response_queue;
 
-		void send_read_request_vec(const VectorValue& address, const BusID& source)
+		void send_read_request_vec(const VectorValue &address, const BusID &source)
 		{
-			VecBusPacket pkt{ VecBusPacketType::read_vec64, source, address };
+			VecBusPacket pkt{VEC_BUS_PKT_TYPE_read_vec64, source, address};
 			send_request(pkt);
 		}
 
-		void send_write_request_vec(const VectorValue& address,
-			const BusID& source,
-			const VectorValue& value)
+		void send_write_request_vec(const VectorValue &address,
+									const BusID &source,
+									const VectorValue &value)
 		{
-			VecBusPacket pkt{ VecBusPacketType::write_vec64, 
-						source, address, value };
+			VecBusPacket pkt{VEC_BUS_PKT_TYPE_write_vec64,
+							 source, address, value};
 			send_request(pkt);
 		}
 
@@ -77,13 +75,13 @@ namespace ecc
 			return std::nullopt;
 		}
 
-		void send_request(const VecBusPacket& pkt)
+		void send_request(const VecBusPacket &pkt)
 		{
 			assert(!is_busy());
 			request_queue.push(pkt);
 		}
 
-		void send_response(const VecBusPacket& pkt)
+		void send_response(const VecBusPacket &pkt)
 		{
 			response_queue.push(pkt);
 		}

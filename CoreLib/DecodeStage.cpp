@@ -9,14 +9,14 @@ namespace ecc
 	{
 		switch (opcode)
 		{
-		case Opcode::JMP_EQUAL:		return FLAGS_MASK_EQ;
-		case Opcode::JMP_NOT_EQUAL:	return FLAGS_MASK_LT | FLAGS_MASK_GT;
+		case Opcode::INSN_OPCODE_JMP_EQUAL:		return FLAGS_MASK_EQ;
+		case Opcode::INSN_OPCODE_JMP_NOT_EQUAL:	return FLAGS_MASK_LT | FLAGS_MASK_GT;
 
-		case Opcode::JMP_GREATER:	return FLAGS_MASK_GT;
-		case Opcode::JMP_LOWER:		return FLAGS_MASK_LT;
+		case Opcode::INSN_OPCODE_JMP_GREATER:	return FLAGS_MASK_GT;
+		case Opcode::INSN_OPCODE_JMP_LOWER:		return FLAGS_MASK_LT;
 
-		case Opcode::JMP_GREATER_EQUAL:	return FLAGS_MASK_GT | FLAGS_MASK_EQ;
-		case Opcode::JMP_LOWER_EQUAL:	return FLAGS_MASK_LT | FLAGS_MASK_EQ;
+		case Opcode::INSN_OPCODE_JMP_GREATER_EQUAL:	return FLAGS_MASK_GT | FLAGS_MASK_EQ;
+		case Opcode::INSN_OPCODE_JMP_LOWER_EQUAL:	return FLAGS_MASK_LT | FLAGS_MASK_EQ;
 		}
 		assert(false);
 		return FLAGS_MASK_GT;
@@ -37,18 +37,18 @@ namespace ecc
 
 				switch (opcode)
 				{
-				case Opcode::NOP:
+				case Opcode::INSN_OPCODE_NOP:
 				{
 					break;
 				}
-				case Opcode::HALT:
+				case Opcode::INSN_OPCODE_HALT:
 				{
 					DecodeToExecuteBus::Packet execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_HALT };
 					execute_bus.send(execute_pkt);
 					break;
 				}
 
-				case Opcode::MOVE_PCREL_REG_CONST16:
+				case Opcode::INSN_OPCODE_MOVE_PCREL_REG_CONST16:
 				{
 					auto reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					auto constValue = static_cast<int64_t>((pkt.insn >> 16) & 0xffff);
@@ -66,7 +66,7 @@ namespace ecc
 				}
 
 				// reg = [reg + const]
-				case Opcode::STORE_REG_CONST_REG:
+				case Opcode::INSN_OPCODE_STORE_REG_CONST_REG:
 				{
 					const auto& src_reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto& base_reg_id = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
@@ -83,7 +83,7 @@ namespace ecc
 				}
 
 				// reg = blockIndex
-				case Opcode::MOVE_REG_BLOCK_INDEX:
+				case Opcode::INSN_OPCODE_MOVE_REG_BLOCK_INDEX:
 				{
 					const auto& reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 
@@ -95,7 +95,7 @@ namespace ecc
 					break;
 				}
 
-				case Opcode::MOVE_REG_CONST16:
+				case Opcode::INSN_OPCODE_MOVE_REG_CONST16:
 				{
 					const auto& reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto& const_value = static_cast<int16_t>((pkt.insn >> 16) & 0xffff);
@@ -108,7 +108,7 @@ namespace ecc
 					break;
 				}
 
-				case Opcode::MOVE_REG_REG:
+				case Opcode::INSN_OPCODE_MOVE_REG_REG:
 				{
 					const auto reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto src_reg = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
@@ -121,7 +121,7 @@ namespace ecc
 					break;
 				}
 
-				case Opcode::L_SSHIFT_REG_REG_CONST:
+				case Opcode::INSN_OPCODE_L_SSHIFT_REG_REG_CONST:
 				{
 					const auto dst_reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto src1_reg = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
@@ -138,7 +138,7 @@ namespace ecc
 				}
 
 
-				case Opcode::ADD_REG_REG_REG:
+				case Opcode::INSN_OPCODE_ADD_REG_REG_REG:
 				{
 					const auto dst_reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto src1_reg = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
@@ -155,7 +155,7 @@ namespace ecc
 
 
 				// reg = reg + const
-				case Opcode::ADD_REG_REG_CONST:
+				case Opcode::INSN_OPCODE_ADD_REG_REG_CONST:
 				{
 					const auto dst_reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto src1_reg = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
@@ -171,7 +171,7 @@ namespace ecc
 					break;
 				}
 
-				case Opcode::JMP_ALWAYS:
+				case Opcode::INSN_OPCODE_JMP_ALWAYS:
 				{
 					const auto off = static_cast<int32_t>(pkt.insn >> 8);
 
@@ -184,7 +184,7 @@ namespace ecc
 					break;
 				}
 
-				case Opcode::CMP_REG_REG:
+				case Opcode::INSN_OPCODE_CMP_REG_REG:
 				{
 					const auto reg1 = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto reg2 = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
@@ -202,12 +202,12 @@ namespace ecc
 					break;
 				}
 
-				case Opcode::JMP_LOWER:
-				case Opcode::JMP_LOWER_EQUAL:
-				case Opcode::JMP_EQUAL:
-				case Opcode::JMP_NOT_EQUAL:
-				case Opcode::JMP_GREATER:
-				case Opcode::JMP_GREATER_EQUAL:
+				case Opcode::INSN_OPCODE_JMP_LOWER:
+				case Opcode::INSN_OPCODE_JMP_LOWER_EQUAL:
+				case Opcode::INSN_OPCODE_JMP_EQUAL:
+				case Opcode::INSN_OPCODE_JMP_NOT_EQUAL:
+				case Opcode::INSN_OPCODE_JMP_GREATER:
+				case Opcode::INSN_OPCODE_JMP_GREATER_EQUAL:
 				{
 					const auto PC = pkt.PC;
 
@@ -231,7 +231,7 @@ namespace ecc
 				}
 
 
-				case Opcode::LOAD_RESTORE_PC:
+				case Opcode::INSN_OPCODE_LOAD_RESTORE_PC:
 				{
 					const auto base = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto off1_const = static_cast<int16_t>(pkt.insn >> 16);
@@ -249,7 +249,7 @@ namespace ecc
 				}
 
 				// ret = [const + reg]
-				case Opcode::LOAD_REG_CONST_REG:
+				case Opcode::INSN_OPCODE_LOAD_REG_CONST_REG:
 				{
 					const auto dest = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto base = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
@@ -268,7 +268,7 @@ namespace ecc
 					break;
 				}
 
-				case Opcode::MOVE_R0_CONST24A:
+				case Opcode::INSN_OPCODE_MOVE_R0_CONST24A:
 				{
 					const auto dest = RegisterID::REG_R0;
 					const auto off1_const = static_cast<int32_t>(pkt.insn >> 8);
@@ -282,7 +282,7 @@ namespace ecc
 					break;
 				}
 
-				case Opcode::MOVE_R0_CONST24B:
+				case Opcode::INSN_OPCODE_MOVE_R0_CONST24B:
 				{
 					const auto dest = RegisterID::REG_R0;
 					const auto off1_const = static_cast<int32_t>(pkt.insn >> 8);
@@ -298,7 +298,7 @@ namespace ecc
 					break;
 				}
 
-				case Opcode::MOVE_R0_CONST24C:
+				case Opcode::INSN_OPCODE_MOVE_R0_CONST24C:
 				{
 					const auto dest = RegisterID::REG_R0;
 					const auto off1_const = static_cast<int32_t>(pkt.insn >> 8);

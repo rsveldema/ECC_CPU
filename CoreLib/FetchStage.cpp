@@ -21,15 +21,15 @@ namespace ecc
 	{
 		switch (op)
 		{
-		case Opcode::HALT:
-		case Opcode::JMP_ALWAYS:
-		case Opcode::JMP_EQUAL:
-		case Opcode::JMP_NOT_EQUAL:
-		case Opcode::JMP_GREATER:
-		case Opcode::JMP_GREATER_EQUAL:
-		case Opcode::JMP_LOWER:
-		case Opcode::JMP_LOWER_EQUAL:
-		case Opcode::LOAD_RESTORE_PC:
+		case Opcode::INSN_OPCODE_HALT:
+		case Opcode::INSN_OPCODE_JMP_ALWAYS:
+		case Opcode::INSN_OPCODE_JMP_EQUAL:
+		case Opcode::INSN_OPCODE_JMP_NOT_EQUAL:
+		case Opcode::INSN_OPCODE_JMP_GREATER:
+		case Opcode::INSN_OPCODE_JMP_GREATER_EQUAL:
+		case Opcode::INSN_OPCODE_JMP_LOWER:
+		case Opcode::INSN_OPCODE_JMP_LOWER_EQUAL:
+		case Opcode::INSN_OPCODE_LOAD_RESTORE_PC:
 		{
 			return true;
 		}
@@ -92,7 +92,7 @@ namespace ecc
 						if (memory_bus.response_busy)
 						{
 							BusPacket response = memory_bus.get_response();
-							assert(response.packet_type == BusPacketType::bus_read_response);
+							assert(response.packet_type == bus_read_response);
 
 							address_cached = address_fetched;							
 							fetched_cached = getInsnData(response.payload);

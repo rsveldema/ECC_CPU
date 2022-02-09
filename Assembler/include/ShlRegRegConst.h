@@ -22,7 +22,7 @@ namespace Insns
 
 		uint32_t getEncodedInstruction() override
 		{
-			return ((uint32_t)ecc::Opcode::L_SSHIFT_REG_REG_CONST) | ((uint32_t)dst << 8) | ((uint32_t)src << 16) | ((uint32_t)bits << 24);
+			return ((uint32_t)ecc::Opcode::INSN_OPCODE_L_SSHIFT_REG_REG_CONST) | ((uint32_t)dst << 8) | ((uint32_t)src << 16) | ((uint32_t)bits << 24);
 		}
 
 

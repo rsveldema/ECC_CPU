@@ -29,25 +29,30 @@ namespace ecc
 
 		METHOD_SECTION;
 
+		void init()
+		{			
+			request_busy = false;
+			response_busy = false;
+		}
 
 		void send_read_request_data(memory_address_t address, const BusID &source)
 		{
-			BusPacket pkt = create_bus_packet(BusPacketType::bus_read_data, source, address, 0);
+			BusPacket pkt = create_bus_packet(bus_read_data, source, address, 0);
 			send_request(pkt);
 		}
 
 		void send_write_request_data(memory_address_t address,
 									 const BusID &source,
-									 const bus_packet_payload_t &value)
+									 const bus_packet_payload_t &payload_data)
 		{
-			BusPacket pkt = create_bus_packet(BusPacketType::bus_write_data, source, address, value);
+			BusPacket pkt = create_bus_packet(bus_write_data, source, address, payload_data);
 			send_request(pkt);
 		}
 
 		void send_read_response(const bus_packet_payload_t &value, const BusID &source)
 		{
 			memory_address_t addr = 0;
-			BusPacket pkt = create_bus_packet(BusPacketType::bus_read_response, source, addr, value);
+			BusPacket pkt = create_bus_packet(bus_read_response, source, addr, value);
 			send_response(pkt);
 		}
 
@@ -82,15 +87,6 @@ namespace ecc
 		}
 	};
 
+	METHOD_SECTION;
 
-	static inline
-	MemoryBus create_memory_bus()
-	{
-		MemoryBus ret;
-		
-		ret.request_busy = false;
-		ret.response_busy = false;
-		
-		return ret;
-	}
 }

@@ -20,7 +20,7 @@ namespace Insns
 
 		uint32_t getEncodedInstruction() override
 		{
-			return ((uint32_t)ecc::Opcode::CMP_REG_REG) | ((uint32_t)dst << 8) | ((uint32_t)src << 16);
+			return ((uint32_t)ecc::Opcode::INSN_OPCODE_CMP_REG_REG) | ((uint32_t)dst << 8) | ((uint32_t)src << 16);
 		}
 
 

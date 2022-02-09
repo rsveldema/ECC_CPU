@@ -1,6 +1,8 @@
 #pragma once
 
 #include "MachineConfig.h"
+#include "MemoryBus.h"
+#include "Core.h"
 
 namespace ecc
 {
@@ -12,13 +14,15 @@ namespace ecc
 
 		Multiplexer<MemoryBus> main_memory_data_access_multiplexer;
 		Multiplexer<MemoryBus> main_memory_insn_access_multiplexer;
-		MemoryBus sram_multiplexer_bus = create_memory_bus();
+		MemoryBus sram_multiplexer_bus;
 
 		CoreCluster(SimComponentRegistry& registry, MemoryBus& _data_memory_bus, MemoryBus& _insn_memory_bus, GlobalStats& globalStats,
 			const MachineConfig& config)
 			: main_memory_data_access_multiplexer(registry, _data_memory_bus),
 			main_memory_insn_access_multiplexer(registry, _insn_memory_bus)
 		{
+			sram_multiplexer_bus.init();
+	
 			for (unsigned i = 0; i < config.num_cores; i++)
 			{
 				const auto core_id = static_cast<ecc::CoreID>(i);
