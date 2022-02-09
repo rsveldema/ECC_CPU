@@ -29,11 +29,6 @@ namespace ecc
 
 		METHOD_SECTION;
 
-		void init_memory_bus()
-		{
-			request_busy = false;
-			response_busy = false;
-		}
 
 		void send_read_request_data(memory_address_t address, const BusID &source)
 		{
@@ -87,4 +82,15 @@ namespace ecc
 		}
 	};
 
+
+	static inline
+	MemoryBus create_memory_bus()
+	{
+		MemoryBus ret;
+		
+		ret.request_busy = false;
+		ret.response_busy = false;
+		
+		return ret;
+	}
 }

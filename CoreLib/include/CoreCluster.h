@@ -12,7 +12,7 @@ namespace ecc
 
 		Multiplexer<MemoryBus> main_memory_data_access_multiplexer;
 		Multiplexer<MemoryBus> main_memory_insn_access_multiplexer;
-		MemoryBus sram_multiplexer_bus;
+		MemoryBus sram_multiplexer_bus = create_memory_bus();
 
 		CoreCluster(SimComponentRegistry& registry, MemoryBus& _data_memory_bus, MemoryBus& _insn_memory_bus, GlobalStats& globalStats,
 			const MachineConfig& config)

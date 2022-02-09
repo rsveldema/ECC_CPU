@@ -17,6 +17,7 @@ typedef bit bool;
 
 module main();
 
+    bit clk;
     FetchToDecodeBus decode_bus;
     StoreToFetchBus store_bus;
     MemoryBus memory_bus;
