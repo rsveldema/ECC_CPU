@@ -15,20 +15,45 @@ typedef bit bool;
 //`include "MemoryBus.sv"
 //`include "FetchStage.sv"
 
+function CONTEXT_SWITCH();
+begin
+end
+endfunction;
+
+function abort();
+begin
+    assert(0);
+end
+endfunction;
+
+function incFetchedInsns();
+begin
+    assert(0);
+end
+endfunction;
+
+function error(msg);
+begin
+    $display(msg);
+    $finish();
+end
+endfunction;
+
 module main();
 
     // bit clk;
 
-    //FetchToDecodeBus decode_bus;
-    //StoreToFetchBus store_bus;
+    FetchToDecodeBus decode_bus;
+    StoreToFetchBus store_bus;
     MemoryBus memory_bus;
 
-    //FetchStage fetcher;
+    FetchStage fetcher(decode_bus, store_bus, memory_bus);
 
     initial begin
         memory_bus.init();
-     //  init_store_to_fetch_bus();
-    end
+        store_bus.init_store_to_fetch_bus();
+
+   end
 
 endmodule;
 

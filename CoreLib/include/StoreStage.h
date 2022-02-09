@@ -19,8 +19,6 @@ namespace ecc
 		ExecuteToStoreBus& execute_bus;
 		BusID memory_bus_id;
 		StoreToFetchBus& fetch_bus;
-		Logger& logger;
-		GlobalStats& stats;
 		DivergenceQueue& divergence_queue;
 
 	public:
@@ -30,8 +28,6 @@ namespace ecc
 			RegisterFile& _regs,
 			BusID bus_id,
 			StoreToFetchBus& _fetch_bus,
-			Logger& _logger,
-			GlobalStats& _stats,
 			DivergenceQueue& _divergence_queue)
 
 			: SimComponent(registry, "storer"),
@@ -40,8 +36,6 @@ namespace ecc
 			regs(_regs),
 			memory_bus_id(bus_id),
 			fetch_bus(_fetch_bus),
-			logger(_logger),
-			stats(_stats),
 			divergence_queue(_divergence_queue)
 		{}
 

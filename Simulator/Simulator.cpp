@@ -124,8 +124,8 @@ int main(int argc, char** argv)
 		.num_cores = num_cores
 	};
 
-	SimComponentRegistry registry(globalStats);
-	CoreClusterGrid machine(registry, config, globalStats);
+	SimComponentRegistry registry;
+	CoreClusterGrid machine(registry, config);
 
 	read_code_memory_dump(machine, filename);
 	read_data_memory_dump(machine, filename + ".data");
@@ -133,7 +133,7 @@ int main(int argc, char** argv)
 	registry.run(machine);
 
 	std::cerr << "finished simulation" << std::endl;
-	globalStats.dump();
+	__global_stats.dump();
 
 	return 0;
 }

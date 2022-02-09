@@ -12,11 +12,9 @@ namespace ecc
 	{
 	public:
 		std::vector<SimComponent*> components;
-		GlobalStats& stats;
 
 	public:
-		SimComponentRegistry(GlobalStats& _stats)
-			: stats(_stats)
+		SimComponentRegistry()
 		{}
 
 

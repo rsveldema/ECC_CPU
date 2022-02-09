@@ -13,7 +13,7 @@ namespace ecc
 				const auto opcode = pkt.opcode;
 				const auto PC = pkt.PC;
 
-				logger.debug("EXECUTE[" + std::to_string(PC) + "] exec: " + to_string(opcode));
+				debug("EXECUTE[" + std::to_string(PC) + "] exec: " + to_string(opcode));
 
 				switch (pkt.opcode)
 				{
@@ -31,7 +31,7 @@ namespace ecc
 
 					const auto dest = RegisterID::REG_FLAGS;
 
-					// logger.debbug("[EXECUTE] CMP: " + value1 + " -- " + value2 + "-----" + result);
+					// debbug("[EXECUTE] CMP: " + value1 + " -- " + value2 + "-----" + result);
 
 					while (store_bus.is_busy)
 					{

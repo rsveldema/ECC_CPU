@@ -21,15 +21,15 @@ function bool changesControlFlow(input Opcode op);
 begin
 begin
 	case (op)
-		Opcode.INSN_OPCODE_HALT,
-		Opcode.INSN_OPCODE_JMP_ALWAYS,
-		Opcode.INSN_OPCODE_JMP_EQUAL,
-		Opcode.INSN_OPCODE_JMP_NOT_EQUAL,
-		Opcode.INSN_OPCODE_JMP_GREATER,
-		Opcode.INSN_OPCODE_JMP_GREATER_EQUAL,
-		Opcode.INSN_OPCODE_JMP_LOWER,
-		Opcode.INSN_OPCODE_JMP_LOWER_EQUAL,
-		Opcode.INSN_OPCODE_LOAD_RESTORE_PC:
+		INSN_OPCODE_HALT,
+		INSN_OPCODE_JMP_ALWAYS,
+		INSN_OPCODE_JMP_EQUAL,
+		INSN_OPCODE_JMP_NOT_EQUAL,
+		INSN_OPCODE_JMP_GREATER,
+		INSN_OPCODE_JMP_GREATER_EQUAL,
+		INSN_OPCODE_JMP_LOWER,
+		INSN_OPCODE_JMP_LOWER_EQUAL,
+		INSN_OPCODE_LOAD_RESTORE_PC:
 			begin
 				return 1;
 			end
@@ -158,7 +158,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		13:
 			begin
-				stats.incFetchedInsns();
+				incFetchedInsns();
 				CONTEXT_SWITCH();
 				state = 11; // GOTO
 				return;
@@ -204,7 +204,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		17:
 			begin
-				logger.error("failed to get insn from local fetcher cache");
+				error("failed to get insn from local fetcher cache");
 				abort();
 				state = 16; // GOTO
 				return;

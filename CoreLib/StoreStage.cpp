@@ -23,7 +23,7 @@ namespace ecc
 					assert(isValidIndex(dest));
 					const auto& src = pkt.src.value;
 
-					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
+					debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
 
 					regs.mark_valid(dest);
 					regs[dest] = src;
@@ -37,7 +37,7 @@ namespace ecc
 
 					assert(dest.are_all_adjacent_memory_addresses(8));
 
-					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
+					debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
 
 					this->memory_bus.send_write_request_vec(dest, memory_bus_id, src);
 					break;
@@ -52,7 +52,7 @@ namespace ecc
 
 					const auto& src = pkt.src.value;
 
-					logger.debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
+					debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
 
 					memory_bus.send_read_request_vec(src, memory_bus_id);
 
@@ -77,7 +77,7 @@ namespace ecc
 						}
 						else
 						{
-							stats.waitForOperandFetch++;
+							__global_stats.waitForOperandFetch++;
 						}
 
 						CONTEXT_SWITCH();
@@ -95,14 +95,14 @@ namespace ecc
 
 				case StorageStageOpcode::STORAGE_CJMP:
 				{
-					stats.numVectorLocalDivergences++;
+					__global_stats.numVectorLocalDivergences++;
 
 					const auto new_address = pkt.dest.address;
 					const auto next_address = pkt.src.address;
 					const auto& exec_mask_new_address = pkt.execution_flags_true;
 					const auto& exec_mask_next_address = pkt.execution_flags_false;
 
-					logger.debug("[STORE] splitting cond-jump into " + std::to_string(count_num_bits64(exec_mask_new_address))
+					debug("[STORE] splitting cond-jump into " + std::to_string(count_num_bits64(exec_mask_new_address))
 						+ " and " + std::to_string(count_num_bits64(exec_mask_next_address)));
 
 					ThreadContext ctxt{
@@ -135,7 +135,7 @@ namespace ecc
 				}
 
 				default:
-					std::cerr << "unhandled store insn" << std::endl;
+					error("unhandled store insn");
 					abort();
 				}
 			}

@@ -1,7 +1,11 @@
 #include "Task.h"
+#include "Stats.h"
 
 namespace ecc
 {
+	GlobalStats __global_stats;
+	std::string __logging_prefix;
+
 	void Task::await_suspend(std::coroutine_handle<ReturnObject::promise_type> h)
 	{
 		h_ = h;

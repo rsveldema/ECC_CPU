@@ -21,15 +21,15 @@ namespace ecc
 	{
 		switch (op)
 		{
-		case Opcode::INSN_OPCODE_HALT:
-		case Opcode::INSN_OPCODE_JMP_ALWAYS:
-		case Opcode::INSN_OPCODE_JMP_EQUAL:
-		case Opcode::INSN_OPCODE_JMP_NOT_EQUAL:
-		case Opcode::INSN_OPCODE_JMP_GREATER:
-		case Opcode::INSN_OPCODE_JMP_GREATER_EQUAL:
-		case Opcode::INSN_OPCODE_JMP_LOWER:
-		case Opcode::INSN_OPCODE_JMP_LOWER_EQUAL:
-		case Opcode::INSN_OPCODE_LOAD_RESTORE_PC:
+		case INSN_OPCODE_HALT:
+		case INSN_OPCODE_JMP_ALWAYS:
+		case INSN_OPCODE_JMP_EQUAL:
+		case INSN_OPCODE_JMP_NOT_EQUAL:
+		case INSN_OPCODE_JMP_GREATER:
+		case INSN_OPCODE_JMP_GREATER_EQUAL:
+		case INSN_OPCODE_JMP_LOWER:
+		case INSN_OPCODE_JMP_LOWER_EQUAL:
+		case INSN_OPCODE_LOAD_RESTORE_PC:
 		{
 			return true;
 		}
@@ -43,7 +43,8 @@ namespace ecc
 
 	ReturnObject FetchStage::run(FetchToDecodeBus &decode_bus,
 								 StoreToFetchBus &store_bus,
-								 MemoryBus &memory_bus)
+								 MemoryBus &memory_bus,
+						 		 const BusID memory_bus_id)
 	{
 		bool have_outstanding_jmp = false;
 		memory_address_t fetch_PC = 0;
@@ -99,7 +100,7 @@ namespace ecc
 							break;
 						}
 
-						stats.incFetchedInsns();
+						incFetchedInsnWait();
 						CONTEXT_SWITCH();
 					}
 				}
@@ -118,12 +119,12 @@ namespace ecc
 				}
 				else
 				{
-					logger.error("failed to get insn from local fetcher cache");
+					error("failed to get insn from local fetcher cache");
 					abort();
 				}
 			}
 
-			// logger.debug("[FETCH] received response for address " + std::to_string(fetch_PC));
+			// debug("[FETCH] received response for address " + std::to_string(fetch_PC));
 
 			Opcode opcode = static_cast<Opcode>(insn & 0xff);
 			if (changesControlFlow(opcode))

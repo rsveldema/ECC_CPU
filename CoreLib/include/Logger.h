@@ -2,25 +2,18 @@
 
 #include <iostream>
 
-class Logger
+namespace ecc
 {
-private:
-	std::string prefix;
+	extern std::string __logging_prefix;
 
-public:
-	Logger(const std::string& _prefix)
-		: prefix(_prefix)
+	static inline void debug(const std::string &str)
 	{
+		std::cerr << __logging_prefix << ": " << str << std::endl;
 	}
 
-	void debug(const std::string& str)
+	static inline void error(const std::string &str)
 	{
-		std::cerr << prefix << ": " << str << std::endl;
+		std::cerr << __logging_prefix << ": " << str << std::endl;
 	}
-	
-	void error(const std::string& str)
-	{
-		std::cerr << prefix << ": " << str << std::endl;
-	}
-};
 
+}

@@ -9,7 +9,7 @@ namespace ecc
 	{
 		for (int i = 0; i < NUM_SIM_STEPS; i++)
 		{
-			stats.numCyclesUsed++;
+			__global_stats.numCyclesUsed++;
 
 			if (machine.hasHalted())
 			{

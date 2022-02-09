@@ -16,8 +16,10 @@ namespace ecc
 		Multiplexer<MemoryBus> main_memory_insn_access_multiplexer;
 		MemoryBus sram_multiplexer_bus;
 
-		CoreCluster(SimComponentRegistry& registry, MemoryBus& _data_memory_bus, MemoryBus& _insn_memory_bus, GlobalStats& globalStats,
-			const MachineConfig& config)
+		CoreCluster(SimComponentRegistry& registry, 
+					MemoryBus& _data_memory_bus, 
+					MemoryBus& _insn_memory_bus, 
+					const MachineConfig& config)
 			: main_memory_data_access_multiplexer(registry, _data_memory_bus),
 			main_memory_insn_access_multiplexer(registry, _insn_memory_bus)
 		{
@@ -26,7 +28,7 @@ namespace ecc
 			for (unsigned i = 0; i < config.num_cores; i++)
 			{
 				const auto core_id = static_cast<ecc::CoreID>(i);
-				cores.emplace_back(std::make_unique<Core>(registry, core_id, globalStats));
+				cores.emplace_back(std::make_unique<Core>(registry, core_id));
 
 				main_memory_data_access_multiplexer.addInput(&cores[i]->getExternalDataBus(),
 					[core_id](const BusPacket& pkt) {
