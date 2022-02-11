@@ -18,37 +18,11 @@ namespace ecc
 			return NUMBER_OF_VECTOR_THREADS_INT64;
 		}
 
-		void store_at(uint8_t *ptr) const
-		{
-			elt_t *out = reinterpret_cast<elt_t *>(ptr);
-			for (int i = 0; i < size(); i++)
-			{
-				out[i] = data[i];
-			}
-		}
 
 		elt_t get(unsigned ix) const
 		{
 			assert(ix < size());
 			return data[ix];
-		}
-
-		void set(unsigned ix, int8_t value)
-		{
-			assert(ix < size());
-			data[ix] = value;
-		}
-
-		void set(unsigned ix, int16_t value)
-		{
-			assert(ix < size());
-			data[ix] = value;
-		}
-
-		void set(unsigned ix, int32_t value)
-		{
-			assert(ix < size());
-			data[ix] = value;
 		}
 
 		void set(unsigned ix, int64_t value)
@@ -57,40 +31,15 @@ namespace ecc
 			data[ix] = value;
 		}
 
-		void set(unsigned ix, float value)
-		{
-			assert(ix < size());
-			elt_t tmp = *(int32_t *)&value;
-			data[ix] = tmp;
-		}
-
-		void set(unsigned ix, double value)
-		{
-			assert(ix < size());
-			elt_t tmp = *(int64_t *)&value;
-			data[ix] = tmp;
-		}
-
+		
 		memory_address_t get_PC() const
 		{
-			return get_int64(0);
+			return data[0];
 		}
 
 		void setPC(memory_address_t value)
 		{
 			data[0] = {static_cast<elt_t>(value)};
-		}
-
-		int64_t get_int64(unsigned ix) const
-		{
-			assert(ix < size());
-			return get(ix);
-		}
-
-		void set_int64(unsigned ix, int64_t value)
-		{
-			assert(ix < size());
-			data[ix] = value;
 		}
 	};
 
