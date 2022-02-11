@@ -90,7 +90,7 @@ namespace ecc
 				{
 					const auto& reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 
-					VectorValue value = create_vec_int64_blockindex();
+					VectorValue value = create_vec_incrementing_values();
 
 					DecodeExecPacket execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_MOVE_REG_VALUE,
 						reg, value };

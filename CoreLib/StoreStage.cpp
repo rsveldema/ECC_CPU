@@ -36,7 +36,7 @@ namespace ecc
 					const auto& dest = pkt.dest.value;
 					const auto& src = pkt.src.value;
 
-					assert(dest.are_all_adjacent_memory_addresses(8));
+					assert(are_all_adjacent_memory_addresses(dest, POINTER_SIZE));
 
 					debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
 

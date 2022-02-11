@@ -27,7 +27,7 @@ namespace ecc
 					const auto& value1 = pkt.value0.vec;
 					const auto& value2 = pkt.value1;
 
-					const VectorValue src = value1.compare(value2);
+					const VectorValue src = compare_vecs(value1, value2);
 
 					const auto dest = RegisterID::REG_FLAGS;
 
@@ -75,7 +75,7 @@ namespace ecc
 					const auto& src1 = pkt.value1;
 					const auto& src2 = pkt.value2;
 
-					auto src = src2.or_shift_left_int64(src1, 24);
+					auto src = or_shift_left(src2, src1, 24);
 
 					while (store_bus.is_busy)
 					{
@@ -99,7 +99,7 @@ namespace ecc
 					const auto& src1 = pkt.value1;
 					const auto& src2 = pkt.value2;
 
-					auto src = src2.or_shift_left_int64(src1, 48);
+					auto src = or_shift_left(src2, src1, 48);
 					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
@@ -121,7 +121,7 @@ namespace ecc
 					const auto& src1 = pkt.value1;
 					const auto& src2 = pkt.value2;
 
-					auto src = src1.shift_left_int64(src2);
+					auto src = shift_left(src1, src2);
 					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
@@ -143,7 +143,7 @@ namespace ecc
 					const auto& src1 = pkt.value1;
 					const auto& src2 = pkt.value2;
 
-					auto src = src1.add_int64(src2);
+					auto src = add(src1, src2);
 
 					while (store_bus.is_busy)
 					{
@@ -168,7 +168,7 @@ namespace ecc
 					auto off1 = pkt.value1;
 					auto off2 = pkt.value2;
 
-					auto offset = off1.add_int64(off2);
+					auto offset = add(off1, off2);
 
 					while (store_bus.is_busy)
 					{
@@ -190,7 +190,7 @@ namespace ecc
 					const auto& addr1 = pkt.value1;
 					const auto& addr2 = pkt.value2;
 
-					auto addr = addr1.add_int64(addr2);
+					auto addr = add(addr1, addr2);
 
 					while (store_bus.is_busy)
 					{
@@ -210,7 +210,7 @@ namespace ecc
 					const auto& off1 = pkt.value0.vec;
 					const auto& off2 = pkt.value1;
 
-					auto offset = off1.add_int64(off2);
+					auto offset = add(off1, off2);
 
 					const auto dest = RegisterID::REG_PC;
 					while (store_bus.is_busy)
@@ -245,8 +245,8 @@ namespace ecc
 					}
 
 					const VectorValue flags = regs[RegisterID::REG_FLAGS];
-					const auto& should_jmp_masks = flags.bit_and_int64(jmp_mask);
-					const uint64_t should_jmp = exec_mask & should_jmp_masks.reduce_int64_to_single_int64_t();
+					const auto& should_jmp_masks = bit_and(flags, jmp_mask);
+					const uint64_t should_jmp = exec_mask & reduce_to_uint64_t(should_jmp_masks);
 					const uint64_t all_threads_mask = exec_mask & ALL_THREADS_EXEC_MASK_INT64;
 
 

@@ -11,7 +11,7 @@ namespace ecc
 			{
 				const auto& addresses = pkt->address;
 				const auto& src = pkt->source;
-				assert(addresses.areAllValidMemoryAddresses());
+				assert(areAllValidMemoryAddresses(addresses));
 
 				if (false) //addresses.all_equal())
 				{
