@@ -22,6 +22,9 @@ namespace ecc
 		{
 		}
 
+		void init()
+		{}
+
 		bool is_empty() const
 		{
 			return read_pos == write_pos;

@@ -24,6 +24,14 @@ namespace ecc
 			VectorValue value2;
 		};
 
+		bool is_busy;
+		Packet data;
+
+		void init()
+		{
+			is_busy = false;
+		}
+
 		void send(const Packet& pkt)
 		{
 			assert(!is_busy);
@@ -37,8 +45,5 @@ namespace ecc
 			is_busy = false;
 			return tmp;
 		}
-
-		bool is_busy = false;
-		Packet data;
 	};
 }

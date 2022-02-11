@@ -32,10 +32,15 @@ namespace ecc
 
 	INTERFACE ExecuteToStoreBus
 	{
-		bool is_busy = false;
+		bool is_busy;
 		ExecStagePacket data;
 
 		METHOD_SECTION;
+
+		void init()
+		{
+			is_busy = false;
+		}
 
 		void send(const ExecStagePacket &pkt)
 		{

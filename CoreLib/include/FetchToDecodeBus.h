@@ -19,7 +19,7 @@ namespace ecc
 
 		METHOD_SECTION;
 
-		void init_fetch_to_decode_bus()
+		void init()
 		{
 			is_busy = false;
 		}

@@ -41,10 +41,12 @@ namespace ecc
 		return false;
 	}
 
-	ReturnObject FetchStage::run(FetchToDecodeBus &decode_bus,
+
+
+	template<CoreID core_id>
+	ReturnObject FetchStage<core_id>::run(FetchToDecodeBus &decode_bus,
 								 StoreToFetchBus &store_bus,
-								 MemoryBus &memory_bus,
-						 		 const BusID memory_bus_id)
+								 MemoryBus &memory_bus)
 	{
 		bool have_outstanding_jmp = false;
 		memory_address_t fetch_PC = 0;
@@ -86,6 +88,7 @@ namespace ecc
 				{
 					const memory_address_t address_fetched = fetch_PC & ~7;
 
+					BusID memory_bus_id = createBusID(core_id, COMPONENT_TYPE_FETCH);
 					memory_bus.send_read_request_data(address_fetched, memory_bus_id);
 
 					while (1)

@@ -126,6 +126,7 @@ int main(int argc, char** argv)
 
 	SimComponentRegistry registry;
 	CoreClusterGrid machine(registry, config);
+	machine.init();
 
 	read_code_memory_dump(machine, filename);
 	read_data_memory_dump(machine, filename + ".data");

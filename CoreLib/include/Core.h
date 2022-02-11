@@ -13,20 +13,24 @@
 
 namespace ecc
 {
+
+	template<CoreID core_id>
 	class Core
 	{
 	private:		
 		DivergenceQueue divergence_queue;
 
-		RegisterFile regs;
 		StoreToFetchBus store_fetch_bus;
 		FetchToDecodeBus fetch_decode_bus;
-		FetchStage fetch;
 		DecodeToExecuteBus decode_execute_bus;
-		DecodeStage decode;
 		ExecuteToStoreBus execute_store_bus;
+
+
+		RegisterFile regs;
+		FetchStage<core_id> fetch;
+		DecodeStage decode;
 		ExecuteStage execute;
-		StoreStage store;
+		StoreStage<core_id>  store;
 
 		// data cache
 		L1DataCache L1d;
@@ -44,15 +48,29 @@ namespace ecc
 		VectorMemoryController vecMemController;
 
 	public:
-		Core(SimComponentRegistry& registry, CoreID core_id)
+
+	void init()
+	{
+		core_L1d.init();
+		core_L1i.init();
+		L1i_to_L2i.init();
+		L1d_to_l2d.init();
+		divergence_queue.init();
+
+		store_fetch_bus.init();
+		fetch_decode_bus.init();
+		decode_execute_bus.init();
+		execute_store_bus.init();
+	}
+
+	public:
+		Core(SimComponentRegistry& registry)
 			: regs{},
-			fetch(registry, fetch_decode_bus, core_L1i, createBusID(core_id, CoreComponentID::COMPONENT_TYPE_FETCH),
-				store_fetch_bus),
+			fetch(registry, fetch_decode_bus, core_L1i, store_fetch_bus),
 			decode(registry, fetch_decode_bus, decode_execute_bus, regs),
 			execute(registry, decode_execute_bus, execute_store_bus, regs),
 			store(registry, execute_store_bus, store_to_vec_controller_bus, 
-					regs, createBusID(core_id, CoreComponentID::COMPONENT_TYPE_STORE),
-				store_fetch_bus, divergence_queue),
+					regs, store_fetch_bus, divergence_queue),
 			L1i(registry, "L1i", core_L1i, L1i_to_L2i),
 			L1d(registry, "L1d", core_L1d, L1d_to_l2d),
 			vecMemController(registry, "vec_mem_controller", store_to_vec_controller_bus, core_L1d)
@@ -67,7 +85,7 @@ namespace ecc
 			return L1i_to_L2i;
 		}
 
-		bool hasHalted()
+		bool hasHalted() const
 		{
 			return regs.hasHalted();
 		}

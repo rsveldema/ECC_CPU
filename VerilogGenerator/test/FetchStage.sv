@@ -44,7 +44,10 @@ end
 endfunction
 
 
-module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus, BusID memory_bus_id);
+module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
+
+	parameter CoreID core_id;
+
 	reg[32:0] state = 0;
 	bool have_outstanding_jmp;
 	memory_address_t fetch_PC;
@@ -60,7 +63,14 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 	FetchToDecodeBusPacket pkt;
 
 
-
+	function BusID get_memory_bus_id();
+	begin
+		BusID b;
+		b.core_id = core_id;
+		b.within_core_id = COMPONENT_TYPE_FETCH;
+		return b;
+	end
+	endfunction;
 	
 	
 	task run();
@@ -138,7 +148,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 		10:
 			begin
 				address_fetched = (fetch_PC & ~(7));
-				memory_bus.send_read_request_data(address_fetched, memory_bus_id);
+				memory_bus.send_read_request_data(address_fetched, get_memory_bus_id());
 				state = 11; // GOTO
 				return;
 			end

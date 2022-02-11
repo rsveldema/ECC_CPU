@@ -9,15 +9,13 @@
 
 namespace ecc
 {
-
+	template<CoreID core_id>
 	class StoreStage : public SimComponent
 	{
 	private:
 		VecMemoryBus& memory_bus;
-
 		RegisterFile& regs;
 		ExecuteToStoreBus& execute_bus;
-		BusID memory_bus_id;
 		StoreToFetchBus& fetch_bus;
 		DivergenceQueue& divergence_queue;
 
@@ -26,7 +24,6 @@ namespace ecc
 			ExecuteToStoreBus& _execute_bus,
 			VecMemoryBus& _memory_bus,
 			RegisterFile& _regs,
-			BusID bus_id,
 			StoreToFetchBus& _fetch_bus,
 			DivergenceQueue& _divergence_queue)
 
@@ -34,11 +31,20 @@ namespace ecc
 			execute_bus(_execute_bus),
 			memory_bus(_memory_bus),
 			regs(_regs),
-			memory_bus_id(bus_id),
 			fetch_bus(_fetch_bus),
 			divergence_queue(_divergence_queue)
 		{}
 
 		ReturnObject run() override;
 	};
+
+	template class StoreStage<CORE_ID_Core0>;
+	template class StoreStage<CORE_ID_Core1>;
+	template class StoreStage<CORE_ID_Core2>;
+	template class StoreStage<CORE_ID_Core3>;
+	template class StoreStage<CORE_ID_Core4>;
+	template class StoreStage<CORE_ID_Core5>;
+	template class StoreStage<CORE_ID_Core6>;
+	template class StoreStage<CORE_ID_Core7>;
+
 }

@@ -35,6 +35,19 @@ namespace ecc
 
 		CoreCluster coreCluster;
 
+
+		void init()
+		{
+			L3_DRAM.init();
+			L2d_multiplexer_bus.init();
+			L2i_multiplexer_bus.init();
+			L2_L3.init();
+			core_to_L2d.init();
+			core_to_L2i.init();
+
+			coreCluster.init();
+		}
+
 		CoreClusterGrid(SimComponentRegistry &registry, const MachineConfig &config)
 			: L2d(registry, "L2", core_to_L2d, L2d_multiplexer_bus),
 			  L2i(registry, "L2", core_to_L2i, L2i_multiplexer_bus),

@@ -16,6 +16,12 @@ namespace ecc
 
 		METHOD_SECTION;
 
+
+		void init()
+		{
+			can_receive = false;
+		}
+
 		void init_store_to_fetch_bus()
 		{
 			can_receive = false;

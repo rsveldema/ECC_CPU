@@ -46,10 +46,8 @@ module main();
     FetchToDecodeBus decode_bus;
     StoreToFetchBus store_bus;
     MemoryBus memory_bus;
-    BusID fetcher_bus_id = createBusID(0, 
-                COMPONENT_TYPE_FETCH);
 
-    FetchStage fetcher(decode_bus, store_bus, memory_bus, fetcher_bus_id);
+    FetchStage  #(.core_id(0)) fetcher (decode_bus, store_bus, memory_bus);
 
     initial begin
         memory_bus.init();

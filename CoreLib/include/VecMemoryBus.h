@@ -38,6 +38,8 @@ namespace ecc
 		std::queue<VecBusPacket> request_queue;
 		std::queue<VecBusPacket> response_queue;
 
+		void init(){}
+
 		void send_read_request_vec(const VectorValue &address, const BusID &source)
 		{
 			VecBusPacket pkt{VEC_BUS_PKT_TYPE_read_vec64, source, address};

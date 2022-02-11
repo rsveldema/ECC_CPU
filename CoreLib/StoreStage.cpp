@@ -3,7 +3,8 @@
 
 namespace ecc
 {
-	ReturnObject StoreStage::run()
+	template<CoreID core_id>
+	ReturnObject StoreStage<core_id>::run()
 	{
 		while (1)
 		{
@@ -39,6 +40,7 @@ namespace ecc
 
 					debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
 
+					BusID memory_bus_id = createBusID(core_id, COMPONENT_TYPE_STORE);
 					this->memory_bus.send_write_request_vec(dest, memory_bus_id, src);
 					break;
 				}
@@ -54,6 +56,7 @@ namespace ecc
 
 					debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
 
+					BusID memory_bus_id = createBusID(core_id, COMPONENT_TYPE_STORE);
 					memory_bus.send_read_request_vec(src, memory_bus_id);
 
 					while (1)
