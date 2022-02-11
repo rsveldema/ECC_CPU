@@ -72,7 +72,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 				have_outstanding_jmp = 0;
 				fetch_PC = 0;
 				exec_mask = ALL_THREADS_EXEC_MASK_INT64;
-				address_cached = 'hffffffff;
+				address_cached = 64'hffffffffffffffff;
 				state = 1; // GOTO
 				return;
 			end

@@ -17,7 +17,7 @@ namespace ecc
 	// simple memory bus that allows sending requests and receiving replies.	 
 	INTERFACE MemoryBus
 	{
-		bool did_init = false;
+		//bool did_ini;
 
 		bool request_busy;
 		bool response_busy;
@@ -29,14 +29,14 @@ namespace ecc
 
 		void init()
 		{			
-			did_init = true;
+			//did_init = true;
 			request_busy = false;
 			response_busy = false;
 		}
 
 		void send_read_request_data(memory_address_t address, const BusID &source)
 		{
-			assert(did_init);
+			//assert(did_init);
 			BusPacket pkt = create_bus_packet(bus_read_data, source, address, 0);
 			send_request(pkt);
 		}
@@ -58,7 +58,7 @@ namespace ecc
 
 		BusPacket accept_request()
 		{	
-			assert(did_init);
+			//assert(did_init);
 
 			assert(request_busy);
 			const BusPacket f = request_data;
@@ -68,7 +68,7 @@ namespace ecc
 
 		BusPacket get_response()
 		{
-			assert(did_init);
+			//assert(did_init);
 			assert(response_busy);
 			const BusPacket f = response_data;
 			response_busy = false;

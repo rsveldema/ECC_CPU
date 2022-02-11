@@ -11,6 +11,12 @@ typedef shortint signed int16_t;
 typedef bit bool;
 
 `include "Defines.sv"
+
+typedef struct packed
+{
+		int64_t[8:0] data;
+} VectorValue;
+
 `include "Packets.sv"
 //`include "MemoryBus.sv"
 //`include "FetchStage.sv"

@@ -52,7 +52,7 @@ namespace ecc
 		memory_address_t fetch_PC = 0;
 		execution_mask_t exec_mask = ALL_THREADS_EXEC_MASK_INT64;
 
-		memory_address_t address_cached = 0xffffffff;
+		memory_address_t address_cached = 0xffffffffffffffff;
 		fetched_instruction_data_t fetched_cached;
 
 		while (1)
