@@ -9,7 +9,7 @@ namespace ecc
 		{
 			if (this->decode_bus.is_busy)
 			{
-				const DecodeToExecuteBus::Packet& pkt = this->decode_bus.recv();
+				const DecodeExecPacket& pkt = this->decode_bus.recv();
 				const auto opcode = pkt.opcode;
 				const auto PC = pkt.PC;
 
@@ -24,7 +24,7 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_CMP:
 				{
-					const auto& value1 = std::get<VectorValue>(pkt.value0);
+					const auto& value1 = pkt.value0.vec;
 					const auto& value2 = pkt.value1;
 
 					const VectorValue src = value1.compare(value2);
@@ -50,7 +50,7 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_MOVE_REG_VALUE:
 				{
-					const auto& dest = std::get<RegisterID>(pkt.value0);
+					const auto& dest = pkt.value0.regID;
 					const auto& src = pkt.value1;
 
 					while (store_bus.is_busy)
@@ -71,7 +71,7 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_ORB_REG_VALUE:
 				{
-					const auto& dest = std::get<RegisterID>(pkt.value0);
+					const auto& dest = pkt.value0.regID;
 					const auto& src1 = pkt.value1;
 					const auto& src2 = pkt.value2;
 
@@ -95,7 +95,7 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_ORC_REG_VALUE:
 				{
-					const auto& dest = std::get<RegisterID>(pkt.value0);
+					const auto& dest = pkt.value0.regID;
 					const auto& src1 = pkt.value1;
 					const auto& src2 = pkt.value2;
 
@@ -117,7 +117,7 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_SHL_REG_VALUE_VALUE:
 				{
-					const auto& dest = std::get<RegisterID>(pkt.value0);
+					const auto& dest = pkt.value0.regID;
 					const auto& src1 = pkt.value1;
 					const auto& src2 = pkt.value2;
 
@@ -139,7 +139,7 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_ADD_REG_VALUE_VALUE:
 				{
-					const auto& dest = std::get<RegisterID>(pkt.value0);
+					const auto& dest = pkt.value0.regID;
 					const auto& src1 = pkt.value1;
 					const auto& src2 = pkt.value2;
 
@@ -164,7 +164,7 @@ namespace ecc
 				// reg = [value + value]
 				case ExecuteStageOpcode::EXEC_LOAD_REG:
 				{
-					const auto dest = std::get<RegisterID>(pkt.value0);
+					const auto dest = pkt.value0.regID;
 					auto off1 = pkt.value1;
 					auto off2 = pkt.value2;
 
@@ -186,7 +186,7 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_STORE_ADDR_VALUE:
 				{
-					const auto& value = std::get<VectorValue>(pkt.value0);
+					const auto& value = pkt.value0.vec;
 					const auto& addr1 = pkt.value1;
 					const auto& addr2 = pkt.value2;
 
@@ -207,7 +207,7 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_LOAD_RESTORE_PC:
 				{
-					const auto& off1 = std::get<VectorValue>(pkt.value0);
+					const auto& off1 = pkt.value0.vec;
 					const auto& off2 = pkt.value1;
 
 					auto offset = off1.add_int64(off2);
@@ -231,7 +231,7 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_COND_JMP:
 				{
-					const auto& offset = std::get<VectorValue>(pkt.value0);
+					const auto& offset = pkt.value0.vec;
 					const auto PC = pkt.PC;
 					const auto new_address = PC + offset.get_PC();
 					const auto next_address = PC + 4;
@@ -291,7 +291,7 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_JMP:
 				{
-					const auto& offset = std::get<VectorValue>(pkt.value0);
+					const auto& offset = pkt.value0.vec;
 
 					const auto PC = pkt.PC;
 

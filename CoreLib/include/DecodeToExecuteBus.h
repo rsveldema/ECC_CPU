@@ -8,40 +8,45 @@
 
 namespace ecc
 {
+	union DecodeStageValue
+	{
+		RegisterID regID;
+		VectorValue vec;
+	};
+
+	struct DecodeExecPacket
+	{
+		execution_mask_t exec_mask;
+
+		memory_address_t PC;
+		ExecuteStageOpcode opcode;
+
+		DecodeStageValue value0;
+		VectorValue value1;
+		VectorValue value2;
+	};
 
 	class DecodeToExecuteBus
 	{
 	public:
-		struct Packet
-		{
-			execution_mask_t exec_mask;
-
-			ecc::memory_address_t PC;
-			ecc::ExecuteStageOpcode opcode;
-
-			std::variant<ecc::RegisterID, VectorValue> value0;
-			VectorValue value1;
-			VectorValue value2;
-		};
-
 		bool is_busy;
-		Packet data;
+		DecodeExecPacket data;
 
 		void init()
 		{
 			is_busy = false;
 		}
 
-		void send(const Packet& pkt)
+		void send(const DecodeExecPacket &pkt)
 		{
 			assert(!is_busy);
 			data = pkt;
 			is_busy = true;
 		}
 
-		Packet recv()
+		DecodeExecPacket recv()
 		{
-			Packet tmp = data;
+			DecodeExecPacket tmp = data;
 			is_busy = false;
 			return tmp;
 		}
