@@ -3,6 +3,15 @@ interface StoreToFetchBus;
 	StoreToFetchPacket data;
 	
 	
+	function void init();
+	begin
+	begin
+		can_receive=0;
+	end
+	end
+	endfunction
+	
+	
 	function void init_store_to_fetch_bus();
 	begin
 	begin

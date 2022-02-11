@@ -67,12 +67,8 @@ def main():
         with open(output_path + output_filename, "w") as fp: 
             ps = PrintStream(fp)
             ast.generate_decls(ps)
-        
             methods = ast.lower_ast()
             generate(methods, ps)
-
-        
-            
 
 
     files = ["../CoreLib/FetchStage.cpp", "../CoreLib/include/MemoryBus.h"]

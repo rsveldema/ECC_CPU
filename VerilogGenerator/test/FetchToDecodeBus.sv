@@ -3,7 +3,7 @@ interface FetchToDecodeBus;
 	FetchToDecodeBusPacket data;
 	
 	
-	function void init_fetch_to_decode_bus();
+	function void init();
 	begin
 	begin
 		is_busy=0;

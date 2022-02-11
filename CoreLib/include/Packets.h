@@ -35,6 +35,24 @@ namespace ecc
 		memory_address_t address;
 		bus_packet_payload_t payload;
 	};
+	
+	union DecodeStageValue
+	{
+		RegisterID regID;
+		VectorValue vec;
+	};
+
+	struct DecodeExecPacket
+	{
+		execution_mask_t exec_mask;
+
+		memory_address_t PC;
+		ExecuteStageOpcode opcode;
+
+		DecodeStageValue value0;
+		VectorValue value1;
+		VectorValue value2;
+	};
 
 
 	METHOD_SECTION;

@@ -12,25 +12,15 @@ namespace ecc
 	{
 		using elt_t = int64_t;
 
-		using elt_vector_t = std::array<elt_t, NUMBER_OF_VECTOR_THREADS_INT64>;
+		//using elt_vector_t = std::array<elt_t, NUMBER_OF_VECTOR_THREADS_INT64>;
 
-		elt_vector_t data;
+		//elt_vector_t data;
+		elt_t data[NUMBER_OF_VECTOR_THREADS_INT64];
 
-		std::string to_string() const
+		uint32_t size() const 
 		{
-			std::string s = "<";
-			const char* comma = "";
-			for (auto& v : data)
-			{
-				s += comma;
-				s += std::to_string(v);
-				comma = ", ";
-			}
-
-			s += ">";
-			return s;
+			return NUMBER_OF_VECTOR_THREADS_INT64;
 		}
-
 
 		bool areAllValidMemoryAddresses() const
 		{
@@ -39,7 +29,7 @@ namespace ecc
 
 		void replicate(const elt_t v)
 		{
-			for (int i = 0; i < data.size(); i++)
+			for (int i = 0; i < size(); i++)
 			{
 				data[i] = v;
 			}
@@ -47,7 +37,7 @@ namespace ecc
 
 		void set_incrementing_values()
 		{
-			for (int i = 0; i < data.size(); i++)
+			for (int i = 0; i < size(); i++)
 			{
 				data[i] = i;
 			}
@@ -55,7 +45,7 @@ namespace ecc
 
 		void or_shift_left(const VectorValue& other, unsigned shift_count)
 		{
-			for (int i = 0; i < data.size(); i++)
+			for (int i = 0; i < size(); i++)
 			{
 				data[i] |= other.data[i] << shift_count;
 			}
@@ -63,7 +53,7 @@ namespace ecc
 
 		void shift_left(const VectorValue& other)
 		{
-			for (int i = 0; i < data.size(); i++)
+			for (int i = 0; i < size(); i++)
 			{
 				data[i] <<= other.data[i];
 			}
@@ -71,7 +61,7 @@ namespace ecc
 
 		void add(const VectorValue& other)
 		{
-			for (int i = 0; i < data.size(); i++)
+			for (int i = 0; i < size(); i++)
 			{
 				data[i] += other.data[i];
 			}
@@ -79,7 +69,7 @@ namespace ecc
 
 		void bit_and(const VectorValue& other)
 		{
-			for (int i = 0; i < data.size(); i++)
+			for (int i = 0; i < size(); i++)
 			{
 				data[i] &= other.data[i];
 			}
@@ -88,7 +78,7 @@ namespace ecc
 
 		bool all_equal() const
 		{
-			for (int i = 1; i < data.size(); i++)
+			for (int i = 1; i < size(); i++)
 			{
 				if (data[0] != data[i])
 				{
@@ -101,7 +91,7 @@ namespace ecc
 		VectorValue compare(const VectorValue& other) const
 		{
 			VectorValue ret;
-			for (int i = 0; i < data.size(); i++)
+			for (int i = 0; i < size(); i++)
 			{
 				elt_t result = 0;
 
@@ -125,14 +115,16 @@ namespace ecc
 		void store_at(uint8_t* ptr) const
 		{
 			elt_t* out = reinterpret_cast<elt_t*>(ptr);
-
-			std::copy(data.begin(), data.end(), out);
+			for (int i=0;i<size(); i++)
+			{
+				out[i] = data[i];
+			}
 		}
 
 		bool are_all_adjacent_memory_addresses(int64_t elt_size) const
 		{
 			elt_t first = data[0];
-			for (int i = 1; i < data.size(); i++)
+			for (int i = 1; i < size(); i++)
 			{
 				if (data[i] != (data[i - 1] + elt_size))
 				{
@@ -145,7 +137,7 @@ namespace ecc
 		uint64_t reduce_to_uint64_t() const
 		{
 			uint64_t ret = 0;
-			for (unsigned i = 0; i < data.size(); i++)
+			for (unsigned i = 0; i < size(); i++)
 			{
 				uint64_t v = (data[i] != 0);
 				ret |= v << i;
@@ -156,45 +148,45 @@ namespace ecc
 		
 		elt_t get(unsigned ix) const
 		{
-			assert(ix < data.size());
+			assert(ix < size());
 			return data[ix];
 		}
 
 
 		void set(unsigned ix, int8_t value)
 		{
-			assert(ix < data.size());
+			assert(ix < size());
 			data[ix] = value;
 		}
 
 		void set(unsigned ix, int16_t value)
 		{
-			assert(ix < data.size());
+			assert(ix < size());
 			data[ix] = value;
 		}
 
 		void set(unsigned ix, int32_t value)
 		{
-			assert(ix < data.size());
+			assert(ix < size());
 			data[ix] = value;
 		}
 
 		void set(unsigned ix, int64_t value)
 		{
-			assert(ix < data.size());
+			assert(ix < size());
 			data[ix] = value;
 		}
 
 		void set(unsigned ix, float value)
 		{
-			assert(ix < data.size());
+			assert(ix < size());
 			elt_t tmp = *(int32_t*) &value;
 			data[ix] = tmp;
 		}
 
 		void set(unsigned ix, double value)
 		{
-			assert(ix < data.size());
+			assert(ix < size());
 			elt_t tmp = *(int64_t*) &value;
 			data[ix] = tmp;
 		}
@@ -211,18 +203,18 @@ namespace ecc
 
 		void setPC(memory_address_t value)
 		{
-			data = { static_cast<elt_t>(value) };
+			data[0] = { static_cast<elt_t>(value) };
 		}
 
 		int64_t get_int64(unsigned ix) const
 		{
-			assert(ix < data.size());
+			assert(ix < size());
 			return get(ix);
 		}
 
 		void set_int64(unsigned ix, int64_t value)
 		{
-			assert(ix < data.size());
+			assert(ix < size());
 			data[ix] = value;
 		}
 
@@ -275,7 +267,16 @@ namespace ecc
 
 	static std::string to_string(const VectorValue& v)
 	{
-		return v.to_string();
-	}
+		std::string s = "<";
+		const char* comma = "";
+		for (auto& v : v.data)
+		{
+			s += comma;
+			s += std::to_string(v);
+			comma = ", ";
+		}
 
+		s += ">";
+		return s;
+	}
 }

@@ -106,6 +106,15 @@ class MyTransformer(Transformer):
             return CallExpr(tree[0], tree[1])
         return tree[0]
 
+    def method_name_qual_ident(self, tree):
+        base = Ident(tree[0] + "")        
+        if len(tree) == 2:
+            return DotAccessExpr(base, tree[1] + "")
+        if len(tree) == 3:
+            return DotAccessExpr(base, tree[2] + "")
+        return base
+
+
     def qual_ident(self, tree):
         base = Ident(tree[0] + "")
 
@@ -301,12 +310,26 @@ class MyTransformer(Transformer):
         if MyTransformer.is_token(tree[start], "inline"):
             start += 1
 
+        template_args = None
+        if isinstance(tree[start], list):
+            template_args = tree[start]
+            start += 1
+
         type = tree[start] 
         func = tree[start + 1]
         params = tree[start + 2]
         block = tree[start + 3]
-        return Method(type, func, params, block)
+        return Method(type, func, params, block, template_args)
     
+
+    def template_arg(self, tree):
+        type = tree[0]
+        var = tree[1]
+        return LocalDecl(type, var, None)
+
+    def template_params(self, tree):
+        return tree[0:]
+
     def params(self, tree):
         return tree[0:]
     

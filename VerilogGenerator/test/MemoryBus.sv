@@ -1,4 +1,5 @@
 interface MemoryBus;
+	bool did_init = false;
 	bool request_busy;
 	bool response_busy;
 	BusPacket request_data;
@@ -8,6 +9,7 @@ interface MemoryBus;
 	function void init();
 	begin
 	begin
+		did_init=1;
 		request_busy=0;
 		response_busy=0;
 	end
@@ -19,6 +21,7 @@ interface MemoryBus;
 	begin
 		BusPacket pkt;
 	begin
+		assert(did_init);
 		pkt = create_bus_packet(bus_read_data, source, address, 0);
 		send_request(pkt);
 	end
@@ -54,6 +57,7 @@ interface MemoryBus;
 	begin
 		BusPacket f;
 	begin
+		assert(did_init);
 		assert(request_busy);
 		f = request_data;
 		request_busy=0;
@@ -67,6 +71,7 @@ interface MemoryBus;
 	begin
 		BusPacket f;
 	begin
+		assert(did_init);
 		assert(response_busy);
 		f = response_data;
 		response_busy=0;

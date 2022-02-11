@@ -1,3 +1,4 @@
+from re import template
 from DotAccessExpr import DotAccessExpr
 from PrintStream import PrintStream
 from LowerState import LowerState
@@ -8,14 +9,16 @@ from Ident import Ident
 from Label import Label
 from LiteralExpr import LiteralExpr
 from SwitchStmt import CaseStmt, SwitchStmt
+from typing import List
 
 
 class Method:
-    def __init__(self, type, funcname, params, block: Block):
+    def __init__(self, type, funcname, params, block: Block, template_args: List[LocalDecl]):
         self.type = type
         self.funcname = funcname
         self.params = params
         self.block = block 
+        self.template_args = template_args
 
     def pretty(self):
         print("method " + self.funcname)
@@ -105,6 +108,12 @@ class Method:
         ps.println("")
         ps.println(f"module {module_name}({params});")
         
+
+        ps.up()
+        for k in self.template_args:
+            ps.println("parameter " + k.type.str() + " " + k.var + ";");
+        ps.down()
+
         self.generate_local_vars(ps)
         
         #ps.print("initial")

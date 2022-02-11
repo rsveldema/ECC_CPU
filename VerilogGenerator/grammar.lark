@@ -27,9 +27,13 @@ static_decl: STATIC "constexpr" type IDENT "=" expr ";"
 
 enum_decl: ENUM IDENT ":" type "{" IDENT ("," IDENT)* "}" ";"
 
+method: (STATIC | INLINE)* template_params? type method_name_qual_ident "(" params ")" block
 
+template_params: "template" "<" template_arg ("," template_arg)* ">"
 
-method: (STATIC | INLINE)* type qual_ident "(" params ")" block
+template_arg: type IDENT
+
+template_instance_args: IDENT ("," IDENT)*
 
 params: (param ("," param)*)?
 
@@ -145,6 +149,8 @@ array_access: qual_ident  "[" expr "]"
 sizeof_term: "sizeof" "(" expr ")"
 
 qual_ident: IDENT ("::" IDENT)?
+
+method_name_qual_ident: IDENT ("<" template_instance_args ">")? ("::" IDENT)?
 
 type: ("const")? ( booltype
 | uint8_t

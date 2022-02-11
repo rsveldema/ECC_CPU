@@ -41,7 +41,7 @@ namespace ecc
 					debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
 
 					BusID memory_bus_id = createBusID(core_id, COMPONENT_TYPE_STORE);
-					this->memory_bus.send_write_request_vec(dest, memory_bus_id, src);
+					memory_bus.send_write_request_vec(dest, memory_bus_id, src);
 					break;
 				}
 
@@ -109,7 +109,7 @@ namespace ecc
 						+ " and " + std::to_string(count_num_bits64(exec_mask_next_address)));
 
 					ThreadContext ctxt{
-						this->regs,
+						regs,
 						new_address,
 						exec_mask_new_address
 					};
@@ -130,7 +130,7 @@ namespace ecc
 						const auto& new_thread_ctxt_opt = divergence_queue.pop_back();
 						const auto& new_thread_ctxt = *new_thread_ctxt_opt;
 
-						this->regs = new_thread_ctxt.regs;
+						regs = new_thread_ctxt.regs;
 
 						fetch_bus.send(StoreToFetchPacket{ new_thread_ctxt.exec_mask, new_thread_ctxt.PC });
 					}

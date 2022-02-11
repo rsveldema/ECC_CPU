@@ -31,6 +31,22 @@ typedef struct packed {
 } BusPacket;
 
 
+typedef union packed {
+	RegisterID regID;
+	VectorValue vec;
+} DecodeStageValue;
+
+
+typedef struct packed {
+	execution_mask_t exec_mask;
+	memory_address_t PC;
+	ExecuteStageOpcode opcode;
+	DecodeStageValue value0;
+	VectorValue value1;
+	VectorValue value2;
+} DecodeExecPacket;
+
+
 function BusPacket create_bus_packet(input BusPacketType pkt_type, input BusID source, input memory_address_t address, input bus_packet_payload_t payload);
 begin
 	BusPacket pkt;
