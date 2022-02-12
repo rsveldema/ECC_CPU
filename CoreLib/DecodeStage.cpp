@@ -33,7 +33,7 @@ namespace ecc
 				auto PC = pkt.PC;
 				auto opcode = (Opcode)(pkt.insn & 0xff);
 
-				debug("DECODE[" + std::to_string(PC) + "] exec: " + to_string(opcode));
+				$display("DECODE[" + std::to_string(PC) + "] exec: " + to_string(opcode));
 
 				switch (opcode)
 				{
@@ -331,8 +331,8 @@ namespace ecc
 				}
 
 				default:
-					debug("[DECODE] unimplemented opcode: " + to_string(opcode));
-					abort();
+					$display("[DECODE] unimplemented opcode: " + to_string(opcode));
+					assert(false);
 				}
 			}
 

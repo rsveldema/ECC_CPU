@@ -15,7 +15,7 @@ class UnaryExpr(Expr):
         
         #print("OP = " + op)
         if op == "sizeof":
-            return f"($bits({self.value.str()}) / 8)"
+            return f" ((uint64_t'($bits({self.value.str()})) >> 3)  ) "
             
         return f"{self.op}({self.value.str()})"
 

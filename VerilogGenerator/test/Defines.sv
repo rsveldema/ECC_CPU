@@ -7,9 +7,9 @@ typedef instruction_t[(2) - 1:0] fetched_instruction_data_t;
 
 typedef uint64_t execution_mask_t;
 
-parameter POINTER_SIZE = ($bits(memory_address_t) / 8);
+parameter POINTER_SIZE =  ((uint64_t'($bits(memory_address_t)) >> 3)  ) ;
 
-parameter INSTRUCTION_SIZE = ($bits(instruction_t) / 8);
+parameter INSTRUCTION_SIZE =  ((uint64_t'($bits(instruction_t)) >> 3)  ) ;
 
 parameter CODE_SEGMENT_START = 0;
 
@@ -17,7 +17,7 @@ parameter DATA_SEGMENT_START = (1024 * 1024);
 
 parameter VECTOR_MEM_SIZE = 64;
 
-parameter NUMBER_OF_VECTOR_THREADS_INT64 = (VECTOR_MEM_SIZE / ($bits(uint64_t) / 8));
+parameter NUMBER_OF_VECTOR_THREADS_INT64 = (VECTOR_MEM_SIZE /  ((uint64_t'($bits(uint64_t)) >> 3)  ) );
 
 parameter ALL_THREADS_EXEC_MASK_INT64 = ((1 << NUMBER_OF_VECTOR_THREADS_INT64) - 1);
 

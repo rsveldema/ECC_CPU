@@ -51,7 +51,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 	memory_address_t fetch_PC;
 	execution_mask_t exec_mask;
 	memory_address_t address_cached;
-	fetched_instruction_data_t fetched_cached;
+	fetched_instruction_data_t insn_data_cached;
 	StoreToFetchPacket jmp_retarget;
 	memory_address_t address_fetched;
 	BusID memory_bus_id;
@@ -126,7 +126,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		8:
 			begin
-				if (((address_cached + ($bits(instruction_t) / 8)) == fetch_PC))
+				if (((address_cached +  ((uint64_t'($bits(instruction_t)) >> 3)  ) ) == fetch_PC))
 				begin
 				end
 				else
@@ -155,7 +155,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 				response = memory_bus.get_response();
 				assert((response.packet_type == bus_read_response));
 				address_cached=address_fetched;
-				fetched_cached=getInsnData(response.payload);
+				insn_data_cached=getInsnData(response.payload);
 				state = 12; // GOTO
 				return;
 			end
@@ -187,13 +187,13 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 					state = 14; // GOTO
 					return;
 				end
-				insn=fetched_cached[0];
+				insn=insn_data_cached[0];
 				state = 14; // GOTO
 				return;
 			end
 		15:
 			begin
-				if (((address_cached + ($bits(instruction_t) / 8)) == fetch_PC))
+				if (((address_cached +  ((uint64_t'($bits(instruction_t)) >> 3)  ) ) == fetch_PC))
 				begin
 				end
 				else
@@ -201,14 +201,14 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 					state = 16; // GOTO
 					return;
 				end
-				insn=fetched_cached[1];
+				insn=insn_data_cached[1];
 				state = 16; // GOTO
 				return;
 			end
 		17:
 			begin
 				error("failed to get insn from local fetcher cache");
-				abort();
+				assert(0);
 				state = 16; // GOTO
 				return;
 			end
@@ -219,7 +219,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		14:
 			begin
-				opcode = (Opcode'((insn & 'hff)));
+				opcode = (Opcode'((insn & 32'hff)));
 				if (!(changesControlFlow(opcode)))
 				begin
 					state = 18; // GOTO
@@ -248,7 +248,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 		20:
 			begin
 				PC = fetch_PC;
-				fetch_PC+=($bits(instruction_t) / 8);
+				fetch_PC+= ((uint64_t'($bits(instruction_t)) >> 3)  ) ;
 				pkt = create_fetch_decode_packet(exec_mask, PC, insn);
 				decode_bus.send(pkt);
 				CONTEXT_SWITCH();

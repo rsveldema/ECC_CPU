@@ -13,7 +13,7 @@ namespace ecc
 				const auto opcode = pkt.opcode;
 				const auto PC = pkt.PC;
 
-				debug("EXECUTE[" + std::to_string(PC) + "] exec: " + to_string(opcode));
+				$display("EXECUTE[" + std::to_string(PC) + "] exec: " + to_string(opcode));
 
 				switch (pkt.opcode)
 				{

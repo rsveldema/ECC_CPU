@@ -20,7 +20,11 @@ class LiteralExpr:
         
         if isinstance(self.value, str):
             if self.value.startswith("0x"):                
-                return LiteralExpr("'h" + self.value[2:])
+                bits = 32
+                digits = self.value[2:]
+                if len(digits) > 8:
+                    bits = 64
+                return LiteralExpr(f"{bits}'h{digits}")
         
         return self
     

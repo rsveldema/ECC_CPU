@@ -26,22 +26,10 @@ begin
 end
 endfunction;
 
-function abort();
-begin
-    assert(0);
-end
-endfunction;
 
 function incFetchedInsnWait();
 begin
     assert(0);
-end
-endfunction;
-
-function error(msg);
-begin
-    $display(msg);
-    $finish();
 end
 endfunction;
 

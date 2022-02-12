@@ -53,7 +53,7 @@ namespace ecc
 		execution_mask_t exec_mask = ALL_THREADS_EXEC_MASK_INT64;
 
 		memory_address_t address_cached = 0xffffffffffffffff;
-		fetched_instruction_data_t fetched_cached;
+		fetched_instruction_data_t insn_data_cached;
 
 		while (1)
 		{
@@ -99,7 +99,7 @@ namespace ecc
 							assert(response.packet_type == bus_read_response);
 
 							address_cached = address_fetched;							
-							fetched_cached = getInsnData(response.payload);
+							insn_data_cached = getInsnData(response.payload);
 							break;
 						}
 
@@ -112,18 +112,18 @@ namespace ecc
 			instruction_t insn = 0;
 			if (address_cached == fetch_PC)
 			{
-				insn = fetched_cached[0];
+				insn = insn_data_cached[0];
 			}
 			else
 			{
 				if ((address_cached + sizeof(instruction_t)) == fetch_PC)
 				{
-					insn = fetched_cached[1];
+					insn = insn_data_cached[1];
 				}
 				else
 				{
-					error("failed to get insn from local fetcher cache");
-					abort();
+					$error("failed to get insn from local fetcher cache");
+					assert(false);
 				}
 			}
 

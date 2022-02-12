@@ -24,7 +24,7 @@ namespace ecc
 					assert(isValidIndex(dest));
 					const auto& src = pkt.src.value;
 
-					debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
+					$display("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
 
 					regs.mark_valid(dest);
 					regs[dest] = src;
@@ -38,7 +38,7 @@ namespace ecc
 
 					assert(are_all_adjacent_memory_addresses(dest, POINTER_SIZE));
 
-					debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
+					$display("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
 
 					BusID memory_bus_id = createBusID(core_id, COMPONENT_TYPE_STORE);
 					memory_bus.send_write_request_vec(dest, memory_bus_id, src);
@@ -54,7 +54,7 @@ namespace ecc
 
 					const auto& src = pkt.src.value;
 
-					debug("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
+					$display("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
 
 					BusID memory_bus_id = createBusID(core_id, COMPONENT_TYPE_STORE);
 					memory_bus.send_read_request_vec(src, memory_bus_id);
@@ -70,7 +70,7 @@ namespace ecc
 							regs.mark_valid(dest);
 							regs[dest] = value;
 
-							//std::cerr << "REG[" << MachineInfo::to_string(src) << "] = " << std::to_string(value) << std::endl;
+							//$display("REG[" << MachineInfo::to_string(src) << "] = " << std::to_string(value));
 							if (is_store_to_pc)
 							{
 								auto new_pc = value.get_PC();
@@ -105,7 +105,7 @@ namespace ecc
 					const auto& exec_mask_new_address = pkt.execution_flags_true;
 					const auto& exec_mask_next_address = pkt.execution_flags_false;
 
-					debug("[STORE] splitting cond-jump into " + std::to_string(count_num_bits64(exec_mask_new_address))
+					$display("[STORE] splitting cond-jump into " + std::to_string(count_num_bits64(exec_mask_new_address))
 						+ " and " + std::to_string(count_num_bits64(exec_mask_next_address)));
 
 					ThreadContext ctxt{
@@ -138,8 +138,8 @@ namespace ecc
 				}
 
 				default:
-					error("unhandled store insn");
-					abort();
+					$display("unhandled store insn");
+					assert(false);
 				}
 			}
 
