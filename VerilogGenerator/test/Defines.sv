@@ -141,6 +141,15 @@ typedef struct packed {
 } BusID;
 
 
+function Opcode getOpcode(input instruction_t insn);
+begin
+begin
+	return (Opcode'((insn & 32'hff)));
+end
+end
+endfunction
+
+
 function BusID createBusID(input CoreID core_id, input CoreComponentID within_id);
 begin
 	BusID ret;

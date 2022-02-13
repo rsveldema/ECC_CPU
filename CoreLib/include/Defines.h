@@ -168,6 +168,12 @@ namespace ecc
 
 	METHOD_SECTION;
 
+	static
+	inline Opcode getOpcode(instruction_t insn)
+	{
+		return static_cast<Opcode>(insn & 0xff);
+	}
+
 
 	static inline
 	BusID createBusID(CoreID core_id, CoreComponentID within_id)

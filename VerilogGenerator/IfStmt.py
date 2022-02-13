@@ -41,11 +41,11 @@ class IfStmt(Statement):
             else_label = Label()
             else_code = self.else_code.lower_ast(state)
             
-            jmp_if = Block()
-            jmp_if.append(Goto(end_label))
+            jmp_else = Block()
+            jmp_else.append(Goto(else_label))
             jmp_empty = Block()
 
-            ret.append(IfStmt(cond, jmp_empty, jmp_if))
+            ret.append(IfStmt(cond, jmp_empty, jmp_else))
             
             ret.append(if_code)
             ret.append(Goto(end_label))
