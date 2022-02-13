@@ -11,7 +11,7 @@ class BinaryExpr:
         self.right = right
 
     def generate(self, ps: PrintStream, ctxt: GenerateContext):
-        ps.println(f"{self.stmt_str()};")
+        ps.println(f"{self.stmt_str(ctxt)};")
         
     def lower_ast(self, state: LowerState):
         return BinaryExpr(self.op, self.left.lower_ast(state), self.right.lower_ast(state))
@@ -25,16 +25,18 @@ class BinaryExpr:
             
         return "(" + self.left.str() + " " + self.op + " " + self.right.str() + ")"
 
-    def stmt_str(self) -> str:
+    def stmt_str(self, ctxt: GenerateContext) -> str:
         if self.op == "[]":
             return self.left.str() + "[" + self.right.str() + "]"
+
+        asg = " = " if ctxt.in_init else " <= "
                 
         if self.op == "=":
-            return self.left.str() + " <= " + self.right.str() 
+            return self.left.str() + asg + self.right.str() 
 
         if self.op == "+=" or self.op == "-=" or self.op == "|=" or self.op == "&=":
             op = self.op[0]
-            return self.left.str() + " <= " +  self.left.str() + " " + op + " " + self.right.str() 
+            return self.left.str() + asg + self.left.str() + " " + op + " " + self.right.str() 
             
         return "(" + self.left.str() + " " + self.op + " " + self.right.str() + ")"
 

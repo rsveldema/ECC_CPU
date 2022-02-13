@@ -6,7 +6,7 @@ interface StoreToFetchBus;
 	function void init();
 	begin
 	begin
-		can_receive <= 0;
+		can_receive = 0;
 	end
 	end
 	endfunction
@@ -15,7 +15,7 @@ interface StoreToFetchBus;
 	function void init_store_to_fetch_bus();
 	begin
 	begin
-		can_receive <= 0;
+		can_receive = 0;
 	end
 	end
 	endfunction

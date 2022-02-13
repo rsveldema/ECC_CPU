@@ -73,42 +73,42 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 				fetch_PC <= 0;
 				exec_mask <= ALL_THREADS_EXEC_MASK_INT64;
 				address_cached <= 64'hffffffffffffffff;
-				state = 1; // GOTO
+				state <= 1; // GOTO
 				return;
 			end
 		1:
 			begin
 				if (!(have_outstanding_jmp))
 				begin
-					state = 3; // GOTO
+					state <= 3; // GOTO
 					return;
 				end
 				have_outstanding_jmp <= 0;
-				state = 4; // GOTO
+				state <= 4; // GOTO
 				return;
 			end
 		4:
 			begin
 				if (!(store_bus.can_receive))
 				begin
-					state = 6; // GOTO
+					state <= 6; // GOTO
 					return;
 				end
 				jmp_retarget <= store_bus.recv();
 				fetch_PC <= jmp_retarget.newpc;
 				exec_mask <= jmp_retarget.exec_mask;
-				state = 5; // GOTO
+				state <= 5; // GOTO
 				return;
 			end
 		6:
 			begin
 				// CONTEXT_SWITCH();
-				state = 4; // GOTO
+				state <= 4; // GOTO
 				return;
 			end
 		5:
 			begin
-				state = 3; // GOTO
+				state <= 3; // GOTO
 				return;
 			end
 		3:
@@ -118,10 +118,10 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 				end
 				else
 				begin
-					state = 7; // GOTO
+					state <= 7; // GOTO
 					return;
 				end
-				state = 7; // GOTO
+				state <= 7; // GOTO
 				return;
 			end
 		8:
@@ -131,10 +131,10 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 				end
 				else
 				begin
-					state = 9; // GOTO
+					state <= 9; // GOTO
 					return;
 				end
-				state = 9; // GOTO
+				state <= 9; // GOTO
 				return;
 			end
 		10:
@@ -142,38 +142,38 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 				address_fetched <= (fetch_PC & ~(7));
 				memory_bus_id <= createBusID(core_id, COMPONENT_TYPE_FETCH);
 				memory_bus.send_read_request_data(address_fetched, memory_bus_id);
-				state = 11; // GOTO
+				state <= 11; // GOTO
 				return;
 			end
 		11:
 			begin
 				if (!(memory_bus.response_busy))
 				begin
-					state = 13; // GOTO
+					state <= 13; // GOTO
 					return;
 				end
 				response <= memory_bus.get_response();
 				assert((response.packet_type == bus_read_response));
 				address_cached <= address_fetched;
 				insn_data_cached <= getInsnData(response.payload);
-				state = 12; // GOTO
+				state <= 12; // GOTO
 				return;
 			end
 		13:
 			begin
 				incFetchedInsnWait();
 				// CONTEXT_SWITCH();
-				state = 11; // GOTO
+				state <= 11; // GOTO
 				return;
 			end
 		12:
 			begin
-				state = 9; // GOTO
+				state <= 9; // GOTO
 				return;
 			end
 		9:
 			begin
-				state = 7; // GOTO
+				state <= 7; // GOTO
 				return;
 			end
 		7:
@@ -184,11 +184,11 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 				end
 				else
 				begin
-					state = 14; // GOTO
+					state <= 14; // GOTO
 					return;
 				end
 				insn <= insn_data_cached[0];
-				state = 14; // GOTO
+				state <= 14; // GOTO
 				return;
 			end
 		15:
@@ -198,23 +198,23 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 				end
 				else
 				begin
-					state = 16; // GOTO
+					state <= 16; // GOTO
 					return;
 				end
 				insn <= insn_data_cached[1];
-				state = 16; // GOTO
+				state <= 16; // GOTO
 				return;
 			end
 		17:
 			begin
 				$error("failed to get insn from local fetcher cache");
 				assert(0);
-				state = 16; // GOTO
+				state <= 16; // GOTO
 				return;
 			end
 		16:
 			begin
-				state = 14; // GOTO
+				state <= 14; // GOTO
 				return;
 			end
 		14:
@@ -222,16 +222,16 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 				opcode <= (Opcode'((insn & 32'hff)));
 				if (!(changesControlFlow(opcode)))
 				begin
-					state = 18; // GOTO
+					state <= 18; // GOTO
 					return;
 				end
 				have_outstanding_jmp <= 1;
-				state = 18; // GOTO
+				state <= 18; // GOTO
 				return;
 			end
 		18:
 			begin
-				state = 19; // GOTO
+				state <= 19; // GOTO
 				return;
 			end
 		19:
@@ -239,10 +239,10 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 				// CONTEXT_SWITCH();
 				if (decode_bus.is_busy)
 				begin
-					state = 19; // GOTO
+					state <= 19; // GOTO
 					return;
 				end
-				state = 20; // GOTO
+				state <= 20; // GOTO
 				return;
 			end
 		20:
@@ -252,7 +252,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 				pkt <= create_fetch_decode_packet(exec_mask, PC, insn);
 				decode_bus.send(pkt);
 				// CONTEXT_SWITCH();
-				state = 1; // GOTO
+				state <= 1; // GOTO
 				return;
 			end
 		2:

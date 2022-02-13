@@ -8,7 +8,7 @@ class Goto:
         
     
     def generate(self, ps: PrintStream, ctxt:GenerateContext):
-        ps.println(f"state = {self.label.str()}; // GOTO")
+        ps.println(f"state <= {self.label.str()}; // GOTO")
         ps.println(f"return;")
         
 

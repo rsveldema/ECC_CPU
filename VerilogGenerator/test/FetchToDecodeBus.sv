@@ -6,7 +6,7 @@ interface FetchToDecodeBus;
 	function void init();
 	begin
 	begin
-		is_busy <= 0;
+		is_busy = 0;
 	end
 	end
 	endfunction

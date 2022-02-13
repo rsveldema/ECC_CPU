@@ -8,8 +8,8 @@ interface MemoryBus;
 	function void init();
 	begin
 	begin
-		request_busy <= 0;
-		response_busy <= 0;
+		request_busy = 0;
+		response_busy = 0;
 	end
 	end
 	endfunction
