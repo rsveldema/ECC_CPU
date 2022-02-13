@@ -21,19 +21,20 @@ typedef struct packed
 //`include "MemoryBus.sv"
 //`include "FetchStage.sv"
 
-function CONTEXT_SWITCH();
+/*
+function void CONTEXT_SWITCH();
 begin
 end
 endfunction;
+*/
 
-
-function incFetchedInsnWait();
+function void incFetchedInsnWait();
 begin
     assert(0);
 end
 endfunction;
 
-module main();
+module main(input clk);
 
     // bit clk;
 
@@ -46,8 +47,12 @@ module main();
     initial begin
         memory_bus.init();
         store_bus.init_store_to_fetch_bus();
+    end
 
-   end
+     always @(posedge clk) 
+     begin
+        fetcher.run();    
+     end 
 
 endmodule;
 

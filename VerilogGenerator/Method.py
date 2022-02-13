@@ -1,5 +1,6 @@
 from re import template
 from DotAccessExpr import DotAccessExpr
+from GenerateContext import GenerateContext
 from PrintStream import PrintStream
 from LowerState import LowerState
 from Block import Block
@@ -86,13 +87,16 @@ class Method:
         return params
 
     def generate_function(self, ps:PrintStream):
+        ctxt = GenerateContext()
+        ctxt.in_init = self.funcname.str().find("init") >= 0
+
         ps.println("")
         ps.println("")
         params = self.get_param_str("input ")
         ps.println(f"function {self.type.str()} {self.funcname.str()}({params});")       
         ps.println("begin")
         self.generate_local_vars(ps)         
-        self.block.generate(ps)
+        self.block.generate(ps, ctxt)
         ps.println("end")
         ps.println("endfunction")
         
@@ -126,11 +130,12 @@ class Method:
         ps.println("")
         ps.up()        
         
+        ctxt = GenerateContext()
 
         ps.println("")
         ps.println("")
         ps.println(f"task {task_name}();")            
-        self.block.generate(ps)
+        self.block.generate(ps, ctxt)
         ps.println("endtask")
         ps.down()
         

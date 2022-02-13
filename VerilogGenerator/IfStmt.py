@@ -1,4 +1,5 @@
 from typing import List
+from GenerateContext import GenerateContext
 from PrintStream import PrintStream
 from LowerState import LowerState
 from Label import Label
@@ -19,12 +20,12 @@ class IfStmt(Statement):
             ret.extend(self.else_code.getLocalDecls())
         return ret
     
-    def generate(self, ps: PrintStream):
+    def generate(self, ps: PrintStream, ctxt: GenerateContext):
         ps.println(f"if ({self.expr.str()})")
-        self.if_code.generate(ps)
+        self.if_code.generate(ps, ctxt)
         if self.else_code:
             ps.println("else")
-            self.else_code.generate(ps)
+            self.else_code.generate(ps, ctxt)
 
         
     def lower_ast(self, state: LowerState):

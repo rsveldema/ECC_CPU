@@ -6,7 +6,7 @@ interface FetchToDecodeBus;
 	function void init();
 	begin
 	begin
-		is_busy=0;
+		is_busy <= 0;
 	end
 	end
 	endfunction
@@ -16,8 +16,8 @@ interface FetchToDecodeBus;
 	begin
 	begin
 		assert(!(is_busy));
-		data=pkt;
-		is_busy=1;
+		data <= pkt;
+		is_busy <= 1;
 	end
 	end
 	endfunction
@@ -28,8 +28,8 @@ interface FetchToDecodeBus;
 		FetchToDecodeBusPacket v;
 	begin
 		assert(is_busy);
-		v = data;
-		is_busy=0;
+		v <= data;
+		is_busy <= 0;
 		return v;
 	end
 	end

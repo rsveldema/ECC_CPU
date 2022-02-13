@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import List
+from GenerateContext import GenerateContext
 from PrintStream import PrintStream
 
 class Statement(ABC):
     
     @abstractmethod
-    def generate(self, ps: PrintStream):
+    def generate(self, ps: PrintStream, ctxt: GenerateContext):
         pass
     
     @abstractmethod

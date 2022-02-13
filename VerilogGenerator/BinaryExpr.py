@@ -1,4 +1,5 @@
 from typing import List
+from GenerateContext import GenerateContext
 from PrintStream import PrintStream
 from LowerState import LowerState
 from Expr import Expr
@@ -9,8 +10,8 @@ class BinaryExpr:
         self.left = left
         self.right = right
 
-    def generate(self, ps: PrintStream):
-        ps.println(f"{self.str()};")
+    def generate(self, ps: PrintStream, ctxt: GenerateContext):
+        ps.println(f"{self.stmt_str()};")
         
     def lower_ast(self, state: LowerState):
         return BinaryExpr(self.op, self.left.lower_ast(state), self.right.lower_ast(state))
@@ -18,9 +19,22 @@ class BinaryExpr:
     def str(self) -> str:
         if self.op == "[]":
             return self.left.str() + "[" + self.right.str() + "]"
-                
+              
         if self.op == "=" or self.op == "+=" or self.op == "-=" or self.op == "|=" or self.op == "&=":
             return self.left.str() + self.op + self.right.str() 
+            
+        return "(" + self.left.str() + " " + self.op + " " + self.right.str() + ")"
+
+    def stmt_str(self) -> str:
+        if self.op == "[]":
+            return self.left.str() + "[" + self.right.str() + "]"
+                
+        if self.op == "=":
+            return self.left.str() + " <= " + self.right.str() 
+
+        if self.op == "+=" or self.op == "-=" or self.op == "|=" or self.op == "&=":
+            op = self.op[0]
+            return self.left.str() + " <= " +  self.left.str() + " " + op + " " + self.right.str() 
             
         return "(" + self.left.str() + " " + self.op + " " + self.right.str() + ")"
 

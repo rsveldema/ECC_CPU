@@ -1,4 +1,5 @@
 from typing import List
+from GenerateContext import GenerateContext
 from PrintStream import PrintStream
 
 class Goto:
@@ -6,7 +7,7 @@ class Goto:
         self.label = label
         
     
-    def generate(self, ps: PrintStream):
+    def generate(self, ps: PrintStream, ctxt:GenerateContext):
         ps.println(f"state = {self.label.str()}; // GOTO")
         ps.println(f"return;")
         

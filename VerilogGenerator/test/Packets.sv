@@ -51,10 +51,10 @@ function BusPacket create_bus_packet(input BusPacketType pkt_type, input BusID s
 begin
 	BusPacket pkt;
 begin
-	pkt.packet_type=pkt_type;
-	pkt.source=source;
-	pkt.address=address;
-	pkt.payload=payload;
+	pkt.packet_type <= pkt_type;
+	pkt.source <= source;
+	pkt.address <= address;
+	pkt.payload <= payload;
 	return pkt;
 end
 end
@@ -65,9 +65,9 @@ function FetchToDecodeBusPacket create_fetch_decode_packet(input execution_mask_
 begin
 	FetchToDecodeBusPacket pkt;
 begin
-	pkt.exec_mask=exec_mask;
-	pkt.insn=insn;
-	pkt.PC=PC;
+	pkt.exec_mask <= exec_mask;
+	pkt.insn <= insn;
+	pkt.PC <= PC;
 	return pkt;
 end
 end

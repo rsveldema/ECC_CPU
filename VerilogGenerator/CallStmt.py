@@ -1,5 +1,6 @@
 from ast import Expression
 from typing import List
+from GenerateContext import GenerateContext
 from PrintStream import PrintStream
 from LowerState import LowerState
 from Statement import Statement
@@ -14,8 +15,13 @@ class CallStmt(Statement):
         ce = self.call_expr.lower_ast(state)
         return CallStmt(ce.func, ce.args)
     
-    def generate(self, ps: PrintStream):
-        ps.println("" + self.call_expr.str() + ";")
+    def generate(self, ps: PrintStream, ctxt: GenerateContext):
+        c = self.call_expr.str()
+        if c.find("CONTEXT_SWITCH") >= 0:
+            ps.println("// " + c + ";")
+        else:
+            ps.println("" + c + ";")
+
         
     def pretty(self):
         print(f"{self.str()};")

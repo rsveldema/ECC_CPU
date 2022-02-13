@@ -1,5 +1,6 @@
 from typing import List
 from Expr import Expr
+from GenerateContext import GenerateContext
 from LocalDecl import LocalDecl
 from PrintStream import PrintStream
 from LowerState import LowerState
@@ -21,10 +22,10 @@ class ForStmt(Statement):
         return self.blk.getLocalDecls()
 
     
-    def generate(self, ps: PrintStream):
+    def generate(self, ps: PrintStream, ctxt: GenerateContext):
         ps.println(f"for ({self.decl.str()}; {self.cond.str()}; {self.inc.str()})")
         ps.up()
-        self.blk.generate(ps)
+        self.blk.generate(ps, ctxt)
         ps.down()
         
     def lower_ast(self, state: LowerState):

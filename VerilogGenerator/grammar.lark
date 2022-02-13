@@ -191,7 +191,7 @@ autotype: "auto"
 
 string : ESCAPED_STRING
 
-IDENT: ("a".."z"|"A".."Z"|"_")("a".."z"|"A".."Z"|"_"|"0".."9")*
+IDENT: ("$" | "a".."z"|"A".."Z"|"_")("a".."z"|"A".."Z"|"_"|"0".."9")*
 
 NUMBER: ("0".."9")+
 

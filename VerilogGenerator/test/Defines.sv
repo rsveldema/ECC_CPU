@@ -145,8 +145,8 @@ function BusID createBusID(input CoreID core_id, input CoreComponentID within_id
 begin
 	BusID ret;
 begin
-	ret.core_id=core_id;
-	ret.within_core_id=within_id;
+	ret.core_id <= core_id;
+	ret.within_core_id <= within_id;
 	return ret;
 end
 end
@@ -158,12 +158,12 @@ begin
 	uint32_t c;
 	uint64_t f;
 begin
-	c = 0;
-	f = value;
+	c <= 0;
+	f <= value;
 	for (uint32_t i = 0; (i < 64); i=(i + 1))
 		begin
-			c+=(uint32_t'((f & 1)));
-			f=(f >> 1);
+			c <= c + (uint32_t'((f & 1)));
+			f <= (f >> 1);
 		end
 	return c;
 end

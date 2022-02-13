@@ -1,4 +1,5 @@
 from typing import List
+from GenerateContext import GenerateContext
 from PrintStream import PrintStream
 from LowerState import LowerState
 from Statement import Statement
@@ -43,10 +44,10 @@ class Block(Statement):
             return None
         return self.insns[len(self.insns) - 1]
         
-    def generate(self, ps: PrintStream):
+    def generate(self, ps: PrintStream, ctxt: GenerateContext):
         ps.println("begin")
         ps.up()
         for insn in self.insns:
-            insn.generate(ps)
+            insn.generate(ps, ctxt)
         ps.down()
         ps.println("end")

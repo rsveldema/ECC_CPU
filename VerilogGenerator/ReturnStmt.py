@@ -1,4 +1,5 @@
 from typing import List
+from GenerateContext import GenerateContext
 from PrintStream import PrintStream
 from LowerState import LowerState
 from Statement import Statement
@@ -16,7 +17,7 @@ class ReturnStmt(Statement):
     def lower_ast(self, state: LowerState) -> Statement:
         return ReturnStmt(self.expr.lower_ast(state))
             
-    def generate(self, ps: PrintStream):
+    def generate(self, ps: PrintStream, ctxt: GenerateContext):
         ps.println(f"return {self.expr.str()};")
 
     def getLocalDecls(self) -> List:

@@ -1,4 +1,5 @@
 from typing import List
+from GenerateContext import GenerateContext
 from PrintStream import PrintStream
 from LowerState import LowerState
 from Goto import Goto
@@ -14,7 +15,7 @@ class Break:
     def pretty(self):
         print("break")
         
-    def generate(self, ps: PrintStream):
+    def generate(self, ps: PrintStream, ctxt: GenerateContext):
         ps.println("break;")
 
 

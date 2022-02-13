@@ -1,4 +1,5 @@
 from typing import List
+from GenerateContext import GenerateContext
 from PrintStream import PrintStream
 from LowerState import LowerState
 from Type import Type
@@ -11,9 +12,11 @@ class LocalDecl:
         self.var = var
         self.init_expr = init_expr
 
-    def generate(self, ps: PrintStream):
+    def generate(self, ps: PrintStream, ctxt: GenerateContext):
+        op = "=" if ctxt.in_init else "<="
+
         if self.init_expr:
-            ps.println(f"{self.var} = {self.init_expr.str()};")
+            ps.println(f"{self.var} {op} {self.init_expr.str()};")
         
      
     def lower_ast(self, state: LowerState):

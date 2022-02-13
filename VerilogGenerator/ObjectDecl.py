@@ -1,3 +1,4 @@
+from GenerateContext import GenerateContext
 from PrintStream import PrintStream
 from LowerState import LowerState
 from Statement import Statement
@@ -17,7 +18,7 @@ class ObjectDecl(Statement):
             new_args.append(p.lower_ast(state))
         return ObjectDecl(self.type.lower_ast(state), self.var, new_args)
     
-    def generate(self, ps: PrintStream):
+    def generate(self, ps: PrintStream, ctxt: GenerateContext):
         ps.println("// " + self.str())
         
     def pretty(self):
