@@ -71,7 +71,7 @@ def main():
             generate(methods, ps)
 
 
-    files = ["../CoreLib/FetchStage.cpp", "../CoreLib/include/MemoryBus.h"]
+    files = ["../CoreLib/FetchStage.cpp", "../CoreLib/RAM.cpp", "../CoreLib/include/MemoryBus.h"]
     for file in files:
         module_name = get_file_name(file)
 

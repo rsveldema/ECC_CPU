@@ -18,6 +18,8 @@ namespace ecc
 
 	static constexpr memory_address_t CODE_SEGMENT_START = 0;
 	static constexpr memory_address_t DATA_SEGMENT_START = 1024 * 1024;
+	static constexpr memory_address_t DATA_SEGMENT_SIZE  = 1024 * 1024;
+	static constexpr memory_address_t END_MEMORY_ADDRESS = DATA_SEGMENT_START + DATA_SEGMENT_SIZE;
 
 	static constexpr uint32_t VECTOR_MEM_SIZE = 64;
 

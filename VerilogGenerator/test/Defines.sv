@@ -15,6 +15,10 @@ parameter CODE_SEGMENT_START = 0;
 
 parameter DATA_SEGMENT_START = (1024 * 1024);
 
+parameter DATA_SEGMENT_SIZE = (1024 * 1024);
+
+parameter END_MEMORY_ADDRESS = (DATA_SEGMENT_START + DATA_SEGMENT_SIZE);
+
 parameter VECTOR_MEM_SIZE = 64;
 
 parameter NUMBER_OF_VECTOR_THREADS_INT64 = (VECTOR_MEM_SIZE /  ((uint64_t'($bits(uint64_t)) >> 3)  ) );

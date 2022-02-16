@@ -11,7 +11,6 @@ namespace ecc
 	{
 	public:
 		MemoryBus& toCPU;
-		std::vector<uint8_t> storage;
 		RAM_Config config;
 
 
@@ -23,14 +22,10 @@ namespace ecc
 			toCPU(_toCPU),
 			config(_config)
 		{
-			storage.resize(config.size);
 		}
 
-		ecc::ReturnObject run() override;
-
-		void write(uint64_t address, char* data, size_t len)
-		{
-			std::copy(data, data + len, storage.begin() + address);
-		}
+		ecc::ReturnObject run() override;	
 	};
+
+	void write_to_global_memory(uint64_t address, uint8_t data);
 }

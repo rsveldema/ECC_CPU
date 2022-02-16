@@ -3,7 +3,16 @@
 
 namespace ecc
 {
-	ecc::ReturnObject RAM::run()
+	std::array<uint8_t, END_MEMORY_ADDRESS> storage;
+
+	METHOD_SECTION;
+
+	void write_to_global_memory(uint64_t address, uint8_t data)
+	{
+		storage[address] = data;
+	}
+
+	ReturnObject RAM::run()
 	{
 		while (1)
 		{
@@ -11,16 +20,20 @@ namespace ecc
 			{
 				const auto pkt = toCPU.accept_request();
 
+				CONTEXT_SWITCH();
+
 				switch (pkt.packet_type)
 				{
 				case bus_read_data:
 				{
-					const auto address = pkt.address;
-					assert(address >= 0);
-					assert(address < (storage.size() - 8));
+					assert(pkt.address >= 0);
+					assert(pkt.address < (sizeof(storage) - 8));
 
-					auto* ptr = reinterpret_cast<bus_packet_payload_t*>(storage.data() + address);
-					bus_packet_payload_t ret = *ptr;
+					bus_packet_payload_t ret = 0;
+					for (int i = 0; i < sizeof(bus_packet_payload_t); i++)
+					{
+						ret |= static_cast<bus_packet_payload_t>(storage[pkt.address + i]) << (i * 8);
+					}
 
 					for (uint64_t i = 0; i < config.read_latency.cycles; i++)
 					{
@@ -33,18 +46,19 @@ namespace ecc
 
 				case bus_write_data:
 				{
-					const auto address = pkt.address;
-
-					const auto& value = pkt.payload;
+					assert(pkt.address >= 0);
+					assert(pkt.address < (sizeof(storage) - 8));
 
 					for (uint64_t i = 0; i < config.write_latency.cycles; i++)
 					{
 						CONTEXT_SWITCH();
 					}
 
-					auto* dest_ptr = reinterpret_cast<bus_packet_payload_t*>(storage.data() + address);
-
-					*dest_ptr = value;
+					bus_packet_payload_t ret = 0;
+					for (int i = 0; i < sizeof(bus_packet_payload_t); i++)
+					{
+						storage[pkt.address + i] = pkt.payload >> (i * 8); 
+					}
 					break;
 				}
 

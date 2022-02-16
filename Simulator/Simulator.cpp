@@ -33,9 +33,13 @@ void read_code_memory_dump(CoreClusterGrid& machine, const std::string& filename
 	uint64_t address = ecc::CODE_SEGMENT_START;
 	while (!f.eof())
 	{
-		char insn[4];
+		char insn[sizeof(instruction_t)];
 		f.read(insn, sizeof(insn));
-		machine.dram.write(address, insn, sizeof(insn));
+		//machine.dram.write(address, insn, sizeof(insn));
+		for (unsigned i=0;i<sizeof(instruction_t);i++)
+		{
+			write_to_global_memory(address + i, insn[i]);
+		}
 		address += sizeof(insn);
 	}
 
@@ -72,7 +76,10 @@ void read_data_memory_dump(CoreClusterGrid& machine, const std::string& filename
 
 	// store content of vector at the data sector we've assembled it at:
 	uint64_t address = ecc::DATA_SEGMENT_START;
-	machine.dram.write(address, buffer.data(), length);
+	for (unsigned i=0;i<length;i++)
+	{
+		write_to_global_memory(address + i, buffer[i]);
+	}
 }
 
 void write_config(const std::string& filename)
