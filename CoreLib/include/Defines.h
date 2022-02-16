@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 #define INTERFACE struct
 #define METHOD_SECTION
 
@@ -12,6 +14,9 @@ namespace ecc
 	using fetched_instruction_data_t = std::array<instruction_t, 2>;
 
 	using execution_mask_t = uint64_t;
+
+	static constexpr uint32_t DRAM_READ_ACCESS_CYCLES = 100;
+	static constexpr uint32_t DRAM_WRITE_ACCESS_CYCLES = 100;
 
 	static constexpr uint32_t POINTER_SIZE = sizeof(memory_address_t);
 	static constexpr uint32_t INSTRUCTION_SIZE = sizeof(instruction_t);

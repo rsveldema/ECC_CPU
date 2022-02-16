@@ -118,16 +118,6 @@ int main(int argc, char** argv)
 	GlobalStats globalStats;
 
 	MachineConfig config{
-		.grid_mem_config {
-			.size = 1024 * 1024 * 8,
-			.read_latency = Cycles(100),
-			.write_latency = Cycles(100),
-		},
-		.sram_config {
-			.size = 1024,
-			.read_latency = Cycles(10),
-			.write_latency = Cycles(10),
-		},
 		.num_cores = num_cores
 	};
 

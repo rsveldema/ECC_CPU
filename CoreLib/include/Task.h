@@ -5,12 +5,24 @@
 #include <iostream>
 #include <cassert>
 #include <string>
-
+#include "Defines.h"
 
 namespace ecc
 {
 	#define CONTEXT_SWITCH() { Task& t = *this; co_await t; }
 	#define WAIT(cond) while (! cond) CONTEXT_SWITCH()
+
+	#define READ_MEMORY_DELAY() { \
+        for (uint64_t i = 0; i < DRAM_READ_ACCESS_CYCLES; i++) { \
+            CONTEXT_SWITCH(); \
+        } \
+	}
+
+	#define WRITE_MEMORY_DELAY() { \
+        for (uint64_t i = 0; i < DRAM_WRITE_ACCESS_CYCLES; i++) { \
+            CONTEXT_SWITCH(); \
+        } \
+	}
 			
 	/** C++ coroutines require the return type to hold a nested promise_type.
 	*/
