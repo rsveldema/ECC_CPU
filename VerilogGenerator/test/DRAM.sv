@@ -10,11 +10,10 @@ end
 endfunction
 
 
-module DRAM();
+module DRAM(MemoryBus toCPU);
 	reg[32:0] state = 0;
-	auto pkt;
-	bus_packet_payload_t ret;
-	bus_packet_payload_t ret;
+	BusPacket pkt;
+	bus_packet_payload_t read_ret;
 
 
 
@@ -41,13 +40,13 @@ module DRAM();
 						begin
 							assert((pkt.address >= 0));
 							assert((pkt.address < ( ((uint64_t'($bits(storage)) >> 3)  )  - 8)));
-							ret <= 0;
+							read_ret <= 0;
 							for (int i = 0; (i <  ((uint64_t'($bits(bus_packet_payload_t)) >> 3)  ) ); i=(i + 1))
 								begin
-									ret <= (ret | ((bus_packet_payload_t'(storage[(pkt.address + i)])) << (i * 8)));
+									read_ret <= (read_ret | ((bus_packet_payload_t'(storage[(pkt.address + i)])) << (i * 8)));
 								end
 							READ_MEMORY_DELAY();
-							toCPU.send_read_response(ret, pkt.source);
+							toCPU.send_read_response(read_ret, pkt.source);
 							state <= 21; // GOTO
 							return;
 						end
@@ -56,7 +55,6 @@ module DRAM();
 							assert((pkt.address >= 0));
 							assert((pkt.address < ( ((uint64_t'($bits(storage)) >> 3)  )  - 8)));
 							WRITE_MEMORY_DELAY();
-							ret <= 0;
 							for (int i = 0; (i <  ((uint64_t'($bits(bus_packet_payload_t)) >> 3)  ) ); i=(i + 1))
 								begin
 									storage[(pkt.address + i)] <= (pkt.payload >> (i * 8));

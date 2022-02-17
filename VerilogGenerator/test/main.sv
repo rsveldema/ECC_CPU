@@ -8,6 +8,9 @@ typedef int signed int32_t;
 typedef shortint unsigned uint16_t;
 typedef shortint signed int16_t;
 
+typedef byte unsigned uint8_t;
+typedef byte signed int8_t;
+
 typedef bit bool;
 
 `include "Defines.sv"
@@ -28,6 +31,21 @@ end
 endfunction;
 */
 
+function void abort();
+begin
+end
+endfunction;
+
+function void READ_MEMORY_DELAY();
+begin
+end
+endfunction;
+
+function void WRITE_MEMORY_DELAY();
+begin
+end
+endfunction;
+
 function void incFetchedInsnWait();
 begin
     assert(0);
@@ -41,6 +59,7 @@ module main(input clk);
     FetchToDecodeBus decode_bus;
     StoreToFetchBus store_bus;
     MemoryBus memory_bus;
+    DRAM dram (memory_bus);
 
     FetchStage  #(.core_id(0)) fetcher (decode_bus, store_bus, memory_bus);
 

@@ -12,13 +12,13 @@ namespace ecc
 		storage[address] = data;
 	}
 
-	ReturnObject DRAM::run()
+	ReturnObject DRAM::run(MemoryBus& toCPU)
 	{
 		while (1)
 		{
 			if (toCPU.request_busy)
 			{
-				const auto pkt = toCPU.accept_request();
+				const BusPacket pkt = toCPU.accept_request();
 
 				CONTEXT_SWITCH();
 
@@ -29,15 +29,15 @@ namespace ecc
 					assert(pkt.address >= 0);
 					assert(pkt.address < (sizeof(storage) - 8));
 
-					bus_packet_payload_t ret = 0;
+					bus_packet_payload_t read_ret = 0;
 					for (int i = 0; i < sizeof(bus_packet_payload_t); i++)
 					{
-						ret = ret | (static_cast<bus_packet_payload_t>(storage[pkt.address + i]) << (i * 8));
+						read_ret = read_ret | (static_cast<bus_packet_payload_t>(storage[pkt.address + i]) << (i * 8));
 					}
 
 					READ_MEMORY_DELAY();
 
-					toCPU.send_read_response(ret, pkt.source);
+					toCPU.send_read_response(read_ret, pkt.source);
 					break;
 				}
 
@@ -48,7 +48,6 @@ namespace ecc
 
 					WRITE_MEMORY_DELAY();
 
-					bus_packet_payload_t ret = 0;
 					for (int i = 0; i < sizeof(bus_packet_payload_t); i++)
 					{
 						storage[(pkt.address + i)] = (pkt.payload >> (i * 8)); 
