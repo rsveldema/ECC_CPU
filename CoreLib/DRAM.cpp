@@ -1,4 +1,5 @@
-#include "DRAM.h"
+#include "CoreLib.h"
+
 
 namespace ecc
 {
@@ -31,7 +32,7 @@ namespace ecc
 					bus_packet_payload_t ret = 0;
 					for (int i = 0; i < sizeof(bus_packet_payload_t); i++)
 					{
-						ret |= static_cast<bus_packet_payload_t>(storage[pkt.address + i]) << (i * 8);
+						ret = ret | (static_cast<bus_packet_payload_t>(storage[pkt.address + i]) << (i * 8));
 					}
 
 					READ_MEMORY_DELAY();
@@ -50,13 +51,16 @@ namespace ecc
 					bus_packet_payload_t ret = 0;
 					for (int i = 0; i < sizeof(bus_packet_payload_t); i++)
 					{
-						storage[pkt.address + i] = pkt.payload >> (i * 8); 
+						storage[(pkt.address + i)] = (pkt.payload >> (i * 8)); 
 					}
 					break;
 				}
 
 				default:
-					abort();
+					{
+						$display("unrecognized bus command");
+						abort();
+					}
 				}
 			}
 

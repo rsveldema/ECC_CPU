@@ -114,8 +114,9 @@ class Method:
         
 
         ps.up()
-        for k in self.template_args:
-            ps.println("parameter " + k.type.str() + " " + k.var + ";");
+        if self.template_args:
+            for k in self.template_args:
+                ps.println("parameter " + k.type.str() + " " + k.var + ";");
         ps.down()
 
         self.generate_local_vars(ps)

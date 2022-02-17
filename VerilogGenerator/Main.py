@@ -71,7 +71,7 @@ def main():
             generate(methods, ps)
 
 
-    files = ["../CoreLib/FetchStage.cpp", "../CoreLib/RAM.cpp", "../CoreLib/include/MemoryBus.h"]
+    files = ["../CoreLib/FetchStage.cpp", "../CoreLib/DRAM.cpp", "../CoreLib/include/MemoryBus.h"]
     for file in files:
         module_name = get_file_name(file)
 
@@ -87,6 +87,7 @@ def main():
 
         methods = create_state_switch(methods)
 
+        print("\tGEN: " + module_name)
         with open(output_path + module_name, "w") as fp: 
         
             ps = PrintStream(fp)

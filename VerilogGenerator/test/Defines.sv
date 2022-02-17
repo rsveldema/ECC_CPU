@@ -7,6 +7,10 @@ typedef instruction_t[(2) - 1:0] fetched_instruction_data_t;
 
 typedef uint64_t execution_mask_t;
 
+parameter DRAM_READ_ACCESS_CYCLES = 100;
+
+parameter DRAM_WRITE_ACCESS_CYCLES = 100;
+
 parameter POINTER_SIZE =  ((uint64_t'($bits(memory_address_t)) >> 3)  ) ;
 
 parameter INSTRUCTION_SIZE =  ((uint64_t'($bits(instruction_t)) >> 3)  ) ;
