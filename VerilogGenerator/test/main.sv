@@ -54,7 +54,6 @@ endfunction;
 
 function void incFetchedInsnWait();
 begin
-    assert(0);
 end
 endfunction;
 

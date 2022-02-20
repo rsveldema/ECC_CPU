@@ -5,19 +5,21 @@
 namespace ecc
 {
 
+METHOD_SECTION;
+
 	uint64_t get_expected_cond_jump_flags_mask(Opcode opcode)
 	{
 		switch (opcode)
 		{
-		default: break;
-		case Opcode::INSN_OPCODE_JMP_EQUAL:		return FLAGS_MASK_EQ;
-		case Opcode::INSN_OPCODE_JMP_NOT_EQUAL:	return FLAGS_MASK_LT | FLAGS_MASK_GT;
+		case Opcode::INSN_OPCODE_JMP_EQUAL:		{return FLAGS_MASK_EQ;}
+		case Opcode::INSN_OPCODE_JMP_NOT_EQUAL:	{return FLAGS_MASK_LT | FLAGS_MASK_GT;}
 
-		case Opcode::INSN_OPCODE_JMP_GREATER:	return FLAGS_MASK_GT;
-		case Opcode::INSN_OPCODE_JMP_LOWER:		return FLAGS_MASK_LT;
+		case Opcode::INSN_OPCODE_JMP_GREATER:	{return FLAGS_MASK_GT;}
+		case Opcode::INSN_OPCODE_JMP_LOWER:		{return FLAGS_MASK_LT;}
 
-		case Opcode::INSN_OPCODE_JMP_GREATER_EQUAL:	return FLAGS_MASK_GT | FLAGS_MASK_EQ;
-		case Opcode::INSN_OPCODE_JMP_LOWER_EQUAL:	return FLAGS_MASK_LT | FLAGS_MASK_EQ;
+		case Opcode::INSN_OPCODE_JMP_GREATER_EQUAL:	{return FLAGS_MASK_GT | FLAGS_MASK_EQ;}
+		case Opcode::INSN_OPCODE_JMP_LOWER_EQUAL:	{return FLAGS_MASK_LT | FLAGS_MASK_EQ;}
+		default: {break;}
 		}
 		assert(false);
 		return FLAGS_MASK_GT;
@@ -25,44 +27,42 @@ namespace ecc
 
 	ReturnObject DecodeStage::run()
 	{
+		DecodeStageValue value0;
+		VectorValue value1;
+		VectorValue value2;
+
 		while (1)
 		{
 			if (fetch_bus.is_busy)
 			{
 				const FetchToDecodeBusPacket pkt = fetch_bus.recv();
 
-				auto PC = pkt.PC;
-				auto opcode = (Opcode)(pkt.insn & 0xff);
+				$display("DECODE[%d] exec: %x", pkt.PC, to_string(static_cast<Opcode>(pkt.insn & 0xff)));
 
-				$display("DECODE[" + std::to_string(PC) + "] exec: " + to_string(opcode));
-
-				switch (opcode)
+				switch (static_cast<Opcode>(pkt.insn & 0xff))
 				{
 				case Opcode::INSN_OPCODE_NOP:
 				{
 					break;
 				}
+
 				case Opcode::INSN_OPCODE_HALT:
 				{
-					DecodeExecPacket execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_HALT };
-					execute_bus.send(execute_pkt);
+					execute_bus.send_req1(pkt.exec_mask, pkt.PC, EXEC_HALT, value0 );
 					break;
 				}
 
 				case Opcode::INSN_OPCODE_MOVE_PCREL_REG_CONST16:
 				{
-					auto reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
-					auto constValue = static_cast<int64_t>((pkt.insn >> 16) & 0xffff);
+					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 
-					memory_address_t value = constValue + pkt.PC;
+					value1 = create_vec_int64(static_cast<int64_t>((pkt.insn >> 16) & 0xffff) + pkt.PC);
 
-					VectorValue vec = create_vec_int64(value);
-
-					DecodeExecPacket execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_MOVE_REG_VALUE,
-									reg,
-									vec,
-					};
-					execute_bus.send(execute_pkt);
+					execute_bus.send_req2(pkt.exec_mask, 
+									pkt.PC, 
+									EXEC_MOVE_REG_VALUE,
+									value0,
+									value1);
 					break;
 				}
 
@@ -72,88 +72,78 @@ namespace ecc
 					const auto& src_reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto& base_reg_id = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
 					const auto& addr_offset_value = static_cast<int16_t>((pkt.insn >> 24) & 0xff);
-					const auto& addr2 = regs[base_reg_id];
-					const auto& value = regs[src_reg];
+					
 
-					VectorValue addr1 = create_vec_int64(addr_offset_value);
+					value0.vec = regs[src_reg];
+					value1 = create_vec_int64(addr_offset_value);
+					value2 = regs[base_reg_id];
 
-					DecodeStageValue arg0;
-					arg0.vec = value;
-
-					DecodeExecPacket execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_STORE_ADDR_VALUE,
-						arg0, addr1, addr2 };
-					execute_bus.send(execute_pkt);
+					execute_bus.send_req3(pkt.exec_mask, pkt.PC, ExecuteStageOpcode::EXEC_STORE_ADDR_VALUE,
+						value0, value1, value2 );
 					break;
 				}
 
 				// reg = blockIndex
 				case Opcode::INSN_OPCODE_MOVE_REG_BLOCK_INDEX:
 				{
-					const auto& reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
+					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
+					value1 = create_vec_incrementing_values();
 
-					VectorValue value = create_vec_incrementing_values();
-
-					DecodeExecPacket execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_MOVE_REG_VALUE,
-						reg, value };
-					execute_bus.send(execute_pkt);
+					execute_bus.send_req2(pkt.exec_mask, pkt.PC, ExecuteStageOpcode::EXEC_MOVE_REG_VALUE,
+						value0, value1);
 					break;
 				}
 
 				case Opcode::INSN_OPCODE_MOVE_REG_CONST16:
 				{
-					const auto& reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
+					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto& const_value = static_cast<int16_t>((pkt.insn >> 16) & 0xffff);
 
-					VectorValue value = create_vec_int64(const_value);
+					value1 = create_vec_int64(const_value);
 
-					DecodeExecPacket execute_pkt{ pkt.exec_mask,  PC, ExecuteStageOpcode::EXEC_MOVE_REG_VALUE,
-						reg, value };
-					execute_bus.send(execute_pkt);
+					execute_bus.send_req2(pkt.exec_mask,  pkt.PC, ExecuteStageOpcode::EXEC_MOVE_REG_VALUE,
+						value0, value1);
 					break;
 				}
 
 				case Opcode::INSN_OPCODE_MOVE_REG_REG:
 				{
-					const auto reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
+					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto src_reg = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
 
 					const auto& value = regs[src_reg];
 
-					DecodeExecPacket execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_MOVE_REG_VALUE,
-						reg, value };
-					execute_bus.send(execute_pkt);
+					execute_bus.send_req2(pkt.exec_mask, pkt.PC, ExecuteStageOpcode::EXEC_MOVE_REG_VALUE,
+						value0, value );
 					break;
 				}
 
 				case Opcode::INSN_OPCODE_L_SSHIFT_REG_REG_CONST:
 				{
-					const auto dst_reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
+					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto src1_reg = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
 					const auto value2_const = static_cast<int8_t>((pkt.insn >> 24) & 0xff);
 
-					const auto value2 = create_vec_int64(value2_const);
+					value2 = create_vec_int64(value2_const);
+					value1 = regs[src1_reg];
 
-					const auto& value1 = regs[src1_reg];
-
-					DecodeExecPacket execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_SHL_REG_VALUE_VALUE,
-						dst_reg, value1, value2 };
-					execute_bus.send(execute_pkt);
+					execute_bus.send_req3(pkt.exec_mask, pkt.PC, ExecuteStageOpcode::EXEC_SHL_REG_VALUE_VALUE,
+						value0, value1, value2);
 					break;
 				}
 
 
 				case Opcode::INSN_OPCODE_ADD_REG_REG_REG:
 				{
-					const auto dst_reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
+					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto src1_reg = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
 					const auto src2_reg = static_cast<RegisterID>((pkt.insn >> 24) & 0xff);
 
 					const auto& value1 = regs[src1_reg];
 					const auto& value2 = regs[src2_reg];
 
-					DecodeExecPacket execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_ADD_REG_VALUE_VALUE,
-						dst_reg, value1, value2 };
-					execute_bus.send(execute_pkt);
+					execute_bus.send_req3(pkt.exec_mask, pkt.PC, ExecuteStageOpcode::EXEC_ADD_REG_VALUE_VALUE,
+						value0, value1, value2);
 					break;
 				}
 
@@ -161,17 +151,17 @@ namespace ecc
 				// reg = reg + const
 				case Opcode::INSN_OPCODE_ADD_REG_REG_CONST:
 				{
-					const auto dst_reg = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
+					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto src1_reg = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
 					const auto value2_const = static_cast<int8_t>((pkt.insn >> 24) & 0xff);
 
-					VectorValue value2 = create_vec_int64(value2_const);
+					value2 = create_vec_int64(value2_const);
+					value1 = regs[src1_reg];
 
-					const auto& value1 = regs[src1_reg];
-
-					DecodeExecPacket execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_ADD_REG_VALUE_VALUE,
-						dst_reg, value1, value2 };
-					execute_bus.send(execute_pkt);
+					execute_bus.send_req3(pkt.exec_mask, pkt.PC, ExecuteStageOpcode::EXEC_ADD_REG_VALUE_VALUE,
+						value0, 
+						value1, 
+						value2);
 					break;
 				}
 
@@ -182,12 +172,10 @@ namespace ecc
 					VectorValue v;
 					v.setPC(off);
 
-					DecodeStageValue arg0;
-					arg0.vec = v;
+					value0.vec = v;
 
-					DecodeExecPacket execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_JMP,
-						arg0 };
-					execute_bus.send(execute_pkt);
+					execute_bus.send_req1(pkt.exec_mask, pkt.PC, ExecuteStageOpcode::EXEC_JMP,
+						value0);
 					break;
 				}
 
@@ -196,19 +184,14 @@ namespace ecc
 					const auto reg1 = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto reg2 = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
 
-					const auto& value1 = regs[reg1];
-					const auto& value2 = regs[reg2];
+					value0.vec = regs[reg1];
+					value1 = regs[reg2];
 
 					//std::cerr << "[DECODE] CMP: " << value1 << " -- " << value2 << std::endl;
 
-					DecodeStageValue arg0;
-					arg0.vec = value1;
-
-					DecodeExecPacket execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_CMP,
-						arg0,
-						value2,
-					};
-					execute_bus.send(execute_pkt);
+					execute_bus.send_req2( pkt.exec_mask, pkt.PC, ExecuteStageOpcode::EXEC_CMP,
+						value0,
+						value1);
 					break;
 				}
 
@@ -219,28 +202,17 @@ namespace ecc
 				case Opcode::INSN_OPCODE_JMP_GREATER:
 				case Opcode::INSN_OPCODE_JMP_GREATER_EQUAL:
 				{
-					const auto PC = pkt.PC;
+					const auto expected_mask = get_expected_cond_jump_flags_mask((Opcode)(pkt.insn & 0xff));
+					value1 = create_vec_int64(expected_mask);
+					value0.vec = create_vec_int64(static_cast<int32_t>(pkt.insn >> 8));
 
-					const auto expected_mask = get_expected_cond_jump_flags_mask(opcode);
-
-					const VectorValue jmp_mask = create_vec_int64(expected_mask);
-
-					const auto off_const = static_cast<int32_t>(pkt.insn >> 8);
-					const VectorValue off = create_vec_int64(off_const);
-
-
-					DecodeStageValue arg0;
-					arg0.vec = off;
-
-
-					DecodeExecPacket execute_pkt{ pkt.exec_mask, PC,
-						ExecuteStageOpcode::EXEC_COND_JMP,
-						arg0, jmp_mask };
 					while (execute_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
 					}
-					execute_bus.send(execute_pkt);
+					execute_bus.send_req2(pkt.exec_mask, pkt.PC,
+						ExecuteStageOpcode::EXEC_COND_JMP,
+						value0, value1);
 					break;
 				}
 
@@ -250,25 +222,19 @@ namespace ecc
 					const auto base = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto off1_const = static_cast<int16_t>(pkt.insn >> 16);
 
-					VectorValue off1 = create_vec_int64(off1_const);
+					value0.vec = create_vec_int64(off1_const);
+					value1 = regs[base];
 
-					const auto& off2 = regs[base];
-
-					DecodeStageValue arg0;
-					arg0.vec = off1;
-
-					DecodeExecPacket execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_LOAD_RESTORE_PC,
-							arg0,
-							off2,
-					};
-					execute_bus.send(execute_pkt);
+					execute_bus.send_req2(pkt.exec_mask, pkt.PC, ExecuteStageOpcode::EXEC_LOAD_RESTORE_PC,
+							value0,
+							value1);
 					break;
 				}
 
 				// ret = [const + reg]
 				case Opcode::INSN_OPCODE_LOAD_REG_CONST_REG:
 				{
-					const auto dest = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
+					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					const auto base = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
 					const auto off1_const = static_cast<int16_t>(pkt.insn >> 24);
 
@@ -276,63 +242,53 @@ namespace ecc
 
 					const auto& off2 = regs[base];
 
-					DecodeExecPacket execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_LOAD_REG,
-							dest,
+					execute_bus.send_req3(pkt.exec_mask, pkt.PC, ExecuteStageOpcode::EXEC_LOAD_REG,
+							value0,
 							off1,
-							off2,
-					};
-					execute_bus.send(execute_pkt);
+							off2);
 					break;
 				}
 
 				case Opcode::INSN_OPCODE_MOVE_R0_CONST24A:
 				{
-					const auto dest = RegisterID::REG_R0;
-					const auto off1_const = static_cast<int32_t>(pkt.insn >> 8);
-					VectorValue off1 = create_vec_int64(off1_const);
+					value0.regID = RegisterID::REG_R0;
+					value1 = create_vec_int64(static_cast<int32_t>(pkt.insn >> 8));
 
-					DecodeExecPacket execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_MOVE_REG_VALUE,
-							dest,
-							off1
-					};
-					execute_bus.send(execute_pkt);
+					execute_bus.send_req2(pkt.exec_mask, pkt.PC, ExecuteStageOpcode::EXEC_MOVE_REG_VALUE,
+							value0,
+							value1);
 					break;
 				}
 
 				case Opcode::INSN_OPCODE_MOVE_R0_CONST24B:
 				{
-					const auto dest = RegisterID::REG_R0;
-					const auto off1_const = static_cast<int32_t>(pkt.insn >> 8);
-					VectorValue off1 = create_vec_int64(off1_const);
-					const auto& off2 = regs[RegisterID::REG_R0];
+					value0.regID = RegisterID::REG_R0;
+					value1 = create_vec_int64(static_cast<int32_t>(pkt.insn >> 8));
+					value2 = regs[RegisterID::REG_R0];
 
-					DecodeExecPacket execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_ORB_REG_VALUE,
-							dest,
-							off1,
-							off2
-					};
-					execute_bus.send(execute_pkt);
+					execute_bus.send_req3(pkt.exec_mask, pkt.PC, ExecuteStageOpcode::EXEC_ORB_REG_VALUE,
+							value0,
+							value1,
+							value2);
 					break;
 				}
 
 				case Opcode::INSN_OPCODE_MOVE_R0_CONST24C:
 				{
-					const auto dest = RegisterID::REG_R0;
-					const auto off1_const = static_cast<int32_t>(pkt.insn >> 8);
-					VectorValue off1 = create_vec_int64(off1_const);
-					const auto& off2 = regs[RegisterID::REG_R0];
+					value0.regID = RegisterID::REG_R0;
+					value1 = create_vec_int64(static_cast<int32_t>(pkt.insn >> 8));
+					value2 = regs[RegisterID::REG_R0];
 
-					DecodeExecPacket execute_pkt{ pkt.exec_mask, PC, ExecuteStageOpcode::EXEC_ORC_REG_VALUE,
-							dest,
-							off1,
-							off2
-					};
-					execute_bus.send(execute_pkt);
+					execute_bus.send_req3(pkt.exec_mask, pkt.PC, 
+								ExecuteStageOpcode::EXEC_ORC_REG_VALUE,
+							value0,
+							value1,
+							value2);
 					break;
 				}
 
 				default:
-					$display("[DECODE] unimplemented opcode: " + to_string(opcode));
+					$display("[DECODE] unimplemented opcode: " + to_string((Opcode)(pkt.insn & 0xff)));
 					assert(false);
 				}
 			}

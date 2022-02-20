@@ -37,23 +37,43 @@ namespace ecc
 		void send_read_request_data(memory_address_t address, const BusID &source)
 		{
 			//assert(did_init);
-			BusPacket pkt = create_bus_packet(bus_read_data, source, address, 0);
-			send_request(pkt);
+			//send_request(create_bus_packet(bus_read_data, 
+			//       source, address, 0));
+
+			request_data.packet_type = bus_read_data;
+			request_data.source = source;
+			request_data.address = address;
+			request_data.payload = 0;
+
+			request_busy = true;
 		}
 
 		void send_write_request_data(memory_address_t address,
 									 const BusID &source,
 									 const bus_packet_payload_t &payload_data)
 		{
-			BusPacket pkt = create_bus_packet(bus_write_data, source, address, payload_data);
-			send_request(pkt);
+			//send_request(create_bus_packet(bus_write_data, source, address, payload_data));			
+
+			request_data.packet_type = bus_write_data;
+			request_data.source = source;
+			request_data.address = address;
+			request_data.payload = payload_data;
+
+			request_busy = true;
 		}
 
 		void send_read_response(const bus_packet_payload_t &value, const BusID &source)
 		{
-			memory_address_t addr = 0;
-			BusPacket pkt = create_bus_packet(bus_read_response, source, addr, value);
-			send_response(pkt);
+			//memory_address_t addr = 0;
+			//send_response(create_bus_packet(bus_read_response, source, 
+			// 				addr, value));
+
+			response_data.packet_type = bus_read_response;
+			response_data.source = source;
+			response_data.address = 0;
+			response_data.payload = value;
+
+			response_busy = true;
 		}
 
 		BusPacket accept_request()
@@ -61,18 +81,16 @@ namespace ecc
 			//assert(did_init);
 
 			assert(request_busy);
-			const BusPacket f = request_data;
 			request_busy = false;
-			return f;
+			return request_data;
 		}
 
 		BusPacket get_response()
 		{
 			//assert(did_init);
 			assert(response_busy);
-			const BusPacket f = response_data;
 			response_busy = false;
-			return f;
+			return response_data;
 		}
 
 		void send_request(const BusPacket &pkt)

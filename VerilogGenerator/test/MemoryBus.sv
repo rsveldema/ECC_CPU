@@ -17,10 +17,12 @@ interface MemoryBus;
 	
 	function void send_read_request_data(input memory_address_t address, input BusID source);
 	begin
-		BusPacket pkt;
 	begin
-		pkt <= create_bus_packet(bus_read_data, source, address, 0);
-		send_request(pkt);
+		request_data.packet_type <= bus_read_data;
+		request_data.source <= source;
+		request_data.address <= address;
+		request_data.payload <= 0;
+		request_busy <= 1;
 	end
 	end
 	endfunction
@@ -28,10 +30,12 @@ interface MemoryBus;
 	
 	function void send_write_request_data(input memory_address_t address, input BusID source, input bus_packet_payload_t payload_data);
 	begin
-		BusPacket pkt;
 	begin
-		pkt <= create_bus_packet(bus_write_data, source, address, payload_data);
-		send_request(pkt);
+		request_data.packet_type <= bus_write_data;
+		request_data.source <= source;
+		request_data.address <= address;
+		request_data.payload <= payload_data;
+		request_busy <= 1;
 	end
 	end
 	endfunction
@@ -39,12 +43,12 @@ interface MemoryBus;
 	
 	function void send_read_response(input bus_packet_payload_t value, input BusID source);
 	begin
-		memory_address_t addr;
-		BusPacket pkt;
 	begin
-		addr <= 0;
-		pkt <= create_bus_packet(bus_read_response, source, addr, value);
-		send_response(pkt);
+		response_data.packet_type <= bus_read_response;
+		response_data.source <= source;
+		response_data.address <= 0;
+		response_data.payload <= value;
+		response_busy <= 1;
 	end
 	end
 	endfunction
@@ -52,12 +56,10 @@ interface MemoryBus;
 	
 	function BusPacket accept_request();
 	begin
-		BusPacket f;
 	begin
 		assert(request_busy);
-		f <= request_data;
 		request_busy <= 0;
-		return f;
+		return request_data;
 	end
 	end
 	endfunction
@@ -65,12 +67,11 @@ interface MemoryBus;
 	
 	function BusPacket get_response();
 	begin
-		BusPacket f;
 	begin
 		assert(response_busy);
-		f <= response_data;
 		response_busy <= 0;
-		return f;
+		$display("response data = %x !!!!!!!!!!!!!!", response_data.payload);
+		return response_data;
 	end
 	end
 	endfunction
