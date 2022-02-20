@@ -38,7 +38,7 @@ void read_code_memory_dump(CoreClusterGrid& machine, const std::string& filename
 		//machine.dram.write(address, insn, sizeof(insn));
 		for (unsigned i=0;i<sizeof(instruction_t);i++)
 		{
-			write_to_global_memory(address + i, insn[i]);
+			INITIAL_write_to_global_memory(address + i, insn[i]);
 		}
 		address += sizeof(insn);
 	}
@@ -78,7 +78,7 @@ void read_data_memory_dump(CoreClusterGrid& machine, const std::string& filename
 	uint64_t address = ecc::DATA_SEGMENT_START;
 	for (unsigned i=0;i<length;i++)
 	{
-		write_to_global_memory(address + i, buffer[i]);
+		INITIAL_write_to_global_memory(address + i, buffer[i]);
 	}
 }
 

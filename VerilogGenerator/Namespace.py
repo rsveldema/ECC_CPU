@@ -19,7 +19,7 @@ class Namespace:
         
             
     def generate_decls(self, ps):
-        state = LowerState()
+        state = LowerState(False)
         for k in self.decls:
             k.lower_ast(state)
             k.generate_decl(ps)

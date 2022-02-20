@@ -77,44 +77,64 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		1:
 			begin
+				state <= 2; // GOTO
+				return;
+			end
+		2:
+			begin
 				$display("have outstanding jmp: ", have_outstanding_jmp);
 				if (!(have_outstanding_jmp))
 				begin
-					state <= 3; // GOTO
+					state <= 4; // GOTO
 					return;
 				end
 				have_outstanding_jmp <= 0;
 				$display("waiting for store pipline to tell us the cond-jump-address");
-				state <= 4; // GOTO
+				state <= 5; // GOTO
 				return;
 			end
-		4:
+		5:
 			begin
 				if (!(store_bus.can_receive))
 				begin
-					state <= 6; // GOTO
+					state <= 7; // GOTO
 					return;
 				end
 				jmp_retarget <= store_bus.recv();
 				// CONTEXT_SWITCH();
+				state <= 8; // GOTO
+				return;
+			end
+		8:
+			begin
 				fetch_PC <= jmp_retarget.newpc;
 				exec_mask <= jmp_retarget.exec_mask;
 				// CONTEXT_SWITCH();
+				state <= 9; // GOTO
+				return;
+			end
+		9:
+			begin
+				state <= 6; // GOTO
+				return;
+			end
+		7:
+			begin
+				// CONTEXT_SWITCH();
+				state <= 10; // GOTO
+				return;
+			end
+		10:
+			begin
 				state <= 5; // GOTO
 				return;
 			end
 		6:
 			begin
-				// CONTEXT_SWITCH();
 				state <= 4; // GOTO
 				return;
 			end
-		5:
-			begin
-				state <= 3; // GOTO
-				return;
-			end
-		3:
+		4:
 			begin
 				$display("testing cache adress");
 				if ((address_cached == fetch_PC))
@@ -122,70 +142,85 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 				end
 				else
 				begin
-					state <= 8; // GOTO
+					state <= 12; // GOTO
 					return;
 				end
 				$display("testing cache adress: already have it cached 1");
-				state <= 7; // GOTO
+				state <= 11; // GOTO
 				return;
 			end
-		8:
+		12:
 			begin
 				if (((address_cached +  ((uint64_t'($bits(instruction_t)) >> 3)  ) ) == fetch_PC))
 				begin
 				end
 				else
 				begin
-					state <= 10; // GOTO
+					state <= 14; // GOTO
 					return;
 				end
 				$display("testing cache adress: already have it cached 2");
-				state <= 9; // GOTO
+				state <= 13; // GOTO
 				return;
 			end
-		10:
+		14:
 			begin
 				address_fetched <= (fetch_PC & ~(7));
 				$display("requesting memory at address: ", address_fetched);
 				memory_bus.send_read_request_data(address_fetched, createBusID(core_id, COMPONENT_TYPE_FETCH));
-				state <= 11; // GOTO
+				state <= 15; // GOTO
 				return;
 			end
-		11:
+		15:
 			begin
 				if (!(memory_bus.response_busy))
 				begin
-					state <= 13; // GOTO
+					state <= 17; // GOTO
 					return;
 				end
 				response <= memory_bus.get_response();
-				$display("response received from caches: ", response.packet_type);
 				// CONTEXT_SWITCH();
+				state <= 18; // GOTO
+				return;
+			end
+		18:
+			begin
+				$display("response received from caches: ", response.packet_type);
 				assert((response.packet_type == bus_read_response));
 				address_cached <= address_fetched;
 				insn_data_cached <= getInsnData(response.payload);
 				// CONTEXT_SWITCH();
-				state <= 12; // GOTO
+				state <= 19; // GOTO
+				return;
+			end
+		19:
+			begin
+				state <= 16; // GOTO
+				return;
+			end
+		17:
+			begin
+				incFetchedInsnWait();
+				// CONTEXT_SWITCH();
+				state <= 20; // GOTO
+				return;
+			end
+		20:
+			begin
+				state <= 15; // GOTO
+				return;
+			end
+		16:
+			begin
+				state <= 13; // GOTO
 				return;
 			end
 		13:
 			begin
-				incFetchedInsnWait();
-				// CONTEXT_SWITCH();
 				state <= 11; // GOTO
 				return;
 			end
-		12:
-			begin
-				state <= 9; // GOTO
-				return;
-			end
-		9:
-			begin
-				state <= 7; // GOTO
-				return;
-			end
-		7:
+		11:
 			begin
 				$display("testing cache adress: retrieving from local cache");
 				insn <= 0;
@@ -194,68 +229,83 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 				end
 				else
 				begin
-					state <= 15; // GOTO
+					state <= 22; // GOTO
 					return;
 				end
 				insn <= insn_data_cached[0];
-				state <= 14; // GOTO
+				state <= 21; // GOTO
 				return;
 			end
-		15:
+		22:
 			begin
 				if (((address_cached +  ((uint64_t'($bits(instruction_t)) >> 3)  ) ) == fetch_PC))
 				begin
 				end
 				else
 				begin
-					state <= 17; // GOTO
+					state <= 24; // GOTO
 					return;
 				end
 				insn <= insn_data_cached[1];
-				state <= 16; // GOTO
+				state <= 23; // GOTO
 				return;
 			end
-		17:
+		24:
 			begin
 				$error("failed to get insn from local fetcher cache");
 				assert(0);
-				state <= 16; // GOTO
+				state <= 23; // GOTO
 				return;
 			end
-		16:
+		23:
 			begin
-				state <= 14; // GOTO
+				state <= 21; // GOTO
 				return;
 			end
-		14:
+		21:
 			begin
 				// CONTEXT_SWITCH();
+				state <= 25; // GOTO
+				return;
+			end
+		25:
+			begin
 				have_outstanding_jmp <= changesControlFlow(getOpcode(insn));
-				state <= 18; // GOTO
+				state <= 26; // GOTO
 				return;
 			end
-		18:
+		26:
 			begin
 				// CONTEXT_SWITCH();
+				state <= 28; // GOTO
+				return;
+			end
+		28:
+			begin
 				if (decode_bus.is_busy)
 				begin
-					state <= 18; // GOTO
+					state <= 26; // GOTO
 					return;
 				end
-				state <= 19; // GOTO
+				state <= 27; // GOTO
 				return;
 			end
-		19:
+		27:
 			begin
 				old_PC <= fetch_PC;
 				fetch_PC <= fetch_PC +  ((uint64_t'($bits(instruction_t)) >> 3)  ) ;
 				pkt <= create_fetch_decode_packet(exec_mask, old_PC, insn);
 				decode_bus.send(pkt);
 				// CONTEXT_SWITCH();
-				state <= 1; // GOTO
+				state <= 29; // GOTO
 				return;
 			end
-		2:
+		29:
+			begin
+				state <= 2; // GOTO
+				return;
+			end
+		3:
 			begin
 			end
 	endcase

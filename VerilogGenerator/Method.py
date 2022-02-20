@@ -26,7 +26,7 @@ class Method:
         self.block.pretty()
         
     def lower_ast(self):
-        state = LowerState()        
+        state = LowerState(not self.is_function())        
         self.block = self.block.lower_ast(state)
         return self
                 
@@ -88,7 +88,7 @@ class Method:
 
     def generate_function(self, ps:PrintStream):
         ctxt = GenerateContext()
-        ctxt.in_init = self.funcname.str().find("init") >= 0
+        ctxt.in_init = self.funcname.str().find("init") >= 0 or self.funcname.str().find("INITIAL") >= 0
 
         ps.println("")
         ps.println("")

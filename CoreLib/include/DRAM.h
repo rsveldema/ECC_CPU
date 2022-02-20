@@ -27,5 +27,5 @@ namespace ecc
 		ecc::ReturnObject run(MemoryBus& toCPU);	
 	};
 
-	void write_to_global_memory(uint64_t address, uint8_t data);
+	void INITIAL_write_to_global_memory(uint64_t address, uint8_t data);
 }

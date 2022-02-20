@@ -26,7 +26,7 @@ class CaseStmt(Statement):
         e = None
         if self.expr:
             e = self.expr.lower_ast(state)
-            
+        
         if self.blk != None:
             return CaseStmt(e, self.blk.lower_ast(state))
         return CaseStmt(e, None)

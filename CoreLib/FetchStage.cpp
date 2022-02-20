@@ -104,9 +104,7 @@ namespace ecc
 				{
 					const memory_address_t address_fetched = fetch_PC & ~7;
 
-
 					$display("requesting memory at address: ", address_fetched);
-
 
 					memory_bus.send_read_request_data(address_fetched, 	
 								createBusID(core_id, COMPONENT_TYPE_FETCH));
@@ -117,9 +115,9 @@ namespace ecc
 						{
 							BusPacket response = memory_bus.get_response();
 					
-							$display("response received from caches: ", response.packet_type);
-
 							CONTEXT_SWITCH();
+
+							$display("response received from caches: ", response.packet_type);
 							assert(response.packet_type == bus_read_response);
 
 							address_cached = address_fetched;							

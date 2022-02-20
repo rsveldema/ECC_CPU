@@ -1,3 +1,5 @@
+from typing import List
+from Method import Method
 from MyTransformer import MyTransformer
 from PrintStream import PrintStream
 from lark import Lark, logger
@@ -24,14 +26,14 @@ def createAST(tree):
     return ast
 
 
-def create_state_switch(methods):
+def create_state_switch(methods: List[Method]):
     switched = []
     for m in methods:
         k = m.toStateSwitch()
         switched.append(k)
     return switched
 
-def generate(methods, ps: PrintStream):
+def generate(methods: List[Method], ps: PrintStream):
     for m in methods:
         m.generate(ps)
 

@@ -7,7 +7,7 @@ namespace ecc
 
 	METHOD_SECTION;
 
-	void write_to_global_memory(uint64_t address, uint8_t data)
+	void INITIAL_write_to_global_memory(uint64_t address, uint8_t data)
 	{		
 		storage[static_cast<phys_memory_address_t>(address)] = data;
 	}
@@ -39,6 +39,7 @@ namespace ecc
 						storage[static_cast<phys_memory_address_t>(pkt.address + 7)]			
 					);
 
+					CONTEXT_SWITCH();
 					READ_MEMORY_DELAY();
 
 					toCPU.send_read_response(read_ret, pkt.source);

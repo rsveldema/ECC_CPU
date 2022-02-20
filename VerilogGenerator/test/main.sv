@@ -70,13 +70,55 @@ module main(input clk);
     FetchStage  #(.core_id(0)) fetcher (decode_bus, store_bus, memory_bus);
 
     initial begin
+        int fd;
+        uint64_t address;
+
         memory_bus.init();
         store_bus.init_store_to_fetch_bus();
+
+        
+        fd = $fopen("../../Assembler/tests/t1.bin", "rb");
+        if (fd == 0) begin            
+            $display("FAILED to open bin file");
+            assert(0);
+        end
+
+        address = CODE_SEGMENT_START;
+        while (! $feof(fd)) begin
+            byte data;
+            int status;
+            status = $fread(data, fd);
+            $display ("CODE: status = %0d reg1 = %b",status,data);
+            INITIAL_write_to_global_memory(address, data);
+            address += 1;
+        end
+        $fclose(fd);
+
+        fd = $fopen("../../Assembler/tests/t1.bin.data", "rb");
+        if (fd == 0) begin
+            $display("FAILED to open bin.data file");
+            assert(0);
+        end
+        address = DATA_SEGMENT_START;
+        while (! $feof(fd)) begin
+            byte data;
+            int status;
+            status = $fread(data, fd);
+            $display ("DATA: status = %0d reg1 = %b",status,data);
+            INITIAL_write_to_global_memory(address, data);
+            address += 1;
+        end
+        $fclose(fd);
     end
 
      always @(posedge clk) 
      begin
         fetcher.run();    
+     end 
+
+     always @(posedge clk) 
+     begin
+        dram.run();    
      end 
 
 endmodule;
