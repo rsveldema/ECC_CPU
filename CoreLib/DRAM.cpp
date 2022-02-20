@@ -8,8 +8,8 @@ namespace ecc
 	METHOD_SECTION;
 
 	void write_to_global_memory(uint64_t address, uint8_t data)
-	{
-		storage[address] = data;
+	{		
+		storage[static_cast<phys_memory_address_t>(address)] = data;
 	}
 
 	ReturnObject DRAM::run(MemoryBus& toCPU)
@@ -26,14 +26,18 @@ namespace ecc
 				{
 				case bus_read_data:
 				{
-					assert(pkt.address >= 0);
 					assert(pkt.address < (sizeof(storage) - 8));
 
-					bus_packet_payload_t read_ret = 0;
-					for (int i = 0; i < sizeof(bus_packet_payload_t); i++)
-					{
-						read_ret = read_ret | (static_cast<bus_packet_payload_t>(storage[pkt.address + i]) << (i * 8));
-					}
+					bus_packet_payload_t read_ret = PACK8(
+						storage[static_cast<phys_memory_address_t>(pkt.address + 0)],
+						storage[static_cast<phys_memory_address_t>(pkt.address + 1)],
+						storage[static_cast<phys_memory_address_t>(pkt.address + 2)],
+						storage[static_cast<phys_memory_address_t>(pkt.address + 3)],
+						storage[static_cast<phys_memory_address_t>(pkt.address + 4)],
+						storage[static_cast<phys_memory_address_t>(pkt.address + 5)],
+						storage[static_cast<phys_memory_address_t>(pkt.address + 6)],
+						storage[static_cast<phys_memory_address_t>(pkt.address + 7)]			
+					);
 
 					READ_MEMORY_DELAY();
 
@@ -43,14 +47,13 @@ namespace ecc
 
 				case bus_write_data:
 				{
-					assert(pkt.address >= 0);
 					assert(pkt.address < (sizeof(storage) - 8));
 
 					WRITE_MEMORY_DELAY();
 
-					for (int i = 0; i < sizeof(bus_packet_payload_t); i++)
+					for (uint64_t i = 0; i < sizeof(bus_packet_payload_t); i++)
 					{
-						storage[(pkt.address + i)] = (pkt.payload >> (i * 8)); 
+						storage[static_cast<phys_memory_address_t>(pkt.address + i)] = static_cast<uint8_t>(pkt.payload >> (i * 8)); 
 					}
 					break;
 				}

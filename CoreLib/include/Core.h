@@ -71,8 +71,8 @@ namespace ecc
 			execute(registry, decode_execute_bus, execute_store_bus, regs),
 			store(registry, execute_store_bus, store_to_vec_controller_bus, 
 					regs, store_fetch_bus, divergence_queue),
-			L1i(registry, "L1i", core_L1i, L1i_to_L2i),
 			L1d(registry, "L1d", core_L1d, L1d_to_l2d),
+			L1i(registry, "L1i", core_L1i, L1i_to_L2i),
 			vecMemController(registry, "vec_mem_controller", store_to_vec_controller_bus, core_L1d)
 		{
 		}

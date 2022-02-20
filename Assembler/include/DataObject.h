@@ -56,7 +56,7 @@ struct DataField
 		const auto* begin = (const char*)&t;
 		const auto* end = begin + sizeof(t);
 
-		for (int i = 0; i < sizeof(t); i++)
+		for (uint64_t i = 0; i < sizeof(t); i++)
 		{
 			auto write_ix = (i + address) - ecc::DATA_SEGMENT_START;
 

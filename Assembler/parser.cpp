@@ -14,7 +14,7 @@ namespace
 {
 	bool isSplitChar(char c, const std::string& splitChars)
 	{
-		for (int i = 0; i < splitChars.size(); i++)
+		for (uint32_t i = 0; i < splitChars.size(); i++)
 		{
 			if (c == splitChars[i])
 			{
@@ -401,7 +401,7 @@ void Program::parseCodeLine(const Line& line, const SourcePosition& pos)
 
 void Line::trim()
 {
-	int start = 0;
+	uint32_t start = 0;
 	while (start < data.size())
 	{
 		if (!isspace(data[start]))
@@ -414,7 +414,7 @@ void Line::trim()
 	size_t count = data.size() - start;
 	data = data.substr(start, count);
 
-	for (int i = 0; i < data.size(); i++)
+	for (uint32_t i = 0; i < data.size(); i++)
 	{
 		if (data[i] == '/' || data[i] == '#')
 		{

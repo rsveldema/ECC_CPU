@@ -1,4 +1,5 @@
 from typing import List
+from ArrayType import ArrayType
 from GenerateContext import GenerateContext
 from PrintStream import PrintStream
 from LowerState import LowerState
@@ -38,6 +39,10 @@ class LocalDecl:
             return f"{self.type.str()} {self.var}"
             
     def generate_decl(self, ps: PrintStream):
+        if (isinstance(self.type, ArrayType)):
+            ps.println(f"{self.type.name} {self.var}[{self.type.num_elts.str()}];")
+            return
+
         if self.init_expr:
             ps.println(f"{self.type.generate()} {self.var} = {self.init_expr.str()};")
         else:

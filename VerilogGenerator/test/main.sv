@@ -13,7 +13,13 @@ typedef byte signed int8_t;
 
 typedef bit bool;
 
+typedef reg[20:0] phys_memory_address_t;
+
+
 `include "Defines.sv"
+
+`define PACK8(a0, a1, a2, a3, a4, a5, a6, a7) {>> { a0, a1,	a2, a3, a4, a5, a6, a7}}
+
 
 typedef struct packed
 {

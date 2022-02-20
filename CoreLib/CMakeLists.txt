@@ -28,6 +28,8 @@ add_library (CoreLib  "include/CoreLib.h"
 
 target_compile_features(CoreLib PUBLIC cxx_std_20)
 
+target_compile_options(CoreLib PUBLIC -Wall -Wno-unused)
+
 #target_link_options(CoreLib PUBLIC -fcoroutines)
 
 #set_property(TARGET CoreLib PROPERTY CXX_STANDARD 20)

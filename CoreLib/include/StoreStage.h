@@ -13,9 +13,9 @@ namespace ecc
 	class StoreStage : public SimComponent
 	{
 	private:
+		ExecuteToStoreBus& execute_bus;
 		VecMemoryBus& memory_bus;
 		RegisterFile& regs;
-		ExecuteToStoreBus& execute_bus;
 		StoreToFetchBus& fetch_bus;
 		DivergenceQueue& divergence_queue;
 

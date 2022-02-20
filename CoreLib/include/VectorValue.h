@@ -46,7 +46,7 @@ namespace ecc
 	static VectorValue or_shift_left(const VectorValue &self, const VectorValue &other, unsigned shift_count)
 	{
 		VectorValue ret;
-		for (int i = 0; i < self.size(); i++)
+		for (uint32_t i = 0; i < self.size(); i++)
 		{
 			ret.data[i] = self.data[i] | (other.data[i] << shift_count);
 		}
@@ -56,7 +56,7 @@ namespace ecc
 	static VectorValue shift_left(const VectorValue &self, const VectorValue &other)
 	{
 		VectorValue ret;
-		for (int i = 0; i < self.size(); i++)
+		for (uint32_t i = 0; i < self.size(); i++)
 		{
 			ret.data[i] = self.data[i] << other.data[i];
 		}
@@ -66,7 +66,7 @@ namespace ecc
 	static VectorValue add(const VectorValue &self, const VectorValue &other)
 	{
 		VectorValue ret;
-		for (int i = 0; i < self.size(); i++)
+		for (uint32_t i = 0; i < self.size(); i++)
 		{
 			ret.data[i] = self.data[i] + other.data[i];
 		}
@@ -76,7 +76,7 @@ namespace ecc
 	static VectorValue bit_and(const VectorValue &self, const VectorValue &other)
 	{
 		VectorValue ret;
-		for (int i = 0; i < self.size(); i++)
+		for (uint32_t i = 0; i < self.size(); i++)
 		{
 			ret.data[i] = self.data[i] & other.data[i];
 		}
@@ -85,7 +85,7 @@ namespace ecc
 
 	static bool all_equal(const VectorValue &self)
 	{
-		for (int i = 1; i < self.size(); i++)
+		for (uint32_t i = 1; i < self.size(); i++)
 		{
 			if (self.data[0] != self.data[i])
 			{
@@ -98,7 +98,7 @@ namespace ecc
 	static VectorValue compare_vecs(const VectorValue &self, const VectorValue &other)
 	{
 		VectorValue ret;
-		for (int i = 0; i < self.size(); i++)
+		for (uint32_t i = 0; i < self.size(); i++)
 		{
 			int64_t result = 0;
 
@@ -122,7 +122,7 @@ namespace ecc
 	static bool are_all_adjacent_memory_addresses(const VectorValue &v, int64_t elt_size)
 	{
 		int64_t first = v.data[0];
-		for (int i = 1; i < v.size(); i++)
+		for (uint32_t i = 1; i < v.size(); i++)
 		{
 			if (v.data[i] != (v.data[i - 1] + elt_size))
 			{
@@ -140,7 +140,7 @@ namespace ecc
 	static uint64_t reduce_to_uint64_t(const VectorValue &v)
 	{
 		uint64_t ret = 0;
-		for (unsigned i = 0; i < v.size(); i++)
+		for (uint32_t i = 0; i < v.size(); i++)
 		{
 			uint64_t tst = (v.data[i] != 0);
 			ret |= tst << i;
@@ -151,7 +151,7 @@ namespace ecc
 	static VectorValue create_vec_incrementing_values()
 	{
 		VectorValue ret;
-		for (int i = 0; i < ret.size(); i++)
+		for (uint32_t i = 0; i < ret.size(); i++)
 		{
 			ret.data[i] = i;
 		}
@@ -161,7 +161,7 @@ namespace ecc
 	static VectorValue create_vec_int64(const int64_t v)
 	{
 		VectorValue ret;
-		for (int i = 0; i < ret.size(); i++)
+		for (uint32_t i = 0; i < ret.size(); i++)
 		{
 			ret.data[i] = v;
 		}

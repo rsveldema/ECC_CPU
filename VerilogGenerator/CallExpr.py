@@ -4,6 +4,10 @@ from PrintStream import PrintStream
 from LowerState import LowerState
 
 
+def is_macro(fn):
+    return fn in ["PACK2", "PACK4", "PACK8"]
+
+
 class CallExpr(Expression):
     def __init__(self, func, args) -> None:
         self.func = func
@@ -30,4 +34,8 @@ class CallExpr(Expression):
             s += comma
             s += k.str()
             comma = ", "
-        return f"{self.func.str()}({s})"
+
+        fn = self.func.str()
+        if is_macro(fn):
+            fn = '`' + fn
+        return f"{fn}({s})"

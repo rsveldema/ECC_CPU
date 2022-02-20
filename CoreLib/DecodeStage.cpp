@@ -9,6 +9,7 @@ namespace ecc
 	{
 		switch (opcode)
 		{
+		default: break;
 		case Opcode::INSN_OPCODE_JMP_EQUAL:		return FLAGS_MASK_EQ;
 		case Opcode::INSN_OPCODE_JMP_NOT_EQUAL:	return FLAGS_MASK_LT | FLAGS_MASK_GT;
 

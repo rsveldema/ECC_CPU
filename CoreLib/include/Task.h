@@ -9,6 +9,18 @@
 
 namespace ecc
 {
+	using phys_memory_address_t = uint32_t;
+
+#define PACK8(a0, a1, a2, a3, a4, a5, a6, a7)    ( \
+	((uint64_t)a0) << 0 |  \
+	((uint64_t)a1) << 8 |  \
+	((uint64_t)a2) << 16 | \
+	((uint64_t)a3) << 24 | \
+	((uint64_t)a4) << 32 | \
+	((uint64_t)a5) << 40 | \
+	((uint64_t)a6) << 48 | \
+	((uint64_t)a7) << 56)
+
 	#define CONTEXT_SWITCH() { Task& t = *this; co_await t; }
 	#define WAIT(cond) while (! cond) CONTEXT_SWITCH()
 

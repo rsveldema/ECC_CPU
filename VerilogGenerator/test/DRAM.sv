@@ -1,10 +1,10 @@
-uint8_t[(END_MEMORY_ADDRESS) - 1:0] storage;
+uint8_t storage[END_MEMORY_ADDRESS];
 
 
 function void write_to_global_memory(input uint64_t address, input uint8_t data);
 begin
 begin
-	storage[address] <= data;
+	storage[(phys_memory_address_t'(address))] <= data;
 end
 end
 endfunction
@@ -38,13 +38,8 @@ module DRAM(MemoryBus toCPU);
 				case (pkt.packet_type)
 					bus_read_data:
 						begin
-							assert((pkt.address >= 0));
 							assert((pkt.address < ( ((uint64_t'($bits(storage)) >> 3)  )  - 8)));
-							read_ret <= 0;
-							for (int i = 0; (i <  ((uint64_t'($bits(bus_packet_payload_t)) >> 3)  ) ); i=(i + 1))
-								begin
-									read_ret <= (read_ret | ((bus_packet_payload_t'(storage[(pkt.address + i)])) << (i * 8)));
-								end
+							read_ret <= `PACK8(storage[(phys_memory_address_t'((pkt.address + 0)))], storage[(phys_memory_address_t'((pkt.address + 1)))], storage[(phys_memory_address_t'((pkt.address + 2)))], storage[(phys_memory_address_t'((pkt.address + 3)))], storage[(phys_memory_address_t'((pkt.address + 4)))], storage[(phys_memory_address_t'((pkt.address + 5)))], storage[(phys_memory_address_t'((pkt.address + 6)))], storage[(phys_memory_address_t'((pkt.address + 7)))]);
 							READ_MEMORY_DELAY();
 							toCPU.send_read_response(read_ret, pkt.source);
 							state <= 21; // GOTO
@@ -52,12 +47,11 @@ module DRAM(MemoryBus toCPU);
 						end
 					bus_write_data:
 						begin
-							assert((pkt.address >= 0));
 							assert((pkt.address < ( ((uint64_t'($bits(storage)) >> 3)  )  - 8)));
 							WRITE_MEMORY_DELAY();
-							for (int i = 0; (i <  ((uint64_t'($bits(bus_packet_payload_t)) >> 3)  ) ); i=(i + 1))
+							for (uint64_t i = 0; (i <  ((uint64_t'($bits(bus_packet_payload_t)) >> 3)  ) ); i=(i + 1))
 								begin
-									storage[(pkt.address + i)] <= (pkt.payload >> (i * 8));
+									storage[(phys_memory_address_t'((pkt.address + i)))] <= (uint8_t'((pkt.payload >> (i * 8))));
 								end
 							state <= 21; // GOTO
 							return;
