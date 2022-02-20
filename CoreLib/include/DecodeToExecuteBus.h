@@ -9,11 +9,12 @@
 namespace ecc
 {
 
-	class DecodeToExecuteBus
+	INTERFACE DecodeToExecuteBus
 	{
-	public:
 		bool is_busy;
 		DecodeExecPacket data;
+
+		METHOD_SECTION;
 
 		void init()
 		{
@@ -73,18 +74,12 @@ namespace ecc
 			is_busy = true;
 		}
 
-		void send(const DecodeExecPacket &pkt)
-		{
-			assert(!is_busy);
-			data = pkt;
-			is_busy = true;
-		}
+	
 
 		DecodeExecPacket recv()
 		{
-			DecodeExecPacket tmp = data;
 			is_busy = false;
-			return tmp;
+			return data;
 		}
 	};
 }

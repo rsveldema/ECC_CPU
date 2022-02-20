@@ -27,7 +27,7 @@ static_decl: STATIC "constexpr" type IDENT "=" expr ";"
 
 enum_decl: ENUM IDENT ":" type "{" IDENT ("," IDENT)* "}" ";"
 
-method: (STATIC | INLINE)* template_params? type method_name_qual_ident "(" params ")" block
+method: (STATIC | INLINE)* template_params? type method_name_qual_ident "(" params ")" ("const")? block
 
 template_params: "template" "<" template_arg ("," template_arg)* ">"
 
@@ -87,11 +87,13 @@ assign_stmt:   lhs some_assign_op expr ";"
 
 local_decl: type IDENT ("=" expr)?
 
-some_assign_op: assign_op | assign_add
+some_assign_op: assign_op | assign_add | assign_or
 
 assign_op: "="
 
 assign_add: "+="
+
+assign_or: "|="
 
 args: (expr ("," expr)*)?
 

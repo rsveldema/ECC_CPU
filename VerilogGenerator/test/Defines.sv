@@ -149,6 +149,15 @@ typedef struct packed {
 } BusID;
 
 
+function bool isValidIndex(input RegisterID id);
+begin
+begin
+	return ((id >= REG_R0) & (id < MAX_REG_ID));
+end
+end
+endfunction
+
+
 function Opcode getOpcode(input instruction_t insn);
 begin
 begin

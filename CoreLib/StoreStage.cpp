@@ -1,4 +1,5 @@
 #include "CoreLib.h"
+#include "log_utils.h"
 
 
 namespace ecc
@@ -11,34 +12,34 @@ namespace ecc
 			if (execute_bus.is_busy)
 			{
 				const auto& pkt = execute_bus.recv();
-				const auto PC = pkt.PC;
-				const auto opcode = pkt.opcode;
 
-				switch (opcode)
+				CONTEXT_SWITCH();
+
+				switch (pkt.opcode)
 				{
-				case StorageStageOpcode::STORAGE_NOP: break;
+				case STORAGE_NOP: break;
 
-				case StorageStageOpcode::STORAGE_STORE_VALUE_INTO_REG:
+				case STORAGE_STORE_VALUE_INTO_REG:
 				{
 					const auto dest = pkt.dest.regID;
 					assert(isValidIndex(dest));
 					const auto& src = pkt.src.value;
 
-					$display("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
+					$display("STORE ----> exec: ", dest, src);
 
 					regs.mark_valid(dest);
-					regs[dest] = src;
+					regs.set(dest, src);
 					break;
 				}
 
-				case StorageStageOpcode::STORAGE_STORE_REG_INTO_MEM:
+				case STORAGE_STORE_REG_INTO_MEM:
 				{
 					const auto& dest = pkt.dest.value;
 					const auto& src = pkt.src.value;
 
 					assert(are_all_adjacent_memory_addresses(dest, POINTER_SIZE));
 
-					$display("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
+					$display("STORE ----> exec: ", dest, src);
 
 					BusID memory_bus_id = createBusID(core_id, COMPONENT_TYPE_STORE);
 					memory_bus.send_write_request_vec(dest, memory_bus_id, src);
@@ -46,7 +47,7 @@ namespace ecc
 				}
 
 				// reg = memory[src]
-				case StorageStageOpcode::STORAGE_LOAD_MEM_INTO_REG:
+				case STORAGE_LOAD_MEM_INTO_REG:
 				{
 					auto dest = pkt.dest.regID;
 					assert(isValidIndex(dest));
@@ -54,7 +55,7 @@ namespace ecc
 
 					const auto& src = pkt.src.value;
 
-					$display("STORE[" + std::to_string(PC) + "] ----> exec: " + to_string(opcode) + " " + to_string(dest) + " = " + to_string(src));
+					$display("STORE ----> exec: ", dest, src);
 
 					BusID memory_bus_id = createBusID(core_id, COMPONENT_TYPE_STORE);
 					memory_bus.send_read_request_vec(src, memory_bus_id);
@@ -68,12 +69,12 @@ namespace ecc
 							const auto& value = payload;
 
 							regs.mark_valid(dest);
-							regs[dest] = value;
+							regs.set(dest, value);
 
 							//$display("REG[" << MachineInfo::to_string(src) << "] = " << std::to_string(value));
 							if (is_store_to_pc)
 							{
-								auto new_pc = value.get_PC();
+								auto new_pc = value.get(0);
 								fetch_bus.send(StoreToFetchPacket{ pkt.exec_mask, new_pc });
 							}
 							break;
@@ -88,7 +89,7 @@ namespace ecc
 					break;
 				}
 
-				case StorageStageOpcode::STORAGE_JMP:
+				case STORAGE_JMP:
 				{
 					auto new_address = pkt.dest.address;
 
@@ -96,17 +97,18 @@ namespace ecc
 					break;
 				}
 
-				case StorageStageOpcode::STORAGE_CJMP:
+				case STORAGE_CJMP:
 				{
-					__global_stats.numVectorLocalDivergences++;
+					__global_stats.numVectorLocalDivergences += 1;
 
 					const auto new_address = pkt.dest.address;
 					const auto next_address = pkt.src.address;
 					const auto& exec_mask_new_address = pkt.execution_flags_true;
 					const auto& exec_mask_next_address = pkt.execution_flags_false;
 
-					$display("[STORE] splitting cond-jump into " + std::to_string(count_num_bits64(exec_mask_new_address))
-						+ " and " + std::to_string(count_num_bits64(exec_mask_next_address)));
+					$display("[STORE] splitting cond-jump: ", 
+							count_num_bits64(exec_mask_new_address),
+							count_num_bits64(exec_mask_next_address));
 
 					ThreadContext ctxt{
 						regs,
@@ -119,7 +121,7 @@ namespace ecc
 					break;
 				}
 
-				case StorageStageOpcode::STORAGE_HALT:
+				case STORAGE_HALT:
 				{
 					if (divergence_queue.is_empty())
 					{

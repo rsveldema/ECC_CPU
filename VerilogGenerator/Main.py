@@ -61,7 +61,7 @@ def main():
 
 
     inc_path = "../CoreLib/include/"
-    includes = ["Defines.h", "Packets.h", "FetchToDecodeBus.h", "StoreToFetchBus.h"]
+    includes = ["Defines.h", "Packets.h", "RegisterFile.h", "DecodeToExecuteBus.h", "FetchToDecodeBus.h", "StoreToFetchBus.h"]
     for file in includes:
         tree = parseFile(parser, inc_path + file)
         ast = createAST(tree)

@@ -24,8 +24,13 @@ namespace ecc
 	extern std::map<std::string, RegisterID> regnames;
 	extern std::map<std::string, ExecuteStageInsnInfo> execInsnInfo;
 
+}
 
-	static std::string to_string(RegisterID r)
+#include "log_utils.h"
+
+namespace ecc
+{    
+	static std::string to_string(const RegisterID& r)
 	{
 		for (const auto& it : regnames)
 		{
@@ -37,7 +42,7 @@ namespace ecc
 		return "unknown_register?";
 	}
 
-	static std::string to_string(Opcode op)
+	static std::string to_string(const Opcode& op)
 	{
 		for (const auto& it : insnInfo)
 		{
@@ -50,7 +55,7 @@ namespace ecc
 	}
 
 
-	static std::string to_string(ExecuteStageOpcode op)
+	static std::string to_string(const ExecuteStageOpcode& op)
 	{
 		for (const auto& it : execInsnInfo)
 		{
@@ -62,7 +67,7 @@ namespace ecc
 		return "unknown exec insn";
 	}
 
-	static std::string to_string(StorageStageOpcode op)
+	static std::string to_string(const StorageStageOpcode& op)
 	{
 		switch (op)
 		{
@@ -77,7 +82,7 @@ namespace ecc
 		return "unknown store type";
 	}
 
-	static std::string to_string(ecc::CoreID core_id)
+	static std::string to_string(const ecc::CoreID& core_id)
 	{
 		return "core[" + std::to_string((int)core_id) + "]";
 	}

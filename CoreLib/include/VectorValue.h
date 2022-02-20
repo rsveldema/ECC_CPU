@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <variant>
 #include <array>
 
@@ -9,9 +10,7 @@ namespace ecc
 {
 	struct VectorValue
 	{
-		using elt_t = int64_t;
-
-		elt_t data[NUMBER_OF_VECTOR_THREADS_INT64];
+		int64_t data[NUMBER_OF_VECTOR_THREADS_INT64];
 
 		uint32_t size() const
 		{
@@ -19,7 +18,7 @@ namespace ecc
 		}
 
 
-		elt_t get(unsigned ix) const
+		int64_t get(unsigned ix) const
 		{
 			assert(ix < size());
 			return data[ix];
@@ -29,17 +28,6 @@ namespace ecc
 		{
 			assert(ix < size());
 			data[ix] = value;
-		}
-
-		
-		memory_address_t get_PC() const
-		{
-			return data[0];
-		}
-
-		void setPC(memory_address_t value)
-		{
-			data[0] = {static_cast<elt_t>(value)};
 		}
 	};
 
@@ -183,3 +171,4 @@ namespace ecc
 		return s;
 	}
 }
+

@@ -61,20 +61,27 @@ module main(input clk);
 
     // bit clk;
 
-    FetchToDecodeBus decode_bus;
-    StoreToFetchBus store_bus;
+    DecodeToExecuteBus decode_exec_bus;
+    FetchToDecodeBus fetch_decode_bus;
+    StoreToFetchBus store_fetch_bus;
+
     MemoryBus memory_bus;
     DRAM dram (memory_bus);
+    RegisterFile reg_file;
 
-    FetchStage  #(.core_id(0)) fetcher (decode_bus, store_bus, memory_bus);
+    FetchStage  #(.core_id(0)) fetcher (fetch_decode_bus, store_fetch_bus, memory_bus);
+    DecodeStage #(.core_id(0)) decoder (fetch_decode_bus, decode_exec_bus, reg_file);
+
 
     initial begin
         int fd;
         uint64_t address;
 
         memory_bus.init();
-        store_bus.init_store_to_fetch_bus();
 
+        decode_exec_bus.init();
+        fetch_decode_bus.init();
+        store_fetch_bus.init();
         
         fd = $fopen("../../Assembler/tests/t1.bin", "rb");
         if (fd == 0) begin            

@@ -175,6 +175,15 @@ namespace ecc
 
 	METHOD_SECTION;
 
+	static 
+	inline bool isValidIndex(const RegisterID id)
+	{
+		return
+			(id >= REG_R0) &
+			(id < MAX_REG_ID);
+	}
+
+
 	static
 	inline Opcode getOpcode(instruction_t insn)
 	{

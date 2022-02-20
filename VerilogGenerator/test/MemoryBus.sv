@@ -70,7 +70,6 @@ interface MemoryBus;
 	begin
 		assert(response_busy);
 		response_busy <= 0;
-		$display("response data = %x !!!!!!!!!!!!!!", response_data.payload);
 		return response_data;
 	end
 	end

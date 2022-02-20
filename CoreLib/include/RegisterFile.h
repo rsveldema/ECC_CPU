@@ -7,54 +7,48 @@
 
 namespace ecc
 {
-	static bool isValidIndex(const ecc::RegisterID id)
-	{
-		return
-			(id >= ecc::RegisterID::REG_R0) &&
-			(id < ecc::RegisterID::MAX_REG_ID);
-	}
 
-	class RegisterFile
+	INTERFACE RegisterFile
 	{
-	public:
-
 		using TinyCounter = uint8_t;
 
-		std::array<VectorValue, static_cast<int>(ecc::RegisterID::MAX_REG_ID)> regs;
+		std::array<VectorValue, static_cast<int>(MAX_REG_ID)> regs;
 
 		// incremented if reg[i] has been invalidated
-		std::array<TinyCounter, static_cast<int>(ecc::RegisterID::MAX_REG_ID)> invalidated_regs;
+		std::array<TinyCounter, static_cast<int>(MAX_REG_ID)> invalidated_regs;
 
 		// incremented if reg[i] has been written to by the store-stage
-		std::array<TinyCounter, static_cast<int>(ecc::RegisterID::MAX_REG_ID)> written_regs;
+		std::array<TinyCounter, static_cast<int>(MAX_REG_ID)> written_regs;
 
 		uint32_t machine_flags = 0;
 
-		void mark_invalid(const ecc::RegisterID id)
+		METHOD_SECTION;
+
+		void mark_invalid(const RegisterID id)
 		{
 			assert(isValidIndex(id));
-			invalidated_regs[static_cast<int>(id)]++;
+			invalidated_regs[static_cast<int>(id)] += 1;
 		}
 
-		void mark_valid(const ecc::RegisterID id)
+		void mark_valid(const RegisterID id)
 		{
 			assert(isValidIndex(id));
-			written_regs[static_cast<int>(id)]++;
+			written_regs[static_cast<int>(id)] += 1;
 		}
 
-		bool is_valid(const ecc::RegisterID id)
+		bool is_valid(const RegisterID id)
 		{
 			assert(isValidIndex(id));
 			return written_regs[static_cast<int>(id)] == invalidated_regs[static_cast<int>(id)];
 		}
 
-		VectorValue& operator [](const ecc::RegisterID id)
+		void set(const RegisterID id, const VectorValue& v)
 		{
 			assert(isValidIndex(id));
-			return regs[static_cast<int>(id)];
+			regs[static_cast<int>(id)] = v;
 		}
 
-		VectorValue operator [](const ecc::RegisterID id) const
+		VectorValue get(const RegisterID id) const
 		{
 			assert(isValidIndex(id));
 			return regs[static_cast<int>(id)];
@@ -67,13 +61,13 @@ namespace ecc
 
 		void setHasHalted()
 		{
-			machine_flags |= ecc::MACHINE_FLAGS_MASK_HALT;
+			machine_flags |= MACHINE_FLAGS_MASK_HALT;
 		}
 
 
 		bool hasHalted() const
 		{
-			return machine_flags & ecc::MACHINE_FLAGS_MASK_HALT;
+			return machine_flags & MACHINE_FLAGS_MASK_HALT;
 		}
 	};
 }

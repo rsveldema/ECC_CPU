@@ -24,10 +24,7 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_CMP:
 				{
-					const auto& value1 = pkt.value0.vec;
-					const auto& value2 = pkt.value1;
-
-					const VectorValue src = compare_vecs(value1, value2);
+					const VectorValue src = compare_vecs(pkt.value0.vec, pkt.value1);
 
 					const auto dest = RegisterID::REG_FLAGS;
 
@@ -72,10 +69,8 @@ namespace ecc
 				case ExecuteStageOpcode::EXEC_ORB_REG_VALUE:
 				{
 					const auto& dest = pkt.value0.regID;
-					const auto& src1 = pkt.value1;
-					const auto& src2 = pkt.value2;
 
-					auto src = or_shift_left(src2, src1, 24);
+					auto src = or_shift_left(pkt.value2, pkt.value1, 24);
 
 					while (store_bus.is_busy)
 					{
@@ -96,10 +91,8 @@ namespace ecc
 				case ExecuteStageOpcode::EXEC_ORC_REG_VALUE:
 				{
 					const auto& dest = pkt.value0.regID;
-					const auto& src1 = pkt.value1;
-					const auto& src2 = pkt.value2;
 
-					auto src = or_shift_left(src2, src1, 48);
+					auto src = or_shift_left(pkt.value2, pkt.value1, 48);
 					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
@@ -118,10 +111,8 @@ namespace ecc
 				case ExecuteStageOpcode::EXEC_SHL_REG_VALUE_VALUE:
 				{
 					const auto& dest = pkt.value0.regID;
-					const auto& src1 = pkt.value1;
-					const auto& src2 = pkt.value2;
 
-					auto src = shift_left(src1, src2);
+					auto src = shift_left(pkt.value1, pkt.value2);
 					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
@@ -140,10 +131,8 @@ namespace ecc
 				case ExecuteStageOpcode::EXEC_ADD_REG_VALUE_VALUE:
 				{
 					const auto& dest = pkt.value0.regID;
-					const auto& src1 = pkt.value1;
-					const auto& src2 = pkt.value2;
 
-					auto src = add(src1, src2);
+					auto src = add(pkt.value1, pkt.value2);
 
 					while (store_bus.is_busy)
 					{
@@ -165,10 +154,7 @@ namespace ecc
 				case ExecuteStageOpcode::EXEC_LOAD_REG:
 				{
 					const auto dest = pkt.value0.regID;
-					auto off1 = pkt.value1;
-					auto off2 = pkt.value2;
-
-					auto offset = add(off1, off2);
+					VectorValue offset = add(pkt.value1, pkt.value2);
 
 					while (store_bus.is_busy)
 					{
@@ -187,10 +173,7 @@ namespace ecc
 				case ExecuteStageOpcode::EXEC_STORE_ADDR_VALUE:
 				{
 					const auto& value = pkt.value0.vec;
-					const auto& addr1 = pkt.value1;
-					const auto& addr2 = pkt.value2;
-
-					auto addr = add(addr1, addr2);
+					auto addr = add(pkt.value1, pkt.value2);
 
 					while (store_bus.is_busy)
 					{
@@ -207,10 +190,7 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_LOAD_RESTORE_PC:
 				{
-					const auto& off1 = pkt.value0.vec;
-					const auto& off2 = pkt.value1;
-
-					auto offset = add(off1, off2);
+					VectorValue offset = add(pkt.value0.vec, pkt.value1);
 
 					const auto dest = RegisterID::REG_PC;
 					while (store_bus.is_busy)
@@ -231,10 +211,8 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_COND_JMP:
 				{
-					const auto& offset = pkt.value0.vec;
-					const auto PC = pkt.PC;
-					const auto new_address = PC + offset.get_PC();
-					const auto next_address = PC + 4;
+					const auto new_address = pkt.PC + pkt.value0.vec.get(0);
+					const auto next_address = pkt.PC + 4;
 
 					const auto& jmp_mask = pkt.value1;
 					const auto& exec_mask = pkt.exec_mask;
@@ -244,13 +222,13 @@ namespace ecc
 						CONTEXT_SWITCH();
 					}
 
-					const VectorValue flags = regs[RegisterID::REG_FLAGS];
+					const VectorValue flags = regs.get(RegisterID::REG_FLAGS);
 					const auto& should_jmp_masks = bit_and(flags, jmp_mask);
 					const uint64_t should_jmp = exec_mask & reduce_to_uint64_t(should_jmp_masks);
 					const uint64_t all_threads_mask = exec_mask & ALL_THREADS_EXEC_MASK_INT64;
 
 
-					std::cerr << "store-bus busy" << std::endl;
+					$display("store-bus busy");
 					while (store_bus.is_busy)
 					{
 						CONTEXT_SWITCH();
@@ -291,11 +269,7 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_JMP:
 				{
-					const auto& offset = pkt.value0.vec;
-
-					const auto PC = pkt.PC;
-
-					const auto new_address = PC + offset.get_PC();
+					const memory_address_t new_address = pkt.PC + pkt.value0.vec.get(0);
 
 					while (store_bus.is_busy)
 					{
@@ -319,9 +293,10 @@ namespace ecc
 				}
 
 
-				default:
+				default: {
 					std::cerr << "[EXECUTE] unhandled opcode in execute stage: " << to_string(pkt.opcode) << std::endl;
 					abort();
+				}
 				}
 			}
 

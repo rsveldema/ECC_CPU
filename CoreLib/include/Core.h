@@ -28,7 +28,7 @@ namespace ecc
 
 		RegisterFile regs;
 		FetchStage<core_id> fetch;
-		DecodeStage decode;
+		DecodeStage<core_id> decode;
 		ExecuteStage execute;
 		StoreStage<core_id>  store;
 

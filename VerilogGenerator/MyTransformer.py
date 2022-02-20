@@ -256,6 +256,9 @@ class MyTransformer(Transformer):
     def assign_add(self, tree):
         return "+="
 
+    def assign_or(self, tree):
+        return "|="
+
     def some_assign_op(self, tree):
         return tree[0]
 
