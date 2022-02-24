@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "RegisterFile.h"
+#include "Defines.h"
 
 namespace ecc
 {

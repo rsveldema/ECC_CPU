@@ -8,18 +8,20 @@
 namespace ecc
 {
 	using instruction_t = uint32_t;
+	using flags_reg_t = uint64_t;
 
 	using memory_address_t = uint64_t;
 
-	using fetched_instruction_data_t = std::array<instruction_t, 2>;
-
 	using execution_mask_t = uint64_t;
+
+	// fits a int64_t at the moment which we use to simplify memory bus access.
+	using fetched_instruction_data_t = std::array<instruction_t, 2>;
 
 	static constexpr uint32_t DRAM_READ_ACCESS_CYCLES = 100;
 	static constexpr uint32_t DRAM_WRITE_ACCESS_CYCLES = 100;
 
-	static constexpr uint32_t POINTER_SIZE = sizeof(memory_address_t);
-	static constexpr uint32_t INSTRUCTION_SIZE = sizeof(instruction_t);
+	static constexpr uint32_t POINTER_SIZE = static_cast<uint32_t>(sizeof(memory_address_t));
+	static constexpr uint32_t INSTRUCTION_SIZE = static_cast<uint32_t>(sizeof(instruction_t));
 
 	static constexpr memory_address_t CODE_SEGMENT_START = 0;
 	static constexpr memory_address_t DATA_SEGMENT_START = 1024 * 1024;
@@ -28,7 +30,7 @@ namespace ecc
 
 	static constexpr uint32_t VECTOR_MEM_SIZE = 64;
 
-	static constexpr uint32_t NUMBER_OF_VECTOR_THREADS_INT64 = (VECTOR_MEM_SIZE / sizeof(uint64_t));
+	static constexpr uint32_t NUMBER_OF_VECTOR_THREADS_INT64 = (VECTOR_MEM_SIZE / static_cast<uint32_t>(sizeof(uint64_t)));
 
 	static constexpr uint64_t ALL_THREADS_EXEC_MASK_INT64 = (1 << NUMBER_OF_VECTOR_THREADS_INT64) - 1;
 
@@ -56,11 +58,11 @@ namespace ecc
 		MAX_REG_ID
 	};
 
-	static constexpr uint64_t MACHINE_FLAGS_MASK_HALT = (1 << 0);
+	static constexpr flags_reg_t MACHINE_FLAGS_MASK_HALT = (1 << 0);
 
-	static constexpr uint64_t FLAGS_MASK_EQ = (1 << 1);
-	static constexpr uint64_t FLAGS_MASK_GT = (1 << 2);
-	static constexpr uint64_t FLAGS_MASK_LT = (1 << 3);
+	static constexpr flags_reg_t FLAGS_MASK_EQ = (1 << 1);
+	static constexpr flags_reg_t FLAGS_MASK_GT = (1 << 2);
+	static constexpr flags_reg_t FLAGS_MASK_LT = (1 << 3);
 
 	enum CoreID : uint8_t
 	{
@@ -201,15 +203,12 @@ namespace ecc
 	}
 
 	static inline
-	uint32_t count_num_bits64(uint64_t value)
+	uint32_t count_num_bits64(const execution_mask_t& value)
 	{
 		uint32_t c = 0;
-		uint64_t f = value;
-		for (uint32_t i = 0; i < 64; i++)
+		for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
 		{
-			c += static_cast<uint32_t>(f & 1);
-
-			f = f >> 1;
+			c += static_cast<uint32_t>((value & (1 << i)) != 0);
 		}
 		return c;
 	}

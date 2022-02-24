@@ -138,6 +138,7 @@ logical_not_expr: "!" term
 hex_number_expr: HEX_NUMBER
 
 access_expr: access ("(" args ")")?
+array_access: access  "[" expr "]"
 
 static_cast: "static_cast" "<" type ">" "(" expr ")"
 
@@ -147,7 +148,6 @@ false_expr: "false"
 
 number_expr: NUMBER
 
-array_access: qual_ident  "[" expr "]"
 
 sizeof_term: "sizeof" "(" expr ")"
 

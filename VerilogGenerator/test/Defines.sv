@@ -7,27 +7,27 @@ typedef instruction_t[(2) - 1:0] fetched_instruction_data_t;
 
 typedef uint64_t execution_mask_t;
 
-parameter DRAM_READ_ACCESS_CYCLES = 100;
+parameter uint32_t DRAM_READ_ACCESS_CYCLES = 100;
 
-parameter DRAM_WRITE_ACCESS_CYCLES = 100;
+parameter uint32_t DRAM_WRITE_ACCESS_CYCLES = 100;
 
-parameter POINTER_SIZE =  ((uint64_t'($bits(memory_address_t)) >> 3)  ) ;
+parameter uint32_t POINTER_SIZE = (uint32_t'( ((uint64_t'($bits(memory_address_t)) >> 3)  ) ));
 
-parameter INSTRUCTION_SIZE =  ((uint64_t'($bits(instruction_t)) >> 3)  ) ;
+parameter uint32_t INSTRUCTION_SIZE = (uint32_t'( ((uint64_t'($bits(instruction_t)) >> 3)  ) ));
 
-parameter CODE_SEGMENT_START = 0;
+parameter memory_address_t CODE_SEGMENT_START = 0;
 
-parameter DATA_SEGMENT_START = (1024 * 1024);
+parameter memory_address_t DATA_SEGMENT_START = (1024 * 1024);
 
-parameter DATA_SEGMENT_SIZE = (1024 * 1024);
+parameter memory_address_t DATA_SEGMENT_SIZE = (1024 * 1024);
 
-parameter END_MEMORY_ADDRESS = (DATA_SEGMENT_START + DATA_SEGMENT_SIZE);
+parameter memory_address_t END_MEMORY_ADDRESS = (DATA_SEGMENT_START + DATA_SEGMENT_SIZE);
 
-parameter VECTOR_MEM_SIZE = 64;
+parameter uint32_t VECTOR_MEM_SIZE = 64;
 
-parameter NUMBER_OF_VECTOR_THREADS_INT64 = (VECTOR_MEM_SIZE /  ((uint64_t'($bits(uint64_t)) >> 3)  ) );
+parameter uint32_t NUMBER_OF_VECTOR_THREADS_INT64 = (VECTOR_MEM_SIZE / (uint32_t'( ((uint64_t'($bits(uint64_t)) >> 3)  ) )));
 
-parameter ALL_THREADS_EXEC_MASK_INT64 = ((1 << NUMBER_OF_VECTOR_THREADS_INT64) - 1);
+parameter uint64_t ALL_THREADS_EXEC_MASK_INT64 = ((1 << NUMBER_OF_VECTOR_THREADS_INT64) - 1);
 
 
 typedef enum {
@@ -48,13 +48,13 @@ typedef enum {
 	,MAX_REG_ID
 } RegisterID;
 
-parameter MACHINE_FLAGS_MASK_HALT = (1 << 0);
+parameter uint64_t MACHINE_FLAGS_MASK_HALT = (1 << 0);
 
-parameter FLAGS_MASK_EQ = (1 << 1);
+parameter uint64_t FLAGS_MASK_EQ = (1 << 1);
 
-parameter FLAGS_MASK_GT = (1 << 2);
+parameter uint64_t FLAGS_MASK_GT = (1 << 2);
 
-parameter FLAGS_MASK_LT = (1 << 3);
+parameter uint64_t FLAGS_MASK_LT = (1 << 3);
 
 
 typedef enum {

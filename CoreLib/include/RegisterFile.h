@@ -20,7 +20,7 @@ namespace ecc
 		// incremented if reg[i] has been written to by the store-stage
 		std::array<TinyCounter, static_cast<int>(MAX_REG_ID)> written_regs;
 
-		uint32_t machine_flags = 0;
+		flags_reg_t machine_flags = 0;
 
 		METHOD_SECTION;
 
@@ -54,7 +54,7 @@ namespace ecc
 			return regs[static_cast<int>(id)];
 		}
 
-		void setMachineFlag(uint32_t flags)
+		void setMachineFlag(uint64_t flags)
 		{
 			machine_flags |= flags;
 		}
@@ -67,7 +67,7 @@ namespace ecc
 
 		bool hasHalted() const
 		{
-			return machine_flags & MACHINE_FLAGS_MASK_HALT;
+			return (machine_flags & MACHINE_FLAGS_MASK_HALT) != 0;
 		}
 	};
 }

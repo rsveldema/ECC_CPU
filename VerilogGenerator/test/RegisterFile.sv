@@ -4,7 +4,7 @@ interface RegisterFile;
 	VectorValue regs[(int'(MAX_REG_ID))];
 	TinyCounter invalidated_regs[(int'(MAX_REG_ID))];
 	TinyCounter written_regs[(int'(MAX_REG_ID))];
-	uint32_t machine_flags = 0;
+	uint64_t machine_flags = 0;
 	
 	
 	function void mark_invalid(input RegisterID id);
@@ -57,7 +57,7 @@ interface RegisterFile;
 	endfunction
 	
 	
-	function void setMachineFlag(input uint32_t flags);
+	function void setMachineFlag(input uint64_t flags);
 	begin
 	begin
 		machine_flags <= machine_flags | flags;
@@ -78,7 +78,7 @@ interface RegisterFile;
 	function bool hasHalted();
 	begin
 	begin
-		return (machine_flags & MACHINE_FLAGS_MASK_HALT);
+		return ((machine_flags & MACHINE_FLAGS_MASK_HALT) != 0);
 	end
 	end
 	endfunction

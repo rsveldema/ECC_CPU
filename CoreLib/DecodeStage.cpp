@@ -9,7 +9,7 @@ namespace ecc
 
 	METHOD_SECTION;
 
-	uint64_t get_expected_cond_jump_flags_mask(Opcode opcode)
+	flags_reg_t get_expected_cond_jump_flags_mask(Opcode opcode)
 	{
 		switch (opcode)
 		{
@@ -83,7 +83,8 @@ namespace ecc
 				case INSN_OPCODE_MOVE_PCREL_REG_CONST16:
 				{
 					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
-					value1 = create_vec_int64(static_cast<int64_t>((pkt.insn >> 16) & 0xffff) + pkt.PC);
+					value1 = create_vec_int64(static_cast<int64_t>((pkt.insn >> 16) & 0xffff) 
+												+ pkt.PC);
 
 					execute_bus.send_req2(pkt.exec_mask,
 										  pkt.PC,
@@ -103,7 +104,7 @@ namespace ecc
 					}
 
 					value0.vec = regs.get(static_cast<RegisterID>((pkt.insn >> 8) & 0xff));
-					value1 = create_vec_int64(static_cast<int16_t>((pkt.insn >> 24) & 0xff));
+					value1 = create_vec_int16(static_cast<int16_t>((pkt.insn >> 24) & 0xff));
 					value2 = regs.get(static_cast<RegisterID>((pkt.insn >> 16) & 0xff));
 
 					execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_STORE_ADDR_VALUE,
@@ -125,7 +126,7 @@ namespace ecc
 				case INSN_OPCODE_MOVE_REG_CONST16:
 				{
 					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
-					value1 = create_vec_int64(static_cast<int16_t>((pkt.insn >> 16) & 0xffff));
+					value1 = create_vec_int16(static_cast<int16_t>((pkt.insn >> 16) & 0xffff));
 
 					execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE,
 										  value0, value1);
@@ -156,7 +157,7 @@ namespace ecc
 
 					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16) & 0xff));
-					value2 = create_vec_int64(static_cast<int8_t>((pkt.insn >> 24) & 0xff));
+					value2 = create_vec_int8(static_cast<int8_t>((pkt.insn >> 24) & 0xff));
 
 					execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_SHL_REG_VALUE_VALUE,
 										  value0, value1, value2);
@@ -191,7 +192,7 @@ namespace ecc
 					}
 
 					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
-					value2 = create_vec_int64(static_cast<int8_t>((pkt.insn >> 24) & 0xff));
+					value2 = create_vec_int8(static_cast<int8_t>((pkt.insn >> 24) & 0xff));
 					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16) & 0xff));
 
 					execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_ADD_REG_VALUE_VALUE,
@@ -203,7 +204,7 @@ namespace ecc
 
 				case INSN_OPCODE_JMP_ALWAYS:
 				{
-					value0.vec = create_vec_int64(static_cast<int32_t>(pkt.insn >> 8));
+					value0.vec = create_vec_int32(static_cast<int32_t>(pkt.insn >> 8));
 
 					execute_bus.send_req1(pkt.exec_mask, pkt.PC, EXEC_JMP,
 										  value0);
@@ -213,7 +214,7 @@ namespace ecc
 				case INSN_OPCODE_CMP_REG_REG:
 				{					
 					while ((!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 8) & 0xff))) |
-						(!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16) & 0xff))))
+					(!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16) & 0xff))))
 					{
 						CONTEXT_SWITCH();
 					}
@@ -236,9 +237,9 @@ namespace ecc
 				case INSN_OPCODE_JMP_GREATER:
 				case INSN_OPCODE_JMP_GREATER_EQUAL:
 				{
-					const execution_mask_t expected_mask = get_expected_cond_jump_flags_mask(static_cast<Opcode>(pkt.insn & 0xff));
+					const flags_reg_t expected_mask = get_expected_cond_jump_flags_mask(static_cast<Opcode>(pkt.insn & 0xff));
 					value1 = create_vec_int64(expected_mask);
-					value0.vec = create_vec_int64(static_cast<int32_t>(pkt.insn >> 8));
+					value0.vec = create_vec_int32(static_cast<int32_t>(pkt.insn >> 8));
 
 					while (execute_bus.is_busy)
 					{
@@ -257,7 +258,7 @@ namespace ecc
 						CONTEXT_SWITCH();
 					}
 
-					value0.vec = create_vec_int64(static_cast<int16_t>(pkt.insn >> 16));
+					value0.vec = create_vec_int16(static_cast<int16_t>(pkt.insn >> 16));
 					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 8) & 0xff));
 
 					execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_LOAD_RESTORE_PC,
@@ -275,7 +276,7 @@ namespace ecc
 					}
 
 					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
-					value1 = create_vec_int64(static_cast<int16_t>(pkt.insn >> 24));
+					value1 = create_vec_int16(static_cast<int16_t>(pkt.insn >> 24));
 					value2 = regs.get(static_cast<RegisterID>((pkt.insn >> 16) & 0xff));
 
 					execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_LOAD_REG,
@@ -288,7 +289,7 @@ namespace ecc
 				case INSN_OPCODE_MOVE_R0_CONST24A:
 				{
 					value0.regID = REG_R0;
-					value1 = create_vec_int64(static_cast<int32_t>(pkt.insn >> 8));
+					value1 = create_vec_int32(static_cast<int32_t>(pkt.insn >> 8));
 
 					execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE,
 										  value0,
@@ -303,7 +304,7 @@ namespace ecc
 						CONTEXT_SWITCH();
 					}
 					value0.regID = REG_R0;
-					value1 = create_vec_int64(static_cast<int32_t>(pkt.insn >> 8));
+					value1 = create_vec_int32(static_cast<int32_t>(pkt.insn >> 8));
 					value2 = regs.get(REG_R0);
 
 					execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_ORB_REG_VALUE,
@@ -320,7 +321,7 @@ namespace ecc
 						CONTEXT_SWITCH();
 					}
 					value0.regID = REG_R0;
-					value1 = create_vec_int64(static_cast<int32_t>(pkt.insn >> 8));
+					value1 = create_vec_int32(static_cast<int32_t>(pkt.insn >> 8));
 					value2 = regs.get(REG_R0);
 
 					execute_bus.send_req3(pkt.exec_mask, pkt.PC,

@@ -5,12 +5,13 @@
 #include <array>
 
 #include "MachineInfo.h"
+#include "Defines.h"
 
 namespace ecc
 {
 	struct VectorValue
 	{
-		int64_t data[NUMBER_OF_VECTOR_THREADS_INT64];
+		std::array<int64_t, NUMBER_OF_VECTOR_THREADS_INT64> data;
 	};
 
 	METHOD_SECTION;
@@ -89,17 +90,20 @@ namespace ecc
 		{
 			int64_t result = 0;
 
-			const auto value1 = self.data[i];
-			const auto value2 = other.data[i];
+			const int64_t value1 = self.data[i];
+			const int64_t value2 = other.data[i];
 
-			if (value1 == value2)
+			if (value1 == value2) {
 				result |= FLAGS_MASK_EQ;
+			}
 
-			if (value1 > value2)
+			if (value1 > value2) {
 				result |= FLAGS_MASK_GT;
+			}
 
-			if (value1 < value2)
+			if (value1 < value2) {
 				result |= FLAGS_MASK_LT;
+			}
 
 			ret.data[i] = result;
 		}
@@ -140,7 +144,7 @@ namespace ecc
 		VectorValue ret;
 		for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
 		{
-			ret.data[i] = i;
+			ret.data[i] = static_cast<int64_t>(i);
 		}
 		return ret;
 	}
@@ -155,19 +159,19 @@ namespace ecc
 		return ret;
 	}
 
-	static std::string to_string(const VectorValue &v)
+	static VectorValue create_vec_int8(const int8_t v)
 	{
-		std::string s = "<";
-		const char *comma = "";
-		for (auto &v : v.data)
+		return create_vec_int64(static_cast<int64_t>(v));
+	}
+
+	static VectorValue create_vec_int16(const int16_t v)
 		{
-			s += comma;
-			s += std::to_string(v);
-			comma = ", ";
+		return create_vec_int64(static_cast<int64_t>(v));
 		}
 
-		s += ">";
-		return s;
+	static VectorValue create_vec_int32(const int32_t v)
+	{
+		return create_vec_int64(static_cast<int64_t>(v));
 	}
 }
 

@@ -21,11 +21,7 @@ typedef reg[20:0] phys_memory_address_t;
 `define PACK8(a0, a1, a2, a3, a4, a5, a6, a7) {>> { a0, a1,	a2, a3, a4, a5, a6, a7}}
 
 
-typedef struct packed
-{
-		int64_t[8:0] data;
-} VectorValue;
-
+`include "VectorValue.sv"
 `include "Packets.sv"
 //`include "MemoryBus.sv"
 //`include "FetchStage.sv"

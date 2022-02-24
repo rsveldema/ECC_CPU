@@ -1,4 +1,5 @@
 from typing import List
+from Expr import Expr
 from GenerateContext import GenerateContext
 from PrintStream import PrintStream
 from LowerState import LowerState
@@ -9,7 +10,7 @@ from UnaryExpr import UnaryExpr
 from Statement import Statement
 
 class IfStmt(Statement):
-    def __init__(self, expr, if_code:Block, else_code:Block) -> None:
+    def __init__(self, expr:Expr, if_code:Block, else_code:Block) -> None:
         self.expr = expr
         self.if_code = if_code
         self.else_code = else_code
@@ -29,6 +30,15 @@ class IfStmt(Statement):
 
         
     def lower_ast(self, state: LowerState):
+        if not state.is_task():
+            ic = None
+            ec = None
+            if self.if_code:
+                ic = self.if_code.lower_ast(state)
+            if self.else_code:
+                ec = self.else_code.lower_ast(state)
+            return IfStmt(self.expr.lower_ast(state), ic, ec)
+
         ret = Block()       
         
         end_label = Label()
