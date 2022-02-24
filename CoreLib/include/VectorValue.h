@@ -11,16 +11,16 @@ namespace ecc
 	struct VectorValue
 	{
 		int64_t data[NUMBER_OF_VECTOR_THREADS_INT64];
-
-
-		int64_t get(unsigned ix) const
-		{
-			assert(ix < NUMBER_OF_VECTOR_THREADS_INT64);
-			return data[ix];
-		}
 	};
 
 	METHOD_SECTION;
+
+	static inline
+	int64_t get(const VectorValue& v, unsigned ix)
+	{
+		assert(ix < NUMBER_OF_VECTOR_THREADS_INT64);
+		return v.data[ix];
+	}
 
 	/*
 	void set(unsigned ix, int64_t value)

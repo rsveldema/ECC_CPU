@@ -96,8 +96,8 @@ namespace ecc
 				// reg = [reg + const]
 				case INSN_OPCODE_STORE_REG_CONST_REG:
 				{
-					while (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 8) & 0xff)) ||
-						   !regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16) & 0xff)))
+					while ((!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 8) & 0xff))) |
+						   (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16) & 0xff))))
 					{
 						CONTEXT_SWITCH();
 					}
@@ -165,14 +165,12 @@ namespace ecc
 
 				case INSN_OPCODE_ADD_REG_REG_REG:
 				{
-					while (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16) & 0xff)) ||
-							!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 24) & 0xff)))
+					while ((!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16) & 0xff))) |
+							(!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 24) & 0xff))))
 					{
 						CONTEXT_SWITCH();
 					}
 
-					//auto r1 = static_cast<RegisterID>((pkt.insn >> 16) & 0xff);
-					//auto r2 = static_cast<RegisterID>((pkt.insn >> 24) & 0xff);
 
 					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
 					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16) & 0xff));
@@ -214,8 +212,8 @@ namespace ecc
 
 				case INSN_OPCODE_CMP_REG_REG:
 				{					
-					while (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 8) & 0xff)) ||
-							!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16) & 0xff)))
+					while ((!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 8) & 0xff))) |
+						(!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16) & 0xff))))
 					{
 						CONTEXT_SWITCH();
 					}

@@ -76,7 +76,7 @@ namespace ecc
 							{
 								CONTEXT_SWITCH();
 							}
-							bus_packet_payload_t payload = arrayData.get(i);
+							bus_packet_payload_t payload = get(arrayData, i);
 							const auto& address = addresses.data[i];
 							toMemory.send_write_request_data(address, src, payload);
 						}

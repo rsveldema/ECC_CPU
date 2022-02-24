@@ -211,7 +211,7 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_COND_JMP:
 				{
-					const auto new_address = pkt.PC + pkt.value0.vec.get(0);
+					const auto new_address = pkt.PC + get(pkt.value0.vec, 0);
 					const auto next_address = pkt.PC + 4;
 
 					const auto& jmp_mask = pkt.value1;
@@ -269,7 +269,7 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_JMP:
 				{
-					const memory_address_t new_address = pkt.PC + pkt.value0.vec.get(0);
+					const memory_address_t new_address = pkt.PC + get(pkt.value0.vec, 0);
 
 					while (store_bus.is_busy)
 					{
