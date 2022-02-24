@@ -74,7 +74,7 @@ namespace ecc
 							//$display("REG[" << MachineInfo::to_string(src) << "] = " << std::to_string(value));
 							if (is_store_to_pc)
 							{
-								auto new_pc = value.get(0);
+								memory_address_t new_pc = value.get(0);
 								fetch_bus.send(StoreToFetchPacket{ pkt.exec_mask, new_pc });
 							}
 							break;

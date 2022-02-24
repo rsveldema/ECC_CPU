@@ -7,13 +7,13 @@ namespace ecc
 	{
 		while (1)
 		{
-			if (this->decode_bus.is_busy)
+			if (decode_bus.is_busy)
 			{
-				const DecodeExecPacket& pkt = this->decode_bus.recv();
-				const auto opcode = pkt.opcode;
-				const auto PC = pkt.PC;
+				const DecodeExecPacket pkt = decode_bus.recv();
 
-				$display("EXECUTE[" + std::to_string(PC) + "] exec: " + to_string(opcode));
+				CONTEXT_SWITCH();
+
+				$display("EXECUTE: ", pkt.PC, pkt.opcode);
 
 				switch (pkt.opcode)
 				{
@@ -199,7 +199,7 @@ namespace ecc
 					}
 
 					ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_LOAD_MEM_INTO_REG,
-							{.regID =  dest}, 
+							{.regID = dest}, 
 							{.value = offset}, 
 							0 
 						};

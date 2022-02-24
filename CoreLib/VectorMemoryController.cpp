@@ -38,7 +38,7 @@ namespace ecc
 							.type = VEC_BUS_PKT_TYPE_read_response_vec64
 						};
 
-						for (unsigned i = 0; i < addresses.size(); i++)
+						for (unsigned i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
 						{
 							// wait for the bus to clear so we can send another request
 							while (toMemory.request_busy)
@@ -55,7 +55,7 @@ namespace ecc
 									auto pkt = toMemory.get_response();
 								
 									const int64_t value = pkt.payload;
-									reply.payload.set(i, value);
+									reply.payload.data[i] = value;
 									break;
 								}
 								CONTEXT_SWITCH();
@@ -70,7 +70,7 @@ namespace ecc
 					{
 						const auto& arrayData = pkt->payload;
 
-						for (unsigned i = 0; i < addresses.size(); i++)
+						for (unsigned i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
 						{
 							while (toMemory.request_busy)
 							{

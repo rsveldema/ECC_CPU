@@ -8,7 +8,7 @@
 
 namespace ecc
 {	
-	
+
 	template<CoreID core_id>
 	class DecodeStage : public SimComponent
 	{
