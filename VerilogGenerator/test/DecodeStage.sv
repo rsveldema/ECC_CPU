@@ -1,6 +1,6 @@
 
 
-function uint64_t get_expected_cond_jump_flags_mask(input Opcode opcode);
+function flags_reg_t get_expected_cond_jump_flags_mask(input Opcode opcode);
 begin
 begin
 	case (opcode)
@@ -48,7 +48,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 	VectorValue value1;
 	VectorValue value2;
 	FetchToDecodeBusPacket pkt;
-	execution_mask_t expected_mask;
+	flags_reg_t expected_mask;
 
 
 

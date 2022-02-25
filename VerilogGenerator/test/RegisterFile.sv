@@ -4,7 +4,7 @@ interface RegisterFile;
 	VectorValue regs[(int'(MAX_REG_ID))];
 	TinyCounter invalidated_regs[(int'(MAX_REG_ID))];
 	TinyCounter written_regs[(int'(MAX_REG_ID))];
-	uint64_t machine_flags = 0;
+	flags_reg_t machine_flags = 0;
 	
 	
 	function void mark_invalid(input RegisterID id);

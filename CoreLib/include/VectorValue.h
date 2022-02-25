@@ -17,21 +17,21 @@ namespace ecc
 	METHOD_SECTION;
 
 	static inline
-	int64_t get(const VectorValue& v, unsigned ix)
+	int64_t get(const VectorValue& v, uint32_t ix)
 	{
 		assert(ix < NUMBER_OF_VECTOR_THREADS_INT64);
 		return v.data[ix];
 	}
 
 	/*
-	void set(unsigned ix, int64_t value)
+	void set(uint32_t ix, int64_t value)
 	{
 		assert(ix < NUMBER_OF_VECTOR_THREADS_INT64);
 		data[ix] = value;
 	}*/
 
 
-	static VectorValue or_shift_left(const VectorValue &self, const VectorValue &other, unsigned shift_count)
+	static VectorValue or_shift_left(const VectorValue &self, const VectorValue &other, uint32_t shift_count)
 	{
 		VectorValue ret;
 		for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
@@ -83,29 +83,27 @@ namespace ecc
 		return true;
 	}
 
+	static int64_t get_compare_result(int64_t value1, int64_t value2)
+	{
+		if (value1 == value2) {
+			return FLAGS_MASK_EQ;
+		}
+
+		if (value1 > value2) {
+			return FLAGS_MASK_GT;
+		}
+
+		//if (value1 < value2) {
+		return FLAGS_MASK_LT;
+		//}
+	}
+
 	static VectorValue compare_vecs(const VectorValue &self, const VectorValue &other)
 	{
 		VectorValue ret;
 		for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
 		{
-			int64_t result = 0;
-
-			const int64_t value1 = self.data[i];
-			const int64_t value2 = other.data[i];
-
-			if (value1 == value2) {
-				result |= FLAGS_MASK_EQ;
-			}
-
-			if (value1 > value2) {
-				result |= FLAGS_MASK_GT;
-			}
-
-			if (value1 < value2) {
-				result |= FLAGS_MASK_LT;
-			}
-
-			ret.data[i] = result;
+			ret.data[i] = get_compare_result(self.data[i], other.data[i]);
 		}
 		return ret;
 	}
@@ -133,8 +131,7 @@ namespace ecc
 		uint64_t ret = 0;
 		for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
 		{
-			uint64_t tst = (v.data[i] != 0);
-			ret |= tst << i;
+			ret |= (v.data[i] != 0) << i;
 		}
 		return ret;
 	}
