@@ -75,13 +75,13 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		33:
 			begin
-				$display("DECODE[%d] exec: %x", pkt.PC, (Opcode'((pkt.insn & 32'hff))));
+				$display("DECODE exec: ", pkt.PC, (Opcode'(pkt.insn)));
 				state <= 34; // GOTO
 				return;
 			end
 		34:
 			begin
-				if (((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_MOVE_R0_CONST24C))
+				if (((Opcode'(pkt.insn)) == INSN_OPCODE_MOVE_R0_CONST24C))
 				begin
 				end
 				else
@@ -131,7 +131,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		72:
 			begin
-				if (((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_MOVE_R0_CONST24B))
+				if (((Opcode'(pkt.insn)) == INSN_OPCODE_MOVE_R0_CONST24B))
 				begin
 				end
 				else
@@ -181,7 +181,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		76:
 			begin
-				if (((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_MOVE_R0_CONST24A))
+				if (((Opcode'(pkt.insn)) == INSN_OPCODE_MOVE_R0_CONST24A))
 				begin
 				end
 				else
@@ -199,7 +199,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		78:
 			begin
-				if (((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_LOAD_REG_CONST_REG))
+				if (((Opcode'(pkt.insn)) == INSN_OPCODE_LOAD_REG_CONST_REG))
 				begin
 				end
 				else
@@ -223,7 +223,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		62:
 			begin
-				if (!(!(regs.is_valid((RegisterID'(((pkt.insn >> 16) & 32'hff)))))))
+				if (!(!(regs.is_valid((RegisterID'((pkt.insn >> 16)))))))
 				begin
 					state <= 81; // GOTO
 					return;
@@ -238,9 +238,9 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		61:
 			begin
-				value0.regID <= (RegisterID'(((pkt.insn >> 8) & 32'hff)));
+				value0.regID <= (RegisterID'((pkt.insn >> 8)));
+				value2 <= regs.get((RegisterID'((pkt.insn >> 16))));
 				value1 <= create_vec_int16((int16_t'((pkt.insn >> 24))));
-				value2 <= regs.get((RegisterID'(((pkt.insn >> 16) & 32'hff))));
 				execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_LOAD_REG, value0, value1, value2);
 				state <= 35; // GOTO
 				return;
@@ -249,7 +249,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		82:
 			begin
-				if (((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_LOAD_RESTORE_PC))
+				if (((Opcode'(pkt.insn)) == INSN_OPCODE_LOAD_RESTORE_PC))
 				begin
 				end
 				else
@@ -273,7 +273,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		59:
 			begin
-				if (!(!(regs.is_valid((RegisterID'(((pkt.insn >> 8) & 32'hff)))))))
+				if (!(!(regs.is_valid((RegisterID'((pkt.insn >> 8)))))))
 				begin
 					state <= 85; // GOTO
 					return;
@@ -289,7 +289,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 		58:
 			begin
 				value0.vec <= create_vec_int16((int16_t'((pkt.insn >> 16))));
-				value1 <= regs.get((RegisterID'(((pkt.insn >> 8) & 32'hff))));
+				value1 <= regs.get((RegisterID'((pkt.insn >> 8))));
 				execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_LOAD_RESTORE_PC, value0, value1);
 				state <= 35; // GOTO
 				return;
@@ -298,7 +298,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		86:
 			begin
-				if ((((((((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_JMP_LOWER) || ((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_JMP_LOWER_EQUAL)) || ((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_JMP_EQUAL)) || ((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_JMP_NOT_EQUAL)) || ((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_JMP_GREATER)) || ((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_JMP_GREATER_EQUAL)))
+				if ((((((((Opcode'(pkt.insn)) == INSN_OPCODE_JMP_LOWER) || ((Opcode'(pkt.insn)) == INSN_OPCODE_JMP_LOWER_EQUAL)) || ((Opcode'(pkt.insn)) == INSN_OPCODE_JMP_EQUAL)) || ((Opcode'(pkt.insn)) == INSN_OPCODE_JMP_NOT_EQUAL)) || ((Opcode'(pkt.insn)) == INSN_OPCODE_JMP_GREATER)) || ((Opcode'(pkt.insn)) == INSN_OPCODE_JMP_GREATER_EQUAL)))
 				begin
 				end
 				else
@@ -306,7 +306,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 					state <= 90; // GOTO
 					return;
 				end
-				expected_mask <= get_expected_cond_jump_flags_mask((Opcode'((pkt.insn & 32'hff))));
+				expected_mask <= get_expected_cond_jump_flags_mask((Opcode'(pkt.insn)));
 				value1 <= create_vec_int64(expected_mask);
 				value0.vec <= create_vec_int32((int32_t'((pkt.insn >> 8))));
 				state <= 54; // GOTO
@@ -348,7 +348,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		90:
 			begin
-				if (((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_CMP_REG_REG))
+				if (((Opcode'(pkt.insn)) == INSN_OPCODE_CMP_REG_REG))
 				begin
 				end
 				else
@@ -372,7 +372,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		53:
 			begin
-				if (!((!(regs.is_valid((RegisterID'(((pkt.insn >> 8) & 32'hff))))) | !(regs.is_valid((RegisterID'(((pkt.insn >> 16) & 32'hff))))))))
+				if (!((!(regs.is_valid((RegisterID'((pkt.insn >> 8))))) | !(regs.is_valid((RegisterID'((pkt.insn >> 16))))))))
 				begin
 					state <= 93; // GOTO
 					return;
@@ -387,8 +387,8 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		52:
 			begin
-				value0.vec <= regs.get((RegisterID'(((pkt.insn >> 8) & 32'hff))));
-				value1 <= regs.get((RegisterID'(((pkt.insn >> 16) & 32'hff))));
+				value0.vec <= regs.get((RegisterID'((pkt.insn >> 8))));
+				value1 <= regs.get((RegisterID'((pkt.insn >> 16))));
 				execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_CMP, value0, value1);
 				state <= 35; // GOTO
 				return;
@@ -397,7 +397,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		94:
 			begin
-				if (((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_JMP_ALWAYS))
+				if (((Opcode'(pkt.insn)) == INSN_OPCODE_JMP_ALWAYS))
 				begin
 				end
 				else
@@ -414,7 +414,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		96:
 			begin
-				if (((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_ADD_REG_REG_CONST))
+				if (((Opcode'(pkt.insn)) == INSN_OPCODE_ADD_REG_REG_CONST))
 				begin
 				end
 				else
@@ -438,7 +438,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		50:
 			begin
-				if (!(!(regs.is_valid((RegisterID'(((pkt.insn >> 16) & 32'hff)))))))
+				if (!(!(regs.is_valid((RegisterID'((pkt.insn >> 16)))))))
 				begin
 					state <= 99; // GOTO
 					return;
@@ -453,9 +453,9 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		49:
 			begin
-				value0.regID <= (RegisterID'(((pkt.insn >> 8) & 32'hff)));
-				value2 <= create_vec_int8((int8_t'(((pkt.insn >> 24) & 32'hff))));
-				value1 <= regs.get((RegisterID'(((pkt.insn >> 16) & 32'hff))));
+				value0.regID <= (RegisterID'((pkt.insn >> 8)));
+				value2 <= create_vec_int8((int8_t'((pkt.insn >> 24))));
+				value1 <= regs.get((RegisterID'((pkt.insn >> 16))));
 				execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_ADD_REG_VALUE_VALUE, value0, value1, value2);
 				state <= 35; // GOTO
 				return;
@@ -464,7 +464,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		100:
 			begin
-				if (((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_ADD_REG_REG_REG))
+				if (((Opcode'(pkt.insn)) == INSN_OPCODE_ADD_REG_REG_REG))
 				begin
 				end
 				else
@@ -488,7 +488,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		47:
 			begin
-				if (!((!(regs.is_valid((RegisterID'(((pkt.insn >> 16) & 32'hff))))) | !(regs.is_valid((RegisterID'(((pkt.insn >> 24) & 32'hff))))))))
+				if (!((!(regs.is_valid((RegisterID'((pkt.insn >> 16))))) | !(regs.is_valid((RegisterID'((pkt.insn >> 24))))))))
 				begin
 					state <= 103; // GOTO
 					return;
@@ -503,9 +503,9 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		46:
 			begin
-				value0.regID <= (RegisterID'(((pkt.insn >> 8) & 32'hff)));
-				value1 <= regs.get((RegisterID'(((pkt.insn >> 16) & 32'hff))));
-				value2 <= regs.get((RegisterID'(((pkt.insn >> 24) & 32'hff))));
+				value0.regID <= (RegisterID'((pkt.insn >> 8)));
+				value1 <= regs.get((RegisterID'((pkt.insn >> 16))));
+				value2 <= regs.get((RegisterID'((pkt.insn >> 24))));
 				execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_ADD_REG_VALUE_VALUE, value0, value1, value2);
 				state <= 35; // GOTO
 				return;
@@ -514,7 +514,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		104:
 			begin
-				if (((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_L_SSHIFT_REG_REG_CONST))
+				if (((Opcode'(pkt.insn)) == INSN_OPCODE_L_SSHIFT_REG_REG_CONST))
 				begin
 				end
 				else
@@ -538,7 +538,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		44:
 			begin
-				if (!(!(regs.is_valid((RegisterID'(((pkt.insn >> 16) & 32'hff)))))))
+				if (!(!(regs.is_valid((RegisterID'((pkt.insn >> 16)))))))
 				begin
 					state <= 107; // GOTO
 					return;
@@ -553,9 +553,9 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		43:
 			begin
-				value0.regID <= (RegisterID'(((pkt.insn >> 8) & 32'hff)));
-				value1 <= regs.get((RegisterID'(((pkt.insn >> 16) & 32'hff))));
-				value2 <= create_vec_int8((int8_t'(((pkt.insn >> 24) & 32'hff))));
+				value0.regID <= (RegisterID'((pkt.insn >> 8)));
+				value1 <= regs.get((RegisterID'((pkt.insn >> 16))));
+				value2 <= create_vec_int8((int8_t'((pkt.insn >> 24))));
 				execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_SHL_REG_VALUE_VALUE, value0, value1, value2);
 				state <= 35; // GOTO
 				return;
@@ -564,7 +564,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		108:
 			begin
-				if (((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_MOVE_REG_REG))
+				if (((Opcode'(pkt.insn)) == INSN_OPCODE_MOVE_REG_REG))
 				begin
 				end
 				else
@@ -588,7 +588,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		41:
 			begin
-				if (!(!(regs.is_valid((RegisterID'(((pkt.insn >> 16) & 32'hff)))))))
+				if (!(!(regs.is_valid((RegisterID'((pkt.insn >> 16)))))))
 				begin
 					state <= 111; // GOTO
 					return;
@@ -603,8 +603,8 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		40:
 			begin
-				value0.regID <= (RegisterID'(((pkt.insn >> 8) & 32'hff)));
-				value1 <= regs.get((RegisterID'(((pkt.insn >> 16) & 32'hff))));
+				value0.regID <= (RegisterID'((pkt.insn >> 8)));
+				value1 <= regs.get((RegisterID'((pkt.insn >> 16))));
 				execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE, value0, value1);
 				state <= 35; // GOTO
 				return;
@@ -613,7 +613,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		112:
 			begin
-				if (((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_MOVE_REG_CONST16))
+				if (((Opcode'(pkt.insn)) == INSN_OPCODE_MOVE_REG_CONST16))
 				begin
 				end
 				else
@@ -621,8 +621,8 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 					state <= 114; // GOTO
 					return;
 				end
-				value0.regID <= (RegisterID'(((pkt.insn >> 8) & 32'hff)));
-				value1 <= create_vec_int16((int16_t'(((pkt.insn >> 16) & 32'hffff))));
+				value0.regID <= (RegisterID'((pkt.insn >> 8)));
+				value1 <= create_vec_int16((int16_t'((pkt.insn >> 16))));
 				execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE, value0, value1);
 				state <= 35; // GOTO
 				return;
@@ -631,7 +631,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		114:
 			begin
-				if (((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_MOVE_REG_BLOCK_INDEX))
+				if (((Opcode'(pkt.insn)) == INSN_OPCODE_MOVE_REG_BLOCK_INDEX))
 				begin
 				end
 				else
@@ -639,7 +639,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 					state <= 116; // GOTO
 					return;
 				end
-				value0.regID <= (RegisterID'(((pkt.insn >> 8) & 32'hff)));
+				value0.regID <= (RegisterID'((pkt.insn >> 8)));
 				value1 <= create_vec_incrementing_values();
 				execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE, value0, value1);
 				state <= 35; // GOTO
@@ -649,7 +649,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		116:
 			begin
-				if (((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_STORE_REG_CONST_REG))
+				if (((Opcode'(pkt.insn)) == INSN_OPCODE_STORE_REG_CONST_REG))
 				begin
 				end
 				else
@@ -673,7 +673,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		38:
 			begin
-				if (!((!(regs.is_valid((RegisterID'(((pkt.insn >> 8) & 32'hff))))) | !(regs.is_valid((RegisterID'(((pkt.insn >> 16) & 32'hff))))))))
+				if (!((!(regs.is_valid((RegisterID'((pkt.insn >> 8))))) | !(regs.is_valid((RegisterID'((pkt.insn >> 16))))))))
 				begin
 					state <= 119; // GOTO
 					return;
@@ -688,9 +688,9 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		37:
 			begin
-				value0.vec <= regs.get((RegisterID'(((pkt.insn >> 8) & 32'hff))));
-				value1 <= create_vec_int16((int16_t'(((pkt.insn >> 24) & 32'hff))));
-				value2 <= regs.get((RegisterID'(((pkt.insn >> 16) & 32'hff))));
+				value0.vec <= regs.get((RegisterID'((pkt.insn >> 8))));
+				value2 <= regs.get((RegisterID'((pkt.insn >> 16))));
+				value1 <= create_vec_int16((int16_t'((uint8_t'((pkt.insn >> 24))))));
 				execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_STORE_ADDR_VALUE, value0, value1, value2);
 				state <= 35; // GOTO
 				return;
@@ -699,7 +699,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		120:
 			begin
-				if (((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_MOVE_PCREL_REG_CONST16))
+				if (((Opcode'(pkt.insn)) == INSN_OPCODE_MOVE_PCREL_REG_CONST16))
 				begin
 				end
 				else
@@ -707,8 +707,8 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 					state <= 122; // GOTO
 					return;
 				end
-				value0.regID <= (RegisterID'(((pkt.insn >> 8) & 32'hff)));
-				value1 <= create_vec_int64(((int64_t'(((pkt.insn >> 16) & 32'hffff))) + pkt.PC));
+				value0.regID <= (RegisterID'((pkt.insn >> 8)));
+				value1 <= create_vec_int64(((int64_t'((uint16_t'((pkt.insn >> 16))))) + pkt.PC));
 				execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE, value0, value1);
 				state <= 35; // GOTO
 				return;
@@ -717,7 +717,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		122:
 			begin
-				if (((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_HALT))
+				if (((Opcode'(pkt.insn)) == INSN_OPCODE_HALT))
 				begin
 				end
 				else
@@ -733,7 +733,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		124:
 			begin
-				if (((Opcode'((pkt.insn & 32'hff))) == INSN_OPCODE_NOP))
+				if (((Opcode'(pkt.insn)) == INSN_OPCODE_NOP))
 				begin
 				end
 				else
@@ -748,7 +748,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		126:
 			begin
-				$display("[DECODE] unimplemented opcode: ", (Opcode'((pkt.insn & 32'hff))));
+				$display("[DECODE] unimplemented opcode: ", (Opcode'(pkt.insn)));
 				assert(0);
 				state <= 125; // GOTO
 				return;

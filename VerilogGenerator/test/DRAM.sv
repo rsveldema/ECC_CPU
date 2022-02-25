@@ -1,4 +1,4 @@
-uint8_t storage[END_MEMORY_ADDRESS];
+uint8_t storage[(uint32_t'(END_MEMORY_ADDRESS))];
 
 
 function void INITIAL_write_to_global_memory(input uint64_t address, input uint8_t data);

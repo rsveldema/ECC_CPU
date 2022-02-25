@@ -3,7 +3,7 @@
 
 namespace ecc
 {
-	std::array<uint8_t, END_MEMORY_ADDRESS> storage;
+	std::array<uint8_t, static_cast<uint32_t>(END_MEMORY_ADDRESS)> storage;
 
 	METHOD_SECTION;
 

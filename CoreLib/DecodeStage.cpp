@@ -60,6 +60,11 @@ namespace ecc
 
 		while (1)
 		{
+			while (execute_bus.is_busy)
+			{
+				CONTEXT_SWITCH();
+			}
+
 			if (fetch_bus.is_busy)
 			{
 				const FetchToDecodeBusPacket pkt = fetch_bus.recv();
@@ -214,7 +219,7 @@ namespace ecc
 				case INSN_OPCODE_CMP_REG_REG:
 				{					
 					while ((!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 8)))) |
-					(!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16)))))
+							(!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16)))))
 					{
 						CONTEXT_SWITCH();
 					}
@@ -237,14 +242,10 @@ namespace ecc
 				case INSN_OPCODE_JMP_GREATER:
 				case INSN_OPCODE_JMP_GREATER_EQUAL:
 				{
-					const flags_reg_t expected_mask = get_expected_cond_jump_flags_mask(static_cast<Opcode>(pkt.insn));
-					value1 = create_vec_int64(expected_mask);
+					
+					value1 = create_vec_int64(get_expected_cond_jump_flags_mask(static_cast<Opcode>(pkt.insn)));
 					value0.vec = create_vec_int32(static_cast<int32_t>(pkt.insn >> 8));
 
-					while (execute_bus.is_busy)
-					{
-						CONTEXT_SWITCH();
-					}
 					execute_bus.send_req2(pkt.exec_mask, pkt.PC,
 										  EXEC_COND_JMP,
 										  value0, value1);
