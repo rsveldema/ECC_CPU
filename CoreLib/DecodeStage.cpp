@@ -65,9 +65,9 @@ namespace ecc
 				const FetchToDecodeBusPacket pkt = fetch_bus.recv();
 				CONTEXT_SWITCH();
 
-				$display("DECODE[%d] exec: %x", pkt.PC, static_cast<Opcode>(pkt.insn & 0xff));
+				$display("DECODE exec: ", pkt.PC, static_cast<Opcode>(pkt.insn));
 
-				switch (static_cast<Opcode>(pkt.insn & 0xff))
+				switch (static_cast<Opcode>(pkt.insn))
 				{
 				case INSN_OPCODE_NOP:
 				{
@@ -82,8 +82,8 @@ namespace ecc
 
 				case INSN_OPCODE_MOVE_PCREL_REG_CONST16:
 				{
-					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
-					value1 = create_vec_int64(static_cast<int64_t>((pkt.insn >> 16) & 0xffff) 
+					value0.regID = static_cast<RegisterID>((pkt.insn >> 8));
+					value1 = create_vec_int64(static_cast<int64_t>(static_cast<uint16_t>(pkt.insn >> 16)) 
 												+ pkt.PC);
 
 					execute_bus.send_req2(pkt.exec_mask,
@@ -97,15 +97,15 @@ namespace ecc
 				// reg = [reg + const]
 				case INSN_OPCODE_STORE_REG_CONST_REG:
 				{
-					while ((!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 8) & 0xff))) |
-						   (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16) & 0xff))))
+					while ((!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 8)))) |
+						   (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16)))))
 					{
 						CONTEXT_SWITCH();
 					}
 
-					value0.vec = regs.get(static_cast<RegisterID>((pkt.insn >> 8) & 0xff));
-					value1 = create_vec_int16(static_cast<int16_t>((pkt.insn >> 24) & 0xff));
-					value2 = regs.get(static_cast<RegisterID>((pkt.insn >> 16) & 0xff));
+					value0.vec = regs.get(static_cast<RegisterID>((pkt.insn >> 8)));
+					value2 = regs.get(static_cast<RegisterID>((pkt.insn >> 16)));
+					value1 = create_vec_int16(static_cast<int16_t>(static_cast<uint8_t>(pkt.insn >> 24)));
 
 					execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_STORE_ADDR_VALUE,
 										  value0, value1, value2);
@@ -115,7 +115,7 @@ namespace ecc
 				// reg = blockIndex
 				case INSN_OPCODE_MOVE_REG_BLOCK_INDEX:
 				{
-					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
+					value0.regID = static_cast<RegisterID>((pkt.insn >> 8));
 					value1 = create_vec_incrementing_values();
 
 					execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE,
@@ -125,8 +125,8 @@ namespace ecc
 
 				case INSN_OPCODE_MOVE_REG_CONST16:
 				{
-					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
-					value1 = create_vec_int16(static_cast<int16_t>((pkt.insn >> 16) & 0xffff));
+					value0.regID = static_cast<RegisterID>((pkt.insn >> 8));
+					value1 = create_vec_int16(static_cast<int16_t>((pkt.insn >> 16)));
 
 					execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE,
 										  value0, value1);
@@ -135,13 +135,13 @@ namespace ecc
 
 				case INSN_OPCODE_MOVE_REG_REG:
 				{
-					while (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16) & 0xff)))
+					while (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16))))
 					{
 						CONTEXT_SWITCH();
 					}
 
-					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
-					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16) & 0xff));
+					value0.regID = static_cast<RegisterID>((pkt.insn >> 8));
+					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16)));
 
 					execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE,
 										  value0, value1);
@@ -150,14 +150,14 @@ namespace ecc
 
 				case INSN_OPCODE_L_SSHIFT_REG_REG_CONST:
 				{
-					while (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16) & 0xff)))
+					while (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16))))
 					{
 						CONTEXT_SWITCH();
 					}
 
-					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
-					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16) & 0xff));
-					value2 = create_vec_int8(static_cast<int8_t>((pkt.insn >> 24) & 0xff));
+					value0.regID = static_cast<RegisterID>((pkt.insn >> 8));
+					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16)));
+					value2 = create_vec_int8(static_cast<int8_t>((pkt.insn >> 24)));
 
 					execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_SHL_REG_VALUE_VALUE,
 										  value0, value1, value2);
@@ -166,16 +166,16 @@ namespace ecc
 
 				case INSN_OPCODE_ADD_REG_REG_REG:
 				{
-					while ((!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16) & 0xff))) |
-							(!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 24) & 0xff))))
+					while ((!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16)))) |
+							(!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 24)))))
 					{
 						CONTEXT_SWITCH();
 					}
 
 
-					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
-					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16) & 0xff));
-					value2 = regs.get(static_cast<RegisterID>((pkt.insn >> 24) & 0xff));
+					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) );
+					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16)));
+					value2 = regs.get(static_cast<RegisterID>((pkt.insn >> 24)));
 
 					execute_bus.send_req3(pkt.exec_mask, pkt.PC,
 										  EXEC_ADD_REG_VALUE_VALUE,
@@ -186,14 +186,14 @@ namespace ecc
 				// reg = reg + const
 				case INSN_OPCODE_ADD_REG_REG_CONST:
 				{
-					while (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16) & 0xff)))
+					while (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16))))
 					{
 						CONTEXT_SWITCH();
 					}
 
-					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
-					value2 = create_vec_int8(static_cast<int8_t>((pkt.insn >> 24) & 0xff));
-					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16) & 0xff));
+					value0.regID = static_cast<RegisterID>((pkt.insn >> 8));
+					value2 = create_vec_int8(static_cast<int8_t>((pkt.insn >> 24)));
+					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16)));
 
 					execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_ADD_REG_VALUE_VALUE,
 										  value0,
@@ -213,14 +213,14 @@ namespace ecc
 
 				case INSN_OPCODE_CMP_REG_REG:
 				{					
-					while ((!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 8) & 0xff))) |
-					(!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16) & 0xff))))
+					while ((!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 8)))) |
+					(!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16)))))
 					{
 						CONTEXT_SWITCH();
 					}
 
-					value0.vec = regs.get(static_cast<RegisterID>((pkt.insn >> 8) & 0xff));
-					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16) & 0xff));
+					value0.vec = regs.get(static_cast<RegisterID>((pkt.insn >> 8)));
+					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16)));
 
 					// std::cerr << "[DECODE] CMP: " << value1 << " -- " << value2 << std::endl;
 
@@ -237,7 +237,7 @@ namespace ecc
 				case INSN_OPCODE_JMP_GREATER:
 				case INSN_OPCODE_JMP_GREATER_EQUAL:
 				{
-					const flags_reg_t expected_mask = get_expected_cond_jump_flags_mask(static_cast<Opcode>(pkt.insn & 0xff));
+					const flags_reg_t expected_mask = get_expected_cond_jump_flags_mask(static_cast<Opcode>(pkt.insn));
 					value1 = create_vec_int64(expected_mask);
 					value0.vec = create_vec_int32(static_cast<int32_t>(pkt.insn >> 8));
 
@@ -253,13 +253,13 @@ namespace ecc
 
 				case INSN_OPCODE_LOAD_RESTORE_PC:
 				{
-					while (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 8) & 0xff)))
+					while (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 8))))
 					{
 						CONTEXT_SWITCH();
 					}
 
 					value0.vec = create_vec_int16(static_cast<int16_t>(pkt.insn >> 16));
-					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 8) & 0xff));
+					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 8)));
 
 					execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_LOAD_RESTORE_PC,
 										  value0,
@@ -270,14 +270,14 @@ namespace ecc
 				// ret = [const + reg]
 				case INSN_OPCODE_LOAD_REG_CONST_REG:
 				{
-					while (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16) & 0xff)))
+					while (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16))))
 					{
 						CONTEXT_SWITCH();
 					}
 
-					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) & 0xff);
+					value0.regID = static_cast<RegisterID>((pkt.insn >> 8));
+					value2 = regs.get(static_cast<RegisterID>((pkt.insn >> 16)));
 					value1 = create_vec_int16(static_cast<int16_t>(pkt.insn >> 24));
-					value2 = regs.get(static_cast<RegisterID>((pkt.insn >> 16) & 0xff));
 
 					execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_LOAD_REG,
 										  value0,
@@ -334,7 +334,7 @@ namespace ecc
 
 				default:
 				{
-					$display("[DECODE] unimplemented opcode: ", static_cast<Opcode>(pkt.insn & 0xff));
+					$display("[DECODE] unimplemented opcode: ", static_cast<Opcode>(pkt.insn));
 					assert(false);
 				}
 				}
