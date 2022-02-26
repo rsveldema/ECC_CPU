@@ -5,6 +5,11 @@ namespace ecc
 
 	METHOD_SECTION;
 
+	execution_mask_t get_cmp_mask(execution_mask_t exec_mask, VectorValue flags, VectorValue value1)
+	{
+		return (exec_mask & reduce_to_uint64_t(bit_and(flags, value1)));
+	}
+
 	ReturnObject ExecuteStage::run()
 	{
 		while (1)
@@ -149,22 +154,21 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_COND_JMP:
 				{
-					//const auto new_address = ;
-
-					const auto& jmp_mask = pkt.value1;
-					const auto& exec_mask = pkt.exec_mask;
-
 					while (!regs.is_valid(RegisterID::REG_FLAGS))
 					{
 						CONTEXT_SWITCH();
 					}
 
-					const VectorValue flags = regs.get(RegisterID::REG_FLAGS);
-					const auto& should_jmp_masks = bit_and(flags, jmp_mask);
-					const uint64_t execution_flags_true = exec_mask & reduce_to_uint64_t(should_jmp_masks);
-					const uint64_t all_threads_mask = exec_mask & ALL_THREADS_EXEC_MASK_INT64;
 
-					if (execution_flags_true == 0)
+					// pkt.value1 = jmp_mask
+					//const auto& should_jmp_masks = bit_and(regs.get(RegisterID::REG_FLAGS), pkt.value1);					
+					//const uint64_t execution_flags_true = pkt.exec_mask & reduce_to_uint64_t(should_jmp_masks);
+
+					//const uint64_t execution_flags_true = pkt.exec_mask & reduce_to_uint64_t(bit_and(regs.get(RegisterID::REG_FLAGS), pkt.value1));
+
+					
+
+					if (get_cmp_mask(pkt.exec_mask, regs.get(RegisterID::REG_FLAGS), pkt.value1) == 0)
 					{
 						// no thread wants to jump to the next-insn
 						store_bus.send_address(pkt.exec_mask, 
@@ -172,7 +176,7 @@ namespace ecc
 							STORAGE_JMP,
 							pkt.PC + sizeof(instruction_t));
 					}
-					else if (execution_flags_true == all_threads_mask)
+					else if (get_cmp_mask(pkt.exec_mask, regs.get(RegisterID::REG_FLAGS), pkt.value1) == (pkt.exec_mask & ALL_THREADS_EXEC_MASK_INT64))
 					{
 						// all threads just want to go to the next-insn
 						store_bus.send_address(pkt.exec_mask, 
@@ -188,8 +192,8 @@ namespace ecc
 							STORAGE_CJMP,
 							pkt.PC + get(pkt.value0.vec, 0),
 							pkt.PC + sizeof(instruction_t),							
-							execution_flags_true,
-							(exec_mask & ~execution_flags_true)); // these threads didn't want to jmp 								
+							get_cmp_mask(pkt.exec_mask, regs.get(RegisterID::REG_FLAGS), pkt.value1),
+							(pkt.exec_mask & ~get_cmp_mask(pkt.exec_mask, regs.get(RegisterID::REG_FLAGS), pkt.value1))); // these threads didn't want to jmp 								
 					}
 					break;
 				}
@@ -208,7 +212,6 @@ namespace ecc
 					store_bus.send_none(pkt.exec_mask, 
 							pkt.PC,
 							STORAGE_HALT);
-
 					break;
 				}
 
