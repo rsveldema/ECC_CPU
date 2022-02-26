@@ -144,7 +144,8 @@ namespace ecc
 
 					const auto dest = RegisterID::REG_PC;
 
-					ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_LOAD_MEM_INTO_REG,
+					ExecStagePacket store_pkt{ pkt.exec_mask, 
+						pkt.PC, StorageStageOpcode::STORAGE_LOAD_MEM_INTO_REG,
 							{.regID = dest}, 
 							{.value = offset}, 
 							0 
@@ -183,7 +184,8 @@ namespace ecc
 					else if (should_jmp == all_threads_mask)
 					{
 						// all threads just want to go to the next-insn
-						ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_JMP,
+						ExecStagePacket store_pkt{ pkt.exec_mask,
+							 pkt.PC, StorageStageOpcode::STORAGE_JMP,
 							new_address };
 						store_bus.send(store_pkt);
 					}
@@ -217,9 +219,10 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_HALT:
 				{
-					ExecStagePacket store_pkt{ pkt.exec_mask, 
-						pkt.PC, StorageStageOpcode::STORAGE_HALT };
-					store_bus.send(store_pkt);
+					store_bus.send_none(pkt.exec_mask, 
+							pkt.PC,
+							STORAGE_HALT);
+
 					break;
 				}
 

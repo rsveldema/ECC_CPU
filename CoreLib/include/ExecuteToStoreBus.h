@@ -49,6 +49,17 @@ namespace ecc
 			is_busy = true;
 		}
 
+		void send_none(execution_mask_t exec_mask, 
+					memory_address_t PC,
+					StorageStageOpcode opcode)
+		{
+			assert(!is_busy);
+			data.exec_mask = exec_mask;
+			data.PC = PC;
+			data.opcode = opcode;
+			is_busy = true;
+		}
+		
 		void send_reg_vec(execution_mask_t exec_mask, 
 					memory_address_t PC,
 					StorageStageOpcode opcode,
