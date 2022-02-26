@@ -24,7 +24,7 @@ namespace ecc
 		ExecStageValue dest;
 		ExecStageValue src;
 	
-		bool is_store_to_pc = false;
+		bool is_store_to_pc;
 
 		execution_mask_t execution_flags_true;
 		execution_mask_t execution_flags_false;
@@ -57,7 +57,7 @@ namespace ecc
 		void send_reg_vec(execution_mask_t exec_mask, 
 					memory_address_t PC,
 					StorageStageOpcode opcode,
-					RegisterID reg,
+					RegisterID reg_id,
 					const VectorValue& vec,
 					bool store_to_pc)
 		{
@@ -65,7 +65,7 @@ namespace ecc
 			data.exec_mask = exec_mask;
 			data.PC = PC;
 			data.opcode = opcode;
-			data.dest.regID = reg;
+			data.dest.regID = reg_id;
 			data.src.value = vec;
 			data.is_store_to_pc = store_to_pc;
 			is_busy = true;

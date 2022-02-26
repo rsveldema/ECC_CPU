@@ -10,7 +10,11 @@ namespace ecc
 		return (exec_mask & reduce_to_uint64_t(bit_and(flags, value1)));
 	}
 
-	ReturnObject ExecuteStage::run()
+
+	template <CoreID core_id>
+	ReturnObject ExecuteStage<core_id>::run(DecodeToExecuteBus& decode_bus,
+					ExecuteToStoreBus& store_bus,
+					RegisterFile& regs)
 	{
 		while (1)
 		{
@@ -29,200 +33,196 @@ namespace ecc
 
 				switch (pkt.opcode)
 				{
-				case ExecuteStageOpcode::EXEC_NOP:
+				case EXEC_NOP:
 				{
 					break;
 				}
 
-				case ExecuteStageOpcode::EXEC_CMP:
+				case EXEC_CMP:
 				{
 					// debbug("[EXECUTE] CMP: " + value1 + " -- " + value2 + "-----" + result);
 
-					regs.mark_invalid(RegisterID::REG_FLAGS);
+					regs.mark_invalid(REG_FLAGS);
 
-					store_bus.send_reg_vec(pkt.exec_mask, 
-							pkt.PC,
-							STORAGE_STORE_VALUE_INTO_REG,
-							RegisterID::REG_FLAGS,
-							compare_vecs(pkt.value0.vec, pkt.value1),
-							false);
+					store_bus.send_reg_vec(pkt.exec_mask,
+										   pkt.PC,
+										   STORAGE_STORE_VALUE_INTO_REG,
+										   REG_FLAGS,
+										   compare_vecs(pkt.value0.vec, pkt.value1),
+										   false);
 					break;
 				}
 
-				case ExecuteStageOpcode::EXEC_MOVE_REG_VALUE:
+				case EXEC_MOVE_REG_VALUE:
 				{
 					regs.mark_invalid(pkt.value0.regID);
 
-					store_bus.send_reg_vec(pkt.exec_mask, 
-							pkt.PC,
-							STORAGE_STORE_VALUE_INTO_REG,
-							pkt.value0.regID,
-							pkt.value1,
-							false);
+					store_bus.send_reg_vec(pkt.exec_mask,
+										   pkt.PC,
+										   STORAGE_STORE_VALUE_INTO_REG,
+										   pkt.value0.regID,
+										   pkt.value1,
+										   false);
 					break;
 				}
 
-
-				case ExecuteStageOpcode::EXEC_ORB_REG_VALUE:
+				case EXEC_ORB_REG_VALUE:
 				{
 					regs.mark_invalid(pkt.value0.regID);
 
-					store_bus.send_reg_vec(pkt.exec_mask, 
-							pkt.PC,
-							STORAGE_STORE_VALUE_INTO_REG,
-							pkt.value0.regID,
-							or_shift_left(pkt.value2, pkt.value1, 24),
-							false);
+					store_bus.send_reg_vec(pkt.exec_mask,
+										   pkt.PC,
+										   STORAGE_STORE_VALUE_INTO_REG,
+										   pkt.value0.regID,
+										   or_shift_left(pkt.value2, pkt.value1, 24),
+										   false);
 					break;
 				}
 
-
-				case ExecuteStageOpcode::EXEC_ORC_REG_VALUE:
+				case EXEC_ORC_REG_VALUE:
 				{
 					regs.mark_invalid(pkt.value0.regID);
 
-					store_bus.send_reg_vec(pkt.exec_mask, 
-							pkt.PC,
-							STORAGE_STORE_VALUE_INTO_REG,
-							pkt.value0.regID,
-							or_shift_left(pkt.value2, pkt.value1, 48),
-							false);
+					store_bus.send_reg_vec(pkt.exec_mask,
+										   pkt.PC,
+										   STORAGE_STORE_VALUE_INTO_REG,
+										   pkt.value0.regID,
+										   or_shift_left(pkt.value2, pkt.value1, 48),
+										   false);
 					break;
 				}
 
-				case ExecuteStageOpcode::EXEC_SHL_REG_VALUE_VALUE:
+				case EXEC_SHL_REG_VALUE_VALUE:
 				{
 					regs.mark_invalid(pkt.value0.regID);
 
-					store_bus.send_reg_vec(pkt.exec_mask, 
-							pkt.PC,
-							STORAGE_STORE_VALUE_INTO_REG,
-							pkt.value0.regID,
-							shift_left(pkt.value1, pkt.value2),
-							false);
+					store_bus.send_reg_vec(pkt.exec_mask,
+										   pkt.PC,
+										   STORAGE_STORE_VALUE_INTO_REG,
+										   pkt.value0.regID,
+										   shift_left(pkt.value1, pkt.value2),
+										   false);
 					break;
 				}
 
-				case ExecuteStageOpcode::EXEC_ADD_REG_VALUE_VALUE:
+				case EXEC_ADD_REG_VALUE_VALUE:
 				{
 					regs.mark_invalid(pkt.value0.regID);
 
-					store_bus.send_reg_vec(pkt.exec_mask, 
-							pkt.PC,
-							STORAGE_STORE_VALUE_INTO_REG,
-							pkt.value0.regID,
-							add(pkt.value1, pkt.value2),
-							false);
+					store_bus.send_reg_vec(pkt.exec_mask,
+										   pkt.PC,
+										   STORAGE_STORE_VALUE_INTO_REG,
+										   pkt.value0.regID,
+										   add(pkt.value1, pkt.value2),
+										   false);
 					break;
 				}
 
 				// reg = [value + value]
-				case ExecuteStageOpcode::EXEC_LOAD_REG:
+				case EXEC_LOAD_REG:
 				{
 					regs.mark_invalid(pkt.value0.regID);
 
-					store_bus.send_reg_vec(pkt.exec_mask, 
-							pkt.PC,
-							STORAGE_LOAD_MEM_INTO_REG,
-							pkt.value0.regID,
-							add(pkt.value1, pkt.value2),
-							false);
+					store_bus.send_reg_vec(pkt.exec_mask,
+										   pkt.PC,
+										   STORAGE_LOAD_MEM_INTO_REG,
+										   pkt.value0.regID,
+										   add(pkt.value1, pkt.value2),
+										   false);
 					break;
 				}
 
-				case ExecuteStageOpcode::EXEC_STORE_ADDR_VALUE:
+				case EXEC_STORE_ADDR_VALUE:
 				{
-					store_bus.send_vec_vec(pkt.exec_mask, 
-							pkt.PC,
-							STORAGE_STORE_REG_INTO_MEM,
-							add(pkt.value1, pkt.value2),
-							pkt.value0.vec);
+					store_bus.send_vec_vec(pkt.exec_mask,
+										   pkt.PC,
+										   STORAGE_STORE_REG_INTO_MEM,
+										   add(pkt.value1, pkt.value2),
+										   pkt.value0.vec);
 					break;
 				}
 
-				case ExecuteStageOpcode::EXEC_LOAD_RESTORE_PC:
+				case EXEC_LOAD_RESTORE_PC:
 				{
-					store_bus.send_reg_vec(pkt.exec_mask, 
-							pkt.PC,
-							STORAGE_LOAD_MEM_INTO_REG,
-							RegisterID::REG_PC,
-							add(pkt.value0.vec, pkt.value1),
-							true);
+					store_bus.send_reg_vec(pkt.exec_mask,
+										   pkt.PC,
+										   STORAGE_LOAD_MEM_INTO_REG,
+										   REG_PC,
+										   add(pkt.value0.vec, pkt.value1),
+										   true);
 					break;
 				}
 
-
-				case ExecuteStageOpcode::EXEC_COND_JMP:
+				case EXEC_COND_JMP:
 				{
-					while (!regs.is_valid(RegisterID::REG_FLAGS))
+					while (!regs.is_valid(REG_FLAGS))
 					{
 						CONTEXT_SWITCH();
 					}
 
-
 					// pkt.value1 = jmp_mask
-					//const auto& should_jmp_masks = bit_and(regs.get(RegisterID::REG_FLAGS), pkt.value1);					
-					//const uint64_t execution_flags_true = pkt.exec_mask & reduce_to_uint64_t(should_jmp_masks);
+					// const auto& should_jmp_masks = bit_and(regs.get(REG_FLAGS), pkt.value1);
+					// const uint64_t execution_flags_true = pkt.exec_mask & reduce_to_uint64_t(should_jmp_masks);
 
-					//const uint64_t execution_flags_true = pkt.exec_mask & reduce_to_uint64_t(bit_and(regs.get(RegisterID::REG_FLAGS), pkt.value1));
+					// const uint64_t execution_flags_true = pkt.exec_mask & reduce_to_uint64_t(bit_and(regs.get(REG_FLAGS), pkt.value1));
 
-					
-
-					if (get_cmp_mask(pkt.exec_mask, regs.get(RegisterID::REG_FLAGS), pkt.value1) == 0)
+					if (get_cmp_mask(pkt.exec_mask, regs.get(REG_FLAGS), pkt.value1) == 0)
 					{
 						// no thread wants to jump to the next-insn
-						store_bus.send_address(pkt.exec_mask, 
-							pkt.PC,
-							STORAGE_JMP,
-							pkt.PC + sizeof(instruction_t));
-					}
-					else if (get_cmp_mask(pkt.exec_mask, regs.get(RegisterID::REG_FLAGS), pkt.value1) == (pkt.exec_mask & ALL_THREADS_EXEC_MASK_INT64))
-					{
-						// all threads just want to go to the next-insn
-						store_bus.send_address(pkt.exec_mask, 
-							pkt.PC,
-							STORAGE_JMP,
-							pkt.PC + get(pkt.value0.vec, 0));					
+						store_bus.send_address(pkt.exec_mask,
+											   pkt.PC,
+											   STORAGE_JMP,
+											   pkt.PC + sizeof(instruction_t));
 					}
 					else
 					{
-						// some threads want to jump, some don't.
-						store_bus.send_2_address(pkt.exec_mask, 
-							pkt.PC,
-							STORAGE_CJMP,
-							pkt.PC + get(pkt.value0.vec, 0),
-							pkt.PC + sizeof(instruction_t),							
-							get_cmp_mask(pkt.exec_mask, regs.get(RegisterID::REG_FLAGS), pkt.value1),
-							(pkt.exec_mask & ~get_cmp_mask(pkt.exec_mask, regs.get(RegisterID::REG_FLAGS), pkt.value1))); // these threads didn't want to jmp 								
+						if (get_cmp_mask(pkt.exec_mask, regs.get(REG_FLAGS), pkt.value1) == (pkt.exec_mask & ALL_THREADS_EXEC_MASK_INT64))
+						{
+							// all threads just want to go to the next-insn
+							store_bus.send_address(pkt.exec_mask,
+												   pkt.PC,
+												   STORAGE_JMP,
+												   pkt.PC + get(pkt.value0.vec, 0));
+						}
+						else
+						{
+							// some threads want to jump, some don't.
+							store_bus.send_2_address(pkt.exec_mask,
+													 pkt.PC,
+													 STORAGE_CJMP,
+													 pkt.PC + get(pkt.value0.vec, 0),
+													 pkt.PC + sizeof(instruction_t),
+													 get_cmp_mask(pkt.exec_mask, regs.get(REG_FLAGS), pkt.value1),
+													 (pkt.exec_mask & ~get_cmp_mask(pkt.exec_mask, regs.get(REG_FLAGS), pkt.value1))); // these threads didn't want to jmp
+						}
 					}
 					break;
 				}
 
-				case ExecuteStageOpcode::EXEC_JMP:
+				case EXEC_JMP:
 				{
-					store_bus.send_address(pkt.exec_mask, 
-							pkt.PC,
-							STORAGE_JMP,
-							pkt.PC + get(pkt.value0.vec, 0));
+					store_bus.send_address(pkt.exec_mask,
+										   pkt.PC,
+										   STORAGE_JMP,
+										   pkt.PC + get(pkt.value0.vec, 0));
 					break;
 				}
 
-				case ExecuteStageOpcode::EXEC_HALT:
+				case EXEC_HALT:
 				{
-					store_bus.send_none(pkt.exec_mask, 
-							pkt.PC,
-							STORAGE_HALT);
+					store_bus.send_none(pkt.exec_mask,
+										pkt.PC,
+										STORAGE_HALT);
 					break;
 				}
 
-
-				default: {
+				default:
+				{
 					$display("[EXECUTE] unhandled opcode in execute stage: ", pkt.opcode);
-					abort();
+					assert(false);	
 				}
 				}
 			}
-
 
 			CONTEXT_SWITCH();
 		}

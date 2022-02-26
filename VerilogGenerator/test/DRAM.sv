@@ -22,34 +22,34 @@ module DRAM(MemoryBus toCPU);
 	case (state)
 		0:
 			begin
-				state <= 126; // GOTO
+				state <= 175; // GOTO
 				return;
 			end
-		126:
+		175:
 			begin
 				if (!(toCPU.request_busy))
 				begin
-					state <= 128; // GOTO
+					state <= 177; // GOTO
 					return;
 				end
 				pkt <= toCPU.accept_request();
 				// CONTEXT_SWITCH();
-				state <= 129; // GOTO
+				state <= 178; // GOTO
 				return;
 			end
-		129:
+		178:
 			begin
-				state <= 130; // GOTO
+				state <= 179; // GOTO
 				return;
 			end
-		130:
+		179:
 			begin
 				if ((pkt.packet_type == bus_write_data))
 				begin
 				end
 				else
 				begin
-					state <= 134; // GOTO
+					state <= 183; // GOTO
 					return;
 				end
 				assert((pkt.address < ( ((uint64_t'($bits(storage)) >> 3)  )  - 8)));
@@ -58,74 +58,74 @@ module DRAM(MemoryBus toCPU);
 					begin
 						storage[(phys_memory_address_t'((pkt.address + i)))] <= (uint8_t'((pkt.payload >> (i * 8))));
 					end
-				state <= 131; // GOTO
+				state <= 180; // GOTO
 				return;
-				state <= 133; // GOTO
+				state <= 182; // GOTO
 				return;
 			end
-		134:
+		183:
 			begin
 				if ((pkt.packet_type == bus_read_data))
 				begin
 				end
 				else
 				begin
-					state <= 137; // GOTO
+					state <= 186; // GOTO
 					return;
 				end
 				assert((pkt.address < ( ((uint64_t'($bits(storage)) >> 3)  )  - 8)));
 				// CONTEXT_SWITCH();
-				state <= 136; // GOTO
+				state <= 185; // GOTO
 				return;
 			end
-		136:
+		185:
 			begin
-				state <= 132; // GOTO
+				state <= 181; // GOTO
 				return;
 			end
-		132:
+		181:
 			begin
 				READ_MEMORY_DELAY();
 				toCPU.send_read_response(`PACK8(storage[(phys_memory_address_t'((pkt.address + 0)))], storage[(phys_memory_address_t'((pkt.address + 1)))], storage[(phys_memory_address_t'((pkt.address + 2)))], storage[(phys_memory_address_t'((pkt.address + 3)))], storage[(phys_memory_address_t'((pkt.address + 4)))], storage[(phys_memory_address_t'((pkt.address + 5)))], storage[(phys_memory_address_t'((pkt.address + 6)))], storage[(phys_memory_address_t'((pkt.address + 7)))]), pkt.source);
-				state <= 131; // GOTO
+				state <= 180; // GOTO
 				return;
-				state <= 135; // GOTO
+				state <= 184; // GOTO
 				return;
 			end
-		137:
+		186:
 			begin
 				$display("unrecognized bus command");
 				abort();
-				state <= 135; // GOTO
+				state <= 184; // GOTO
 				return;
 			end
-		135:
+		184:
 			begin
-				state <= 133; // GOTO
+				state <= 182; // GOTO
 				return;
 			end
-		133:
+		182:
 			begin
-				state <= 131; // GOTO
+				state <= 180; // GOTO
 				return;
 			end
-		131:
+		180:
 			begin
-				state <= 128; // GOTO
+				state <= 177; // GOTO
 				return;
 			end
-		128:
+		177:
 			begin
 				// CONTEXT_SWITCH();
-				state <= 138; // GOTO
+				state <= 187; // GOTO
 				return;
 			end
-		138:
+		187:
 			begin
-				state <= 126; // GOTO
+				state <= 175; // GOTO
 				return;
 			end
-		127:
+		176:
 			begin
 			end
 	endcase

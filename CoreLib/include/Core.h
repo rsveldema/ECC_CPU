@@ -29,7 +29,7 @@ namespace ecc
 		RegisterFile regs;
 		FetchStage<core_id> fetch;
 		DecodeStage<core_id> decode;
-		ExecuteStage execute;
+		ExecuteStage<core_id> execute;
 		StoreStage<core_id>  store;
 
 		// data cache

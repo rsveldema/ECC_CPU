@@ -66,6 +66,7 @@ module main(input clk);
     DecodeToExecuteBus decode_exec_bus;
     FetchToDecodeBus fetch_decode_bus;
     StoreToFetchBus store_fetch_bus;
+    ExecuteToStoreBus exec_store_bus;
 
     MemoryBus memory_bus;
     DRAM dram (memory_bus);
@@ -73,6 +74,7 @@ module main(input clk);
 
     FetchStage  #(.core_id(0)) fetcher (fetch_decode_bus, store_fetch_bus, memory_bus);
     DecodeStage #(.core_id(0)) decoder (fetch_decode_bus, decode_exec_bus, reg_file);
+    ExecuteStage #(.core_id(0)) executor (decode_exec_bus, exec_store_bus, reg_file);
 
 
     initial begin
@@ -84,7 +86,9 @@ module main(input clk);
         decode_exec_bus.init();
         fetch_decode_bus.init();
         store_fetch_bus.init();
-        
+        exec_store_bus.init();
+
+
         fd = $fopen("../../Assembler/tests/t1.bin", "rb");
         if (fd == 0) begin            
             $display("FAILED to open bin file");
@@ -122,11 +126,8 @@ module main(input clk);
      always @(posedge clk) 
      begin
         fetcher.run();    
-     end 
-
-     always @(posedge clk) 
-     begin
         decoder.run();    
+        executor.run();
      end 
 
      always @(posedge clk) 
