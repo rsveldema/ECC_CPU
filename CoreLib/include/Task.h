@@ -11,6 +11,10 @@ namespace ecc
 {
 	using phys_memory_address_t = uint32_t;
 
+
+
+#define SET_BIT(ret, bitnum, value)    ret |= ((value) << bitnum)
+
 #define PACK8(a0, a1, a2, a3, a4, a5, a6, a7)    ( \
 	((uint64_t)a0) << 0 |  \
 	((uint64_t)a1) << 8 |  \

@@ -6,6 +6,7 @@
 
 #include "MachineInfo.h"
 #include "Defines.h"
+#include "Task.h"
 
 namespace ecc
 {
@@ -16,8 +17,7 @@ namespace ecc
 
 	METHOD_SECTION;
 
-	static inline
-	int64_t get(const VectorValue& v, uint32_t ix)
+	static inline int64_t get(const VectorValue &v, uint32_t ix)
 	{
 		assert(ix < NUMBER_OF_VECTOR_THREADS_INT64);
 		return v.data[ix];
@@ -29,7 +29,6 @@ namespace ecc
 		assert(ix < NUMBER_OF_VECTOR_THREADS_INT64);
 		data[ix] = value;
 	}*/
-
 
 	static VectorValue or_shift_left(const VectorValue &self, const VectorValue &other, uint32_t shift_count)
 	{
@@ -85,15 +84,17 @@ namespace ecc
 
 	static int64_t get_compare_result(int64_t value1, int64_t value2)
 	{
-		if (value1 == value2) {
+		if (value1 == value2)
+		{
 			return FLAGS_MASK_EQ;
 		}
 
-		if (value1 > value2) {
+		if (value1 > value2)
+		{
 			return FLAGS_MASK_GT;
 		}
 
-		//if (value1 < value2) {
+		// if (value1 < value2) {
 		return FLAGS_MASK_LT;
 		//}
 	}
@@ -131,7 +132,7 @@ namespace ecc
 		uint64_t ret = 0;
 		for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
 		{
-			ret |= (v.data[i] != 0) << i;
+			SET_BIT(ret, i, (v.data[i] != 0));
 		}
 		return ret;
 	}
@@ -162,13 +163,12 @@ namespace ecc
 	}
 
 	static VectorValue create_vec_int16(const int16_t v)
-		{
+	{
 		return create_vec_int64(static_cast<int64_t>(v));
-		}
+	}
 
 	static VectorValue create_vec_int32(const int32_t v)
 	{
 		return create_vec_int64(static_cast<int64_t>(v));
 	}
 }
-

@@ -5,7 +5,7 @@ from LowerState import LowerState
 
 
 def is_macro(fn):
-    return fn in ["PACK2", "PACK4", "PACK8"]
+    return fn in ["PACK2", "PACK4", "PACK8", "SET_BIT"]
 
 
 class CallExpr(Expression):

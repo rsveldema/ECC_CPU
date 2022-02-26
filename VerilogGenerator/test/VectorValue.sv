@@ -152,7 +152,7 @@ begin
 	ret <= 0;
 	for (uint32_t i = 0; (i < NUMBER_OF_VECTOR_THREADS_INT64); i=(i + 1))
 		begin
-			ret <= ret | ((v.data[i] != 0) << i);
+			`SET_BIT(ret, i, (v.data[i] != 0));
 		end
 	return ret;
 end
