@@ -49,6 +49,21 @@ namespace ecc
 			is_busy = true;
 		}
 
+		void send_reg_vec(execution_mask_t exec_mask, 
+					memory_address_t PC,
+					StorageStageOpcode opcode,
+					RegisterID reg,
+					const VectorValue& vec)
+		{
+			assert(!is_busy);
+			data.exec_mask = exec_mask;
+			data.PC = PC;
+			data.opcode = opcode;
+			data.dest.regID = reg;
+			data.src.value = vec;
+			is_busy = true;
+		}
+
 		ExecStagePacket recv()
 		{
 			assert(is_busy);
