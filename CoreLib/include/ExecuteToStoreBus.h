@@ -57,6 +57,7 @@ namespace ecc
 			data.exec_mask = exec_mask;
 			data.PC = PC;
 			data.opcode = opcode;
+			data.is_store_to_pc = false;
 			is_busy = true;
 		}
 		
@@ -72,6 +73,23 @@ namespace ecc
 			data.opcode = opcode;
 			data.dest.regID = reg;
 			data.src.value = vec;
+			data.is_store_to_pc = false;
+			is_busy = true;
+		}
+
+		void send_vec_vec(execution_mask_t exec_mask, 
+					memory_address_t PC,
+					StorageStageOpcode opcode,
+					const VectorValue& vec1,
+					const VectorValue& vec2)
+		{
+			assert(!is_busy);
+			data.exec_mask = exec_mask;
+			data.PC = PC;
+			data.opcode = opcode;
+			data.dest.value = vec1;
+			data.src.value = vec2;
+			data.is_store_to_pc = false;
 			is_busy = true;
 		}
 

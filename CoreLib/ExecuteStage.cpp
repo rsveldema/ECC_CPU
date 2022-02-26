@@ -45,10 +45,7 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_MOVE_REG_VALUE:
 				{
-					const auto& dest = pkt.value0.regID;
-					const auto& src = pkt.value1;
-
-					regs.mark_invalid(dest);
+					regs.mark_invalid(pkt.value0.regID);
 
 					store_bus.send_reg_vec(pkt.exec_mask, 
 							pkt.PC,
@@ -87,8 +84,6 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_SHL_REG_VALUE_VALUE:
 				{
-					const auto& dest = pkt.value0.regID;
-
 					regs.mark_invalid(pkt.value0.regID);
 
 					store_bus.send_reg_vec(pkt.exec_mask, 
@@ -127,14 +122,11 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_STORE_ADDR_VALUE:
 				{
-					const auto& value = pkt.value0.vec;
-					auto addr = add(pkt.value1, pkt.value2);
-
-					ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC,
-						StorageStageOpcode::STORAGE_STORE_REG_INTO_MEM,
-						{.value = addr}, 
-						{.value = value} };
-					store_bus.send(store_pkt);
+					store_bus.send_vec_vec(pkt.exec_mask, 
+							pkt.PC,
+							STORAGE_STORE_REG_INTO_MEM,
+							add(pkt.value1, pkt.value2),
+							pkt.value0.vec);
 					break;
 				}
 
