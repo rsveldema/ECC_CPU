@@ -73,7 +73,7 @@ continue_stmt: "continue" ";"
 
 call_stmt: access "(" args ")" ";"
 
-access: qual_ident ("." IDENT)? ("->" IDENT)?
+access: qual_ident ("." IDENT)* ("->" IDENT)?
 
 lhs: access ("[" term "]")?
 

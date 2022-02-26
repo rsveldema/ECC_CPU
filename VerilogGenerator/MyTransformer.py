@@ -100,7 +100,10 @@ class MyTransformer(Transformer):
         if len(tree) == 1:
             return tree[0]
         else:
-            return DotAccessExpr(tree[0], tree[1]+"")
+            ident_list = []
+            for p in tree[1:]:
+                ident_list.append(p + "")
+            return DotAccessExpr(tree[0], ident_list)
 
     def init_expr(self, tree):
         return InitExpr(tree[0:])
@@ -120,9 +123,9 @@ class MyTransformer(Transformer):
     def method_name_qual_ident(self, tree):
         base = Ident(tree[0] + "")        
         if len(tree) == 2:
-            return DotAccessExpr(base, tree[1] + "")
+            return DotAccessExpr(base, [tree[1] + ""])
         if len(tree) == 3:
-            return DotAccessExpr(base, tree[2] + "")
+            return DotAccessExpr(base, [tree[2] + ""])
         return base
 
 
@@ -130,7 +133,7 @@ class MyTransformer(Transformer):
         base = Ident(tree[0] + "")
 
         if len(tree) == 2:
-            return DotAccessExpr(base, tree[1] + "")
+            return DotAccessExpr(base, [tree[1] + ""])
 
         return base
 

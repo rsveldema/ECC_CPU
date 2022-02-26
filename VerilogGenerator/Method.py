@@ -104,7 +104,7 @@ class Method:
     def generate_module(self, ps:PrintStream):
         da: DotAccessExpr = self.funcname
         module_name = da.left.str()        
-        task_name = da.member
+        task_name = da.member_list[0]
         
         params = self.get_param_str("")
 

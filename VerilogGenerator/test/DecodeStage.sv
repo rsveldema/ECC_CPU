@@ -44,9 +44,6 @@ endfunction
 module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, RegisterFile regs);
 	parameter CoreID core_id;
 	reg[32:0] state = 0;
-	DecodeStageValue value0;
-	VectorValue value1;
-	VectorValue value2;
 	FetchToDecodeBusPacket pkt;
 
 
@@ -140,10 +137,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		67:
 			begin
-				value0.regID <= REG_R0;
-				value1 <= create_vec_int32((int32_t'((pkt.insn >> 8))));
-				value2 <= regs.get(REG_R0);
-				execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_ORC_REG_VALUE, value0, value1, value2);
+				execute_bus.send_req3_reg(pkt.exec_mask, pkt.PC, EXEC_ORC_REG_VALUE, REG_R0, create_vec_int32((int32_t'((pkt.insn >> 8)))), regs.get(REG_R0));
 				state <= 38; // GOTO
 				return;
 				state <= 69; // GOTO
@@ -190,10 +184,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		64:
 			begin
-				value0.regID <= REG_R0;
-				value1 <= create_vec_int32((int32_t'((pkt.insn >> 8))));
-				value2 <= regs.get(REG_R0);
-				execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_ORB_REG_VALUE, value0, value1, value2);
+				execute_bus.send_req3_reg(pkt.exec_mask, pkt.PC, EXEC_ORB_REG_VALUE, REG_R0, create_vec_int32((int32_t'((pkt.insn >> 8)))), regs.get(REG_R0));
 				state <= 38; // GOTO
 				return;
 				state <= 73; // GOTO
@@ -209,9 +200,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 					state <= 78; // GOTO
 					return;
 				end
-				value0.regID <= REG_R0;
-				value1 <= create_vec_int32((int32_t'((pkt.insn >> 8))));
-				execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE, value0, value1);
+				execute_bus.send_req2_reg(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE, REG_R0, create_vec_int32((int32_t'((pkt.insn >> 8)))));
 				state <= 38; // GOTO
 				return;
 				state <= 77; // GOTO
@@ -258,10 +247,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		61:
 			begin
-				value0.regID <= (RegisterID'((pkt.insn >> 8)));
-				value2 <= regs.get((RegisterID'((pkt.insn >> 16))));
-				value1 <= create_vec_int16((int16_t'((pkt.insn >> 24))));
-				execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_LOAD_REG, value0, value1, value2);
+				execute_bus.send_req3_reg(pkt.exec_mask, pkt.PC, EXEC_LOAD_REG, (RegisterID'((pkt.insn >> 8))), create_vec_int16((int16_t'((pkt.insn >> 24)))), regs.get((RegisterID'((pkt.insn >> 16)))));
 				state <= 38; // GOTO
 				return;
 				state <= 79; // GOTO
@@ -308,9 +294,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		58:
 			begin
-				value0.vec <= create_vec_int16((int16_t'((pkt.insn >> 16))));
-				value1 <= regs.get((RegisterID'((pkt.insn >> 8))));
-				execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_LOAD_RESTORE_PC, value0, value1);
+				execute_bus.send_req2_vec(pkt.exec_mask, pkt.PC, EXEC_LOAD_RESTORE_PC, create_vec_int16((int16_t'((pkt.insn >> 16)))), regs.get((RegisterID'((pkt.insn >> 8)))));
 				state <= 38; // GOTO
 				return;
 				state <= 83; // GOTO
@@ -326,9 +310,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 					state <= 88; // GOTO
 					return;
 				end
-				value1 <= create_vec_int64(get_expected_cond_jump_flags_mask((Opcode'(pkt.insn))));
-				value0.vec <= create_vec_int32((int32_t'((pkt.insn >> 8))));
-				execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_COND_JMP, value0, value1);
+				execute_bus.send_req2_vec(pkt.exec_mask, pkt.PC, EXEC_COND_JMP, create_vec_int32((int32_t'((pkt.insn >> 8)))), create_vec_int64(get_expected_cond_jump_flags_mask((Opcode'(pkt.insn)))));
 				state <= 38; // GOTO
 				return;
 				state <= 87; // GOTO
@@ -375,9 +357,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		55:
 			begin
-				value0.vec <= regs.get((RegisterID'((pkt.insn >> 8))));
-				value1 <= regs.get((RegisterID'((pkt.insn >> 16))));
-				execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_CMP, value0, value1);
+				execute_bus.send_req2_vec(pkt.exec_mask, pkt.PC, EXEC_CMP, regs.get((RegisterID'((pkt.insn >> 8)))), regs.get((RegisterID'((pkt.insn >> 16)))));
 				state <= 38; // GOTO
 				return;
 				state <= 89; // GOTO
@@ -393,8 +373,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 					state <= 94; // GOTO
 					return;
 				end
-				value0.vec <= create_vec_int32((int32_t'((pkt.insn >> 8))));
-				execute_bus.send_req1(pkt.exec_mask, pkt.PC, EXEC_JMP, value0);
+				execute_bus.send_req1(pkt.exec_mask, pkt.PC, EXEC_JMP, create_vec_int32((int32_t'((pkt.insn >> 8)))));
 				state <= 38; // GOTO
 				return;
 				state <= 93; // GOTO
@@ -441,10 +420,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		52:
 			begin
-				value0.regID <= (RegisterID'((pkt.insn >> 8)));
-				value2 <= create_vec_int8((int8_t'((pkt.insn >> 24))));
-				value1 <= regs.get((RegisterID'((pkt.insn >> 16))));
-				execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_ADD_REG_VALUE_VALUE, value0, value1, value2);
+				execute_bus.send_req3_reg(pkt.exec_mask, pkt.PC, EXEC_ADD_REG_VALUE_VALUE, (RegisterID'((pkt.insn >> 8))), regs.get((RegisterID'((pkt.insn >> 16)))), create_vec_int8((int8_t'((pkt.insn >> 24)))));
 				state <= 38; // GOTO
 				return;
 				state <= 95; // GOTO
@@ -491,10 +467,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		49:
 			begin
-				value0.regID <= (RegisterID'((pkt.insn >> 8)));
-				value1 <= regs.get((RegisterID'((pkt.insn >> 16))));
-				value2 <= regs.get((RegisterID'((pkt.insn >> 24))));
-				execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_ADD_REG_VALUE_VALUE, value0, value1, value2);
+				execute_bus.send_req3_reg(pkt.exec_mask, pkt.PC, EXEC_ADD_REG_VALUE_VALUE, (RegisterID'((pkt.insn >> 8))), regs.get((RegisterID'((pkt.insn >> 16)))), regs.get((RegisterID'((pkt.insn >> 24)))));
 				state <= 38; // GOTO
 				return;
 				state <= 99; // GOTO
@@ -541,10 +514,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		46:
 			begin
-				value0.regID <= (RegisterID'((pkt.insn >> 8)));
-				value1 <= regs.get((RegisterID'((pkt.insn >> 16))));
-				value2 <= create_vec_int8((int8_t'((pkt.insn >> 24))));
-				execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_SHL_REG_VALUE_VALUE, value0, value1, value2);
+				execute_bus.send_req3_reg(pkt.exec_mask, pkt.PC, EXEC_SHL_REG_VALUE_VALUE, (RegisterID'((pkt.insn >> 8))), regs.get((RegisterID'((pkt.insn >> 16)))), create_vec_int8((int8_t'((pkt.insn >> 24)))));
 				state <= 38; // GOTO
 				return;
 				state <= 103; // GOTO
@@ -591,9 +561,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		43:
 			begin
-				value0.regID <= (RegisterID'((pkt.insn >> 8)));
-				value1 <= regs.get((RegisterID'((pkt.insn >> 16))));
-				execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE, value0, value1);
+				execute_bus.send_req2_reg(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE, (RegisterID'((pkt.insn >> 8))), regs.get((RegisterID'((pkt.insn >> 16)))));
 				state <= 38; // GOTO
 				return;
 				state <= 107; // GOTO
@@ -609,9 +577,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 					state <= 112; // GOTO
 					return;
 				end
-				value0.regID <= (RegisterID'((pkt.insn >> 8)));
-				value1 <= create_vec_int16((int16_t'((pkt.insn >> 16))));
-				execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE, value0, value1);
+				execute_bus.send_req2_reg(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE, (RegisterID'((pkt.insn >> 8))), create_vec_int16((int16_t'((pkt.insn >> 16)))));
 				state <= 38; // GOTO
 				return;
 				state <= 111; // GOTO
@@ -627,9 +593,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 					state <= 114; // GOTO
 					return;
 				end
-				value0.regID <= (RegisterID'((pkt.insn >> 8)));
-				value1 <= create_vec_incrementing_values();
-				execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE, value0, value1);
+				execute_bus.send_req2_reg(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE, (RegisterID'((pkt.insn >> 8))), create_vec_incrementing_values());
 				state <= 38; // GOTO
 				return;
 				state <= 113; // GOTO
@@ -676,10 +640,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		40:
 			begin
-				value0.vec <= regs.get((RegisterID'((pkt.insn >> 8))));
-				value2 <= regs.get((RegisterID'((pkt.insn >> 16))));
-				value1 <= create_vec_int16((int16_t'((uint8_t'((pkt.insn >> 24))))));
-				execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_STORE_ADDR_VALUE, value0, value1, value2);
+				execute_bus.send_req3_vec(pkt.exec_mask, pkt.PC, EXEC_STORE_ADDR_VALUE, regs.get((RegisterID'((pkt.insn >> 8)))), create_vec_int16((int16_t'((uint8_t'((pkt.insn >> 24)))))), regs.get((RegisterID'((pkt.insn >> 16)))));
 				state <= 38; // GOTO
 				return;
 				state <= 115; // GOTO
@@ -695,7 +656,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 					state <= 120; // GOTO
 					return;
 				end
-				execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE, {(RegisterID'((pkt.insn >> 8)))}, create_vec_int64(((int64_t'((uint16_t'((pkt.insn >> 16))))) + pkt.PC)));
+				execute_bus.send_req2_reg(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE, (RegisterID'((pkt.insn >> 8))), create_vec_int64(((int64_t'((uint16_t'((pkt.insn >> 16))))) + pkt.PC)));
 				state <= 38; // GOTO
 				return;
 				state <= 119; // GOTO
@@ -711,7 +672,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 					state <= 122; // GOTO
 					return;
 				end
-				execute_bus.send_req1(pkt.exec_mask, pkt.PC, EXEC_HALT, value0);
+				execute_bus.send_req0(pkt.exec_mask, pkt.PC, EXEC_HALT);
 				state <= 38; // GOTO
 				return;
 				state <= 121; // GOTO
