@@ -95,13 +95,13 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		36:
 			begin
-				$display("DECODE exec: ", pkt.PC, (Opcode'(pkt.insn)));
+				$display("DECODE exec: ", pkt.PC, getOpcode(pkt.insn));
 				state <= 37; // GOTO
 				return;
 			end
 		37:
 			begin
-				if (((Opcode'(pkt.insn)) == INSN_OPCODE_MOVE_R0_CONST24C))
+				if ((getOpcode(pkt.insn) == INSN_OPCODE_MOVE_R0_CONST24C))
 				begin
 				end
 				else
@@ -151,7 +151,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		72:
 			begin
-				if (((Opcode'(pkt.insn)) == INSN_OPCODE_MOVE_R0_CONST24B))
+				if ((getOpcode(pkt.insn) == INSN_OPCODE_MOVE_R0_CONST24B))
 				begin
 				end
 				else
@@ -201,7 +201,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		76:
 			begin
-				if (((Opcode'(pkt.insn)) == INSN_OPCODE_MOVE_R0_CONST24A))
+				if ((getOpcode(pkt.insn) == INSN_OPCODE_MOVE_R0_CONST24A))
 				begin
 				end
 				else
@@ -219,7 +219,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		78:
 			begin
-				if (((Opcode'(pkt.insn)) == INSN_OPCODE_LOAD_REG_CONST_REG))
+				if ((getOpcode(pkt.insn) == INSN_OPCODE_LOAD_REG_CONST_REG))
 				begin
 				end
 				else
@@ -269,7 +269,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		82:
 			begin
-				if (((Opcode'(pkt.insn)) == INSN_OPCODE_LOAD_RESTORE_PC))
+				if ((getOpcode(pkt.insn) == INSN_OPCODE_LOAD_RESTORE_PC))
 				begin
 				end
 				else
@@ -318,7 +318,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		86:
 			begin
-				if ((((((((Opcode'(pkt.insn)) == INSN_OPCODE_JMP_LOWER) || ((Opcode'(pkt.insn)) == INSN_OPCODE_JMP_LOWER_EQUAL)) || ((Opcode'(pkt.insn)) == INSN_OPCODE_JMP_EQUAL)) || ((Opcode'(pkt.insn)) == INSN_OPCODE_JMP_NOT_EQUAL)) || ((Opcode'(pkt.insn)) == INSN_OPCODE_JMP_GREATER)) || ((Opcode'(pkt.insn)) == INSN_OPCODE_JMP_GREATER_EQUAL)))
+				if (((((((getOpcode(pkt.insn) == INSN_OPCODE_JMP_LOWER) || (getOpcode(pkt.insn) == INSN_OPCODE_JMP_LOWER_EQUAL)) || (getOpcode(pkt.insn) == INSN_OPCODE_JMP_EQUAL)) || (getOpcode(pkt.insn) == INSN_OPCODE_JMP_NOT_EQUAL)) || (getOpcode(pkt.insn) == INSN_OPCODE_JMP_GREATER)) || (getOpcode(pkt.insn) == INSN_OPCODE_JMP_GREATER_EQUAL)))
 				begin
 				end
 				else
@@ -336,7 +336,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		88:
 			begin
-				if (((Opcode'(pkt.insn)) == INSN_OPCODE_CMP_REG_REG))
+				if ((getOpcode(pkt.insn) == INSN_OPCODE_CMP_REG_REG))
 				begin
 				end
 				else
@@ -385,7 +385,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		92:
 			begin
-				if (((Opcode'(pkt.insn)) == INSN_OPCODE_JMP_ALWAYS))
+				if ((getOpcode(pkt.insn) == INSN_OPCODE_JMP_ALWAYS))
 				begin
 				end
 				else
@@ -402,7 +402,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		94:
 			begin
-				if (((Opcode'(pkt.insn)) == INSN_OPCODE_ADD_REG_REG_CONST))
+				if ((getOpcode(pkt.insn) == INSN_OPCODE_ADD_REG_REG_CONST))
 				begin
 				end
 				else
@@ -452,7 +452,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		98:
 			begin
-				if (((Opcode'(pkt.insn)) == INSN_OPCODE_ADD_REG_REG_REG))
+				if ((getOpcode(pkt.insn) == INSN_OPCODE_ADD_REG_REG_REG))
 				begin
 				end
 				else
@@ -502,7 +502,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		102:
 			begin
-				if (((Opcode'(pkt.insn)) == INSN_OPCODE_L_SSHIFT_REG_REG_CONST))
+				if ((getOpcode(pkt.insn) == INSN_OPCODE_L_SSHIFT_REG_REG_CONST))
 				begin
 				end
 				else
@@ -552,7 +552,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		106:
 			begin
-				if (((Opcode'(pkt.insn)) == INSN_OPCODE_MOVE_REG_REG))
+				if ((getOpcode(pkt.insn) == INSN_OPCODE_MOVE_REG_REG))
 				begin
 				end
 				else
@@ -601,7 +601,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		110:
 			begin
-				if (((Opcode'(pkt.insn)) == INSN_OPCODE_MOVE_REG_CONST16))
+				if ((getOpcode(pkt.insn) == INSN_OPCODE_MOVE_REG_CONST16))
 				begin
 				end
 				else
@@ -619,7 +619,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		112:
 			begin
-				if (((Opcode'(pkt.insn)) == INSN_OPCODE_MOVE_REG_BLOCK_INDEX))
+				if ((getOpcode(pkt.insn) == INSN_OPCODE_MOVE_REG_BLOCK_INDEX))
 				begin
 				end
 				else
@@ -637,7 +637,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		114:
 			begin
-				if (((Opcode'(pkt.insn)) == INSN_OPCODE_STORE_REG_CONST_REG))
+				if ((getOpcode(pkt.insn) == INSN_OPCODE_STORE_REG_CONST_REG))
 				begin
 				end
 				else
@@ -687,7 +687,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		118:
 			begin
-				if (((Opcode'(pkt.insn)) == INSN_OPCODE_MOVE_PCREL_REG_CONST16))
+				if ((getOpcode(pkt.insn) == INSN_OPCODE_MOVE_PCREL_REG_CONST16))
 				begin
 				end
 				else
@@ -705,7 +705,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		120:
 			begin
-				if (((Opcode'(pkt.insn)) == INSN_OPCODE_HALT))
+				if ((getOpcode(pkt.insn) == INSN_OPCODE_HALT))
 				begin
 				end
 				else
@@ -721,7 +721,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		122:
 			begin
-				if (((Opcode'(pkt.insn)) == INSN_OPCODE_NOP))
+				if ((getOpcode(pkt.insn) == INSN_OPCODE_NOP))
 				begin
 				end
 				else
@@ -736,7 +736,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		124:
 			begin
-				$display("[DECODE] unimplemented opcode: ", (Opcode'(pkt.insn)));
+				$display("[DECODE] unimplemented opcode: ", getOpcode(pkt.insn));
 				assert(0);
 				state <= 123; // GOTO
 				return;

@@ -9,6 +9,12 @@ namespace ecc
 		return { static_cast<instruction_t>(value), static_cast<instruction_t>(value >> 32) };
 	}
 
+	memory_address_t get_address_to_fetch_from_PC(memory_address_t fetch_PC)
+	{
+		return fetch_PC & ~7;
+	}
+
+
 	bool changesControlFlow(Opcode op)
 	{
 		switch (op)
@@ -94,11 +100,8 @@ namespace ecc
 				}
 				else
 				{
-					const memory_address_t address_fetched = fetch_PC & ~7;
-
-					$display("requesting memory at address: ", address_fetched);
-
-					memory_bus.send_read_request_data(address_fetched, 	
+					$display("requesting memory at address: ", get_address_to_fetch_from_PC(fetch_PC));
+					memory_bus.send_read_request_data(get_address_to_fetch_from_PC(fetch_PC), 	
 								createBusID(core_id, COMPONENT_TYPE_FETCH));
 
 					while (1)
@@ -112,7 +115,7 @@ namespace ecc
 							$display("response received from caches: ", response.packet_type);
 							assert(response.packet_type == bus_read_response);
 
-							address_cached = address_fetched;							
+							address_cached = get_address_to_fetch_from_PC(fetch_PC);				
 							insn_data_cached = getInsnData(response.payload);
 							CONTEXT_SWITCH();
 							break;
@@ -147,7 +150,7 @@ namespace ecc
 
 			CONTEXT_SWITCH();
 
-			// debug("[FETCH] received response for address " + std::to_string(fetch_PC));
+			$display("[FETCH] received response for address/insn ", fetch_PC, insn);
 
 			have_outstanding_jmp = changesControlFlow(getOpcode(insn));
 

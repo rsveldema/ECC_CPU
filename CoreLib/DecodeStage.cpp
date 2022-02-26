@@ -70,9 +70,9 @@ namespace ecc
 				const FetchToDecodeBusPacket pkt = fetch_bus.recv();
 				CONTEXT_SWITCH();
 
-				$display("DECODE exec: ", pkt.PC, static_cast<Opcode>(pkt.insn));
+				$display("DECODE exec: ", pkt.PC, getOpcode(pkt.insn));
 
-				switch (static_cast<Opcode>(pkt.insn))
+				switch (getOpcode(pkt.insn))
 				{
 				case INSN_OPCODE_NOP:
 				{
@@ -335,7 +335,7 @@ namespace ecc
 
 				default:
 				{
-					$display("[DECODE] unimplemented opcode: ", static_cast<Opcode>(pkt.insn));
+					$display("[DECODE] unimplemented opcode: ", getOpcode(pkt.insn));
 					assert(false);
 				}
 				}

@@ -189,7 +189,7 @@ namespace ecc
 	static
 	inline Opcode getOpcode(instruction_t insn)
 	{
-		return static_cast<Opcode>(insn & 0xff);
+		return static_cast<Opcode>(insn);
 	}
 
 

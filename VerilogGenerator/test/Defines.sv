@@ -32,7 +32,7 @@ parameter uint32_t NUMBER_OF_VECTOR_THREADS_INT64 = (VECTOR_MEM_SIZE / (uint32_t
 parameter uint64_t ALL_THREADS_EXEC_MASK_INT64 = ((1 << NUMBER_OF_VECTOR_THREADS_INT64) - 1);
 
 
-typedef enum {
+typedef enum byte {
 	REG_R0
 	,REG_R1
 	,REG_R2
@@ -59,7 +59,7 @@ parameter flags_reg_t FLAGS_MASK_GT = (1 << 2);
 parameter flags_reg_t FLAGS_MASK_LT = (1 << 3);
 
 
-typedef enum {
+typedef enum byte {
 	CORE_ID_Core0
 	,CORE_ID_Core1
 	,CORE_ID_Core2
@@ -71,7 +71,7 @@ typedef enum {
 } CoreID;
 
 
-typedef enum {
+typedef enum byte {
 	COMPONENT_TYPE_FETCH
 	,COMPONENT_TYPE_DECODE
 	,COMPONENT_TYPE_EXECUTE
@@ -79,7 +79,7 @@ typedef enum {
 } CoreComponentID;
 
 
-typedef enum {
+typedef enum byte {
 	INSN_OPCODE_NOP
 	,INSN_OPCODE_HALT
 	,INSN_OPCODE_MOVE_REG_BLOCK_INDEX
@@ -117,7 +117,7 @@ typedef enum {
 } Opcode;
 
 
-typedef enum {
+typedef enum byte {
 	EXEC_NOP
 	,EXEC_MOVE_REG_VALUE
 	,EXEC_STORE_ADDR_VALUE
@@ -134,7 +134,7 @@ typedef enum {
 } ExecuteStageOpcode;
 
 
-typedef enum {
+typedef enum byte {
 	STORAGE_NOP
 	,STORAGE_STORE_VALUE_INTO_REG
 	,STORAGE_STORE_REG_INTO_MEM
@@ -163,7 +163,7 @@ endfunction
 function Opcode getOpcode(input instruction_t insn);
 begin
 begin
-	return (Opcode'((insn & 32'hff)));
+	return (Opcode'(insn));
 end
 end
 endfunction

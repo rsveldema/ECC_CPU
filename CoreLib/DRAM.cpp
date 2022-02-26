@@ -30,7 +30,6 @@ namespace ecc
 
 					CONTEXT_SWITCH();
 					READ_MEMORY_DELAY();
-
 					toCPU.send_read_response(
 							PACK8(
 								storage[static_cast<phys_memory_address_t>(pkt.address + 0)],

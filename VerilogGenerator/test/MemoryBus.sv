@@ -44,6 +44,8 @@ interface MemoryBus;
 	function void send_read_response(input bus_packet_payload_t value, input BusID source);
 	begin
 	begin
+		$display("DRAM READ RESPONSE: ", value);
+
 		response_data.packet_type <= bus_read_response;
 		response_data.source <= source;
 		response_data.address <= 0;

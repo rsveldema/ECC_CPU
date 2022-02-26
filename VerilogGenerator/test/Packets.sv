@@ -13,7 +13,7 @@ typedef struct packed {
 } StoreToFetchPacket;
 
 
-typedef enum {
+typedef enum byte {
 	bus_read_data
 	,bus_write_data
 	,bus_read_response

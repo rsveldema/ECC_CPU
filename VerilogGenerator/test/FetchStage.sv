@@ -9,6 +9,15 @@ end
 endfunction
 
 
+function memory_address_t get_address_to_fetch_from_PC(input memory_address_t fetch_PC);
+begin
+begin
+	return (fetch_PC & ~(7));
+end
+end
+endfunction
+
+
 function bool changesControlFlow(input Opcode op);
 begin
 begin
@@ -45,7 +54,6 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 	memory_address_t address_cached;
 	fetched_instruction_data_t insn_data_cached;
 	StoreToFetchPacket jmp_retarget;
-	memory_address_t address_fetched;
 	BusPacket response;
 	instruction_t insn;
 
@@ -155,9 +163,8 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		14:
 			begin
-				address_fetched <= (fetch_PC & ~(7));
-				$display("requesting memory at address: ", address_fetched);
-				memory_bus.send_read_request_data(address_fetched, createBusID(core_id, COMPONENT_TYPE_FETCH));
+				$display("requesting memory at address: ", get_address_to_fetch_from_PC(fetch_PC));
+				memory_bus.send_read_request_data(get_address_to_fetch_from_PC(fetch_PC), createBusID(core_id, COMPONENT_TYPE_FETCH));
 				state <= 15; // GOTO
 				return;
 			end
@@ -177,7 +184,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			begin
 				$display("response received from caches: ", response.packet_type);
 				assert((response.packet_type == bus_read_response));
-				address_cached <= address_fetched;
+				address_cached <= get_address_to_fetch_from_PC(fetch_PC);
 				insn_data_cached <= getInsnData(response.payload);
 				// CONTEXT_SWITCH();
 				state <= 19; // GOTO
@@ -260,6 +267,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		25:
 			begin
+				$display("[FETCH] received response for address/insn ", fetch_PC, insn);
 				have_outstanding_jmp <= changesControlFlow(getOpcode(insn));
 				state <= 26; // GOTO
 				return;

@@ -68,6 +68,10 @@ namespace ecc
 			//send_response(create_bus_packet(bus_read_response, source, 
 			// 				addr, value));
 
+
+			std::cerr << "READ RESP: " << value << "\n";			
+
+
 			response_data.packet_type = bus_read_response;
 			response_data.source = source;
 			response_data.address = 0;

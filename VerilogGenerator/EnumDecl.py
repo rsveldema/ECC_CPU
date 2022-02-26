@@ -17,7 +17,7 @@ class EnumDecl(GlobalDecl):
     def generate_decl(self, ps:PrintStream):
         ps.println("")
         ps.println("")
-        ps.println("typedef enum {")
+        ps.println("typedef enum byte {")
         comma = ""
         for v in self.vars:
             ps.println("\t" + comma + v)
