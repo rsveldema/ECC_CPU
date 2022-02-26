@@ -11,7 +11,7 @@ namespace ecc
 		{
 			if (execute_bus.is_busy)
 			{
-				const auto& pkt = execute_bus.recv();
+				const ExecStagePacket pkt = execute_bus.recv();
 
 				CONTEXT_SWITCH();
 
@@ -21,28 +21,24 @@ namespace ecc
 
 				case STORAGE_STORE_VALUE_INTO_REG:
 				{
-					const auto dest = pkt.dest.regID;
-					assert(isValidIndex(dest));
-					const auto& src = pkt.src.value;
+					assert(isValidIndex(pkt.dest.regID));
 
-					$display("STORE ----> exec: ", dest, src);
+					$display("STORE ----> exec: ", pkt.dest.regID,  pkt.src.value);
 
-					regs.mark_valid(dest);
-					regs.set(dest, src);
+					regs.mark_valid(pkt.dest.regID);
+					regs.set(pkt.dest.regID,  pkt.src.value);
 					break;
 				}
 
 				case STORAGE_STORE_REG_INTO_MEM:
 				{
-					const auto& dest = pkt.dest.value;
-					const auto& src = pkt.src.value;
+					assert(are_all_adjacent_memory_addresses(pkt.dest.value, POINTER_SIZE));
 
-					assert(are_all_adjacent_memory_addresses(dest, POINTER_SIZE));
+					$display("STORE ----> exec: ", pkt.dest.value, pkt.src.value);
 
-					$display("STORE ----> exec: ", dest, src);
-
-					BusID memory_bus_id = createBusID(core_id, COMPONENT_TYPE_STORE);
-					memory_bus.send_write_request_vec(dest, memory_bus_id, src);
+					memory_bus.send_write_request_vec(pkt.dest.value, 
+								createBusID(core_id, COMPONENT_TYPE_STORE), 
+								pkt.src.value);
 					break;
 				}
 
@@ -75,7 +71,7 @@ namespace ecc
 							if (is_store_to_pc)
 							{
 								memory_address_t new_pc = get(value, 0);
-								fetch_bus.send(StoreToFetchPacket{ pkt.exec_mask, new_pc });
+								fetch_bus.send(pkt.exec_mask, new_pc);
 							}
 							break;
 						}
@@ -91,9 +87,7 @@ namespace ecc
 
 				case STORAGE_JMP:
 				{
-					auto new_address = pkt.dest.address;
-
-					fetch_bus.send(StoreToFetchPacket{ pkt.exec_mask, new_address });
+					fetch_bus.send(pkt.exec_mask, pkt.dest.address);
 					break;
 				}
 
@@ -117,7 +111,7 @@ namespace ecc
 					};
 					divergence_queue.push_front(ctxt);
 
-					fetch_bus.send(StoreToFetchPacket{ exec_mask_next_address, next_address });
+					fetch_bus.send(exec_mask_next_address, next_address);
 					break;
 				}
 
@@ -134,7 +128,7 @@ namespace ecc
 
 						regs = new_thread_ctxt.regs;
 
-						fetch_bus.send(StoreToFetchPacket{ new_thread_ctxt.exec_mask, new_thread_ctxt.PC });
+						fetch_bus.send( new_thread_ctxt.exec_mask, new_thread_ctxt.PC );
 					}
 					break;
 				}
