@@ -129,7 +129,9 @@ term: "(" expr ")"
 | bit_not_expr
 | logical_not_expr
 | static_cast
+| init_expr
 
+init_expr: "{" term ("," term)* "}"
 
 bit_not_expr: "~" term
 

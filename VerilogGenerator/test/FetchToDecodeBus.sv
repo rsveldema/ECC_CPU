@@ -25,12 +25,10 @@ interface FetchToDecodeBus;
 	
 	function FetchToDecodeBusPacket recv();
 	begin
-		FetchToDecodeBusPacket v;
 	begin
 		assert(is_busy);
-		v <= data;
 		is_busy <= 0;
-		return v;
+		return data;
 	end
 	end
 	endfunction

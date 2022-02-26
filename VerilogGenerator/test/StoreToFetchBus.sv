@@ -34,12 +34,10 @@ interface StoreToFetchBus;
 	
 	function StoreToFetchPacket recv();
 	begin
-		StoreToFetchPacket v;
 	begin
 		assert(can_receive);
-		v <= data;
 		can_receive <= 0;
-		return v;
+		return data;
 	end
 	end
 	endfunction

@@ -20,6 +20,8 @@ typedef reg[20:0] phys_memory_address_t;
 
 `define SET_BIT(ret, ix, value)   ret[ix] <= value
 
+`define PACK2(a0, a1) { a0, a1 }
+
 
 `include "Defines.sv"
 
@@ -94,7 +96,7 @@ module main(input clk);
             byte data;
             int status;
             status = $fread(data, fd);
-            $display ("CODE: status = %0d reg1 = %b",status,data);
+            //$display ("CODE: status = %0d reg1 = %b",status,data);
             INITIAL_write_to_global_memory(address, data);
             address += 1;
         end
@@ -110,7 +112,7 @@ module main(input clk);
             byte data;
             int status;
             status = $fread(data, fd);
-            $display ("DATA: status = %0d reg1 = %b",status,data);
+            //$display ("DATA: status = %0d reg1 = %b",status,data);
             INITIAL_write_to_global_memory(address, data);
             address += 1;
         end

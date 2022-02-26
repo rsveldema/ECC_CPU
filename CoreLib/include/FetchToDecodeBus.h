@@ -34,9 +34,8 @@ namespace ecc
 		FetchToDecodeBusPacket recv()
 		{
 			assert(is_busy);
-			FetchToDecodeBusPacket v = data;
-			is_busy = false;			
-			return v;
+			is_busy = false;	
+			return data;
 		}
 	};
 }

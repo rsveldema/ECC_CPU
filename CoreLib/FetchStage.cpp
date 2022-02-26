@@ -2,19 +2,11 @@
 
 namespace ecc
 {
-	union int64_to_insn_data 
-	{
-		uint64_t value;
-		fetched_instruction_data_t data;
-	};
-
 	METHOD_SECTION;
 
 	fetched_instruction_data_t getInsnData(uint64_t value)
 	{
-		int64_to_insn_data tmp;
-		tmp.value = value;
-		return tmp.data;
+		return { static_cast<instruction_t>(value), static_cast<instruction_t>(value >> 32) };
 	}
 
 	bool changesControlFlow(Opcode op)
@@ -164,10 +156,8 @@ namespace ecc
 				CONTEXT_SWITCH();
 			}
 
-			const memory_address_t old_PC = fetch_PC;
+			decode_bus.send(create_fetch_decode_packet(exec_mask, fetch_PC, insn));
 			fetch_PC += sizeof(instruction_t);
-			FetchToDecodeBusPacket pkt = create_fetch_decode_packet(exec_mask, old_PC, insn);
-			decode_bus.send(pkt);
 
 			CONTEXT_SWITCH();
 		}

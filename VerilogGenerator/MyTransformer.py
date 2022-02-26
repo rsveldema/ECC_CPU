@@ -1,5 +1,6 @@
 from lark import Lark, Token, Transformer
 from ForStmt import ForStmt
+from InitExpr import InitExpr
 from Type import Type
 from Break import Break
 from Continue import Continue
@@ -100,6 +101,9 @@ class MyTransformer(Transformer):
             return tree[0]
         else:
             return DotAccessExpr(tree[0], tree[1]+"")
+
+    def init_expr(self, tree):
+        return InitExpr(tree[0:])
 
     def lhs(self, tree):
         if len(tree) == 1:

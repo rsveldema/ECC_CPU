@@ -60,26 +60,14 @@ namespace ecc
 	static inline
 	BusPacket create_bus_packet(BusPacketType pkt_type, BusID source, memory_address_t address, bus_packet_payload_t payload)
 	{
-		BusPacket pkt;
-		pkt.packet_type = pkt_type;
-		pkt.source = source;
-		pkt.address = address;
-		pkt.payload = payload;
-		return pkt;
+		return { pkt_type, source, address, payload };
 	}
-
-
-
 
 	static inline
 	FetchToDecodeBusPacket create_fetch_decode_packet(execution_mask_t exec_mask,
 		memory_address_t PC,
 		instruction_t insn)
 	{
-		FetchToDecodeBusPacket pkt;
-		pkt.exec_mask = exec_mask;
-		pkt.insn = insn;
-		pkt.PC = PC;
-		return pkt;		
+		return { exec_mask, PC, insn };
 	}
 }

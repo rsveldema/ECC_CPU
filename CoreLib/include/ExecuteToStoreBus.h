@@ -52,9 +52,8 @@ namespace ecc
 		ExecStagePacket recv()
 		{
 			assert(is_busy);
-			ExecStagePacket tmp = data;
 			is_busy = false;
-			return tmp;
+			return data;
 		}
 	};
 }

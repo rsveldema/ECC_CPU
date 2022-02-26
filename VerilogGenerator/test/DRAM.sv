@@ -13,7 +13,6 @@ endfunction
 module DRAM(MemoryBus toCPU);
 	reg[32:0] state = 0;
 	BusPacket pkt;
-	bus_packet_payload_t read_ret;
 
 
 
@@ -75,7 +74,6 @@ module DRAM(MemoryBus toCPU);
 					return;
 				end
 				assert((pkt.address < ( ((uint64_t'($bits(storage)) >> 3)  )  - 8)));
-				read_ret <= `PACK8(storage[(phys_memory_address_t'((pkt.address + 0)))], storage[(phys_memory_address_t'((pkt.address + 1)))], storage[(phys_memory_address_t'((pkt.address + 2)))], storage[(phys_memory_address_t'((pkt.address + 3)))], storage[(phys_memory_address_t'((pkt.address + 4)))], storage[(phys_memory_address_t'((pkt.address + 5)))], storage[(phys_memory_address_t'((pkt.address + 6)))], storage[(phys_memory_address_t'((pkt.address + 7)))]);
 				// CONTEXT_SWITCH();
 				state <= 136; // GOTO
 				return;
@@ -88,7 +86,7 @@ module DRAM(MemoryBus toCPU);
 		132:
 			begin
 				READ_MEMORY_DELAY();
-				toCPU.send_read_response(read_ret, pkt.source);
+				toCPU.send_read_response(`PACK8(storage[(phys_memory_address_t'((pkt.address + 0)))], storage[(phys_memory_address_t'((pkt.address + 1)))], storage[(phys_memory_address_t'((pkt.address + 2)))], storage[(phys_memory_address_t'((pkt.address + 3)))], storage[(phys_memory_address_t'((pkt.address + 4)))], storage[(phys_memory_address_t'((pkt.address + 5)))], storage[(phys_memory_address_t'((pkt.address + 6)))], storage[(phys_memory_address_t'((pkt.address + 7)))]), pkt.source);
 				state <= 131; // GOTO
 				return;
 				state <= 135; // GOTO

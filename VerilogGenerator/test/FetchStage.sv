@@ -1,17 +1,9 @@
 
 
-typedef union packed {
-	uint64_t value;
-	fetched_instruction_data_t data;
-} int64_to_insn_data;
-
-
 function fetched_instruction_data_t getInsnData(input uint64_t value);
 begin
-	int64_to_insn_data tmp;
 begin
-	tmp.value <= value;
-	return tmp.data;
+	return {(instruction_t'(value)), (instruction_t'((value >> 32)))};
 end
 end
 endfunction
@@ -56,8 +48,6 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 	memory_address_t address_fetched;
 	BusPacket response;
 	instruction_t insn;
-	memory_address_t old_PC;
-	FetchToDecodeBusPacket pkt;
 
 
 
@@ -292,10 +282,8 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		27:
 			begin
-				old_PC <= fetch_PC;
+				decode_bus.send(create_fetch_decode_packet(exec_mask, fetch_PC, insn));
 				fetch_PC <= fetch_PC +  ((uint64_t'($bits(instruction_t)) >> 3)  ) ;
-				pkt <= create_fetch_decode_packet(exec_mask, old_PC, insn);
-				decode_bus.send(pkt);
 				// CONTEXT_SWITCH();
 				state <= 29; // GOTO
 				return;

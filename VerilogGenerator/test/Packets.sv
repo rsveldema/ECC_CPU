@@ -49,13 +49,8 @@ typedef struct packed {
 
 function BusPacket create_bus_packet(input BusPacketType pkt_type, input BusID source, input memory_address_t address, input bus_packet_payload_t payload);
 begin
-	BusPacket pkt;
 begin
-	pkt.packet_type <= pkt_type;
-	pkt.source <= source;
-	pkt.address <= address;
-	pkt.payload <= payload;
-	return pkt;
+	return {pkt_type, source, address, payload};
 end
 end
 endfunction
@@ -63,12 +58,8 @@ endfunction
 
 function FetchToDecodeBusPacket create_fetch_decode_packet(input execution_mask_t exec_mask, input memory_address_t PC, input instruction_t insn);
 begin
-	FetchToDecodeBusPacket pkt;
 begin
-	pkt.exec_mask <= exec_mask;
-	pkt.insn <= insn;
-	pkt.PC <= PC;
-	return pkt;
+	return {exec_mask, PC, insn};
 end
 end
 endfunction

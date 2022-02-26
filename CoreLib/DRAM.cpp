@@ -28,21 +28,20 @@ namespace ecc
 				{
 					assert(pkt.address < (sizeof(storage) - 8));
 
-					bus_packet_payload_t read_ret = PACK8(
-						storage[static_cast<phys_memory_address_t>(pkt.address + 0)],
-						storage[static_cast<phys_memory_address_t>(pkt.address + 1)],
-						storage[static_cast<phys_memory_address_t>(pkt.address + 2)],
-						storage[static_cast<phys_memory_address_t>(pkt.address + 3)],
-						storage[static_cast<phys_memory_address_t>(pkt.address + 4)],
-						storage[static_cast<phys_memory_address_t>(pkt.address + 5)],
-						storage[static_cast<phys_memory_address_t>(pkt.address + 6)],
-						storage[static_cast<phys_memory_address_t>(pkt.address + 7)]			
-					);
-
 					CONTEXT_SWITCH();
 					READ_MEMORY_DELAY();
 
-					toCPU.send_read_response(read_ret, pkt.source);
+					toCPU.send_read_response(
+							PACK8(
+								storage[static_cast<phys_memory_address_t>(pkt.address + 0)],
+								storage[static_cast<phys_memory_address_t>(pkt.address + 1)],
+								storage[static_cast<phys_memory_address_t>(pkt.address + 2)],
+								storage[static_cast<phys_memory_address_t>(pkt.address + 3)],
+								storage[static_cast<phys_memory_address_t>(pkt.address + 4)],
+								storage[static_cast<phys_memory_address_t>(pkt.address + 5)],
+								storage[static_cast<phys_memory_address_t>(pkt.address + 6)],
+								storage[static_cast<phys_memory_address_t>(pkt.address + 7)]), 
+							pkt.source);
 					break;
 				}
 

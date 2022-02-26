@@ -37,9 +37,8 @@ namespace ecc
 		StoreToFetchPacket recv()
 		{
 			assert(can_receive);
-			StoreToFetchPacket v = data;
 			can_receive = false;
-			return v;
+			return data;
 		}
 
 	};
