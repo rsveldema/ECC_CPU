@@ -124,6 +124,11 @@ module main(input clk);
 
      always @(posedge clk) 
      begin
+        decoder.run();    
+     end 
+
+     always @(posedge clk) 
+     begin
         dram.run();    
      end 
 
