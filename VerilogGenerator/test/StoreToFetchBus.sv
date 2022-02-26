@@ -12,20 +12,12 @@ interface StoreToFetchBus;
 	endfunction
 	
 	
-	function void init_store_to_fetch_bus();
-	begin
-	begin
-		can_receive = 0;
-	end
-	end
-	endfunction
-	
-	
-	function void send(input StoreToFetchPacket pkt);
+	function void send(input execution_mask_t mask, input memory_address_t new_pc);
 	begin
 	begin
 		assert(!(can_receive));
-		data <= pkt;
+		data.exec_mask <= mask;
+		data.newpc <= new_pc;
 		can_receive <= 1;
 	end
 	end

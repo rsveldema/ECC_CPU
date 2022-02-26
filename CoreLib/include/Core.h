@@ -56,6 +56,7 @@ namespace ecc
 		L1i_to_L2i.init();
 		L1d_to_l2d.init();
 		divergence_queue.init();
+		store_to_vec_controller_bus.init();
 
 		store_fetch_bus.init();
 		fetch_decode_bus.init();

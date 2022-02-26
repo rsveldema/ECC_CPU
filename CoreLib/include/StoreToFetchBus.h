@@ -22,13 +22,7 @@ namespace ecc
 			can_receive = false;
 		}
 
-		void init_store_to_fetch_bus()
-		{
-			can_receive = false;
-		}
-
 		void send(execution_mask_t mask, memory_address_t new_pc)
-
 		{
 			assert(!can_receive);
 			data.exec_mask = mask;

@@ -7,10 +7,11 @@ namespace ecc
 	{
 		while (1)
 		{
-			if (auto pkt = toCPU.try_accept_request())
+			if (toCPU.request_busy)
 			{
-				const auto& addresses = pkt->address;
-				const auto& src = pkt->source;
+				auto pkt = toCPU.accept_request();
+				const auto& addresses = pkt.address;
+				const auto& src = pkt.source;
 				assert(areAllValidMemoryAddresses(addresses));
 
 				if (false) //addresses.all_equal())
@@ -29,7 +30,7 @@ namespace ecc
 				{
 					// all vec-threads want to access a different memory location
 
-					switch (pkt->type)
+					switch (pkt.type)
 					{
 					default: abort();
 					case VEC_BUS_PKT_TYPE_read_vec64:
@@ -68,7 +69,7 @@ namespace ecc
 
 					case VEC_BUS_PKT_TYPE_write_vec64:
 					{
-						const auto& arrayData = pkt->payload;
+						const auto& arrayData = pkt.payload;
 
 						for (unsigned i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
 						{

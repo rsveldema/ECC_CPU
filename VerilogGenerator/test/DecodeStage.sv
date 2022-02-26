@@ -51,7 +51,6 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 	
 	
 	task run();
-
 	case (state)
 		0:
 			begin

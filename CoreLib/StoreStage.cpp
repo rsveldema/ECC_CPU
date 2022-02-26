@@ -4,6 +4,9 @@
 
 namespace ecc
 {
+
+	METHOD_SECTION;
+
 	template<CoreID core_id>
 	ReturnObject StoreStage<core_id>::run()
 	{
@@ -45,33 +48,26 @@ namespace ecc
 				// reg = memory[src]
 				case STORAGE_LOAD_MEM_INTO_REG:
 				{
-					auto dest = pkt.dest.regID;
-					assert(isValidIndex(dest));
-					const auto is_store_to_pc = pkt.is_store_to_pc;
+					assert(isValidIndex(pkt.dest.regID));
 
-					const auto& src = pkt.src.value;
+					$display("STORE ----> exec: ", pkt.dest.regID, pkt.src.value);
 
-					$display("STORE ----> exec: ", dest, src);
-
-					BusID memory_bus_id = createBusID(core_id, COMPONENT_TYPE_STORE);
-					memory_bus.send_read_request_vec(src, memory_bus_id);
+					memory_bus.send_read_request_vec(pkt.src.value, createBusID(core_id, COMPONENT_TYPE_STORE));
 
 					while (1)
 					{
-						if (auto new_pc_pkt_opt = memory_bus.try_accept_response())
+						if (memory_bus.response_busy)
 						{
-							const auto& new_pc_pkt = *new_pc_pkt_opt;
-							const auto& payload = new_pc_pkt.payload;
-							const auto& value = payload;
+							const VecBusPacket new_pc_pkt = memory_bus.accept_response();
+							CONTEXT_SWITCH();
 
-							regs.mark_valid(dest);
-							regs.set(dest, value);
+							regs.mark_valid(pkt.dest.regID);
+							regs.set(pkt.dest.regID, new_pc_pkt.payload);
 
 							//$display("REG[" << MachineInfo::to_string(src) << "] = " << std::to_string(value));
-							if (is_store_to_pc)
+							if (pkt.is_store_to_pc)
 							{
-								memory_address_t new_pc = get(value, 0);
-								fetch_bus.send(pkt.exec_mask, new_pc);
+								fetch_bus.send(pkt.exec_mask, get(new_pc_pkt.payload, 0));
 							}
 							break;
 						}
@@ -95,23 +91,23 @@ namespace ecc
 				{
 					__global_stats.numVectorLocalDivergences += 1;
 
-					const auto new_address = pkt.dest.address;
-					const auto next_address = pkt.src.address;
-					const auto& exec_mask_new_address = pkt.execution_flags_true;
-					const auto& exec_mask_next_address = pkt.execution_flags_false;
+					//const auto new_address = pkt.dest.address;
+					//const auto next_address = pkt.src.address;
+					//const auto& exec_mask_new_address = pkt.execution_flags_true;
+					//const auto& exec_mask_next_address = pkt.execution_flags_false;
 
 					$display("[STORE] splitting cond-jump: ", 
-							count_num_bits64(exec_mask_new_address),
-							count_num_bits64(exec_mask_next_address));
+							count_num_bits64(pkt.execution_flags_true),
+							count_num_bits64(pkt.execution_flags_false));
 
 					ThreadContext ctxt{
 						regs,
-						new_address,
-						exec_mask_new_address
+						pkt.dest.address,
+						pkt.execution_flags_true
 					};
 					divergence_queue.push_front(ctxt);
 
-					fetch_bus.send(exec_mask_next_address, next_address);
+					fetch_bus.send(pkt.execution_flags_false, pkt.src.address);
 					break;
 				}
 

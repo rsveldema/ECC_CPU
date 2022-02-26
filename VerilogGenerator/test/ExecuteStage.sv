@@ -19,7 +19,6 @@ module ExecuteStage(DecodeToExecuteBus decode_bus, ExecuteToStoreBus store_bus, 
 	
 	
 	task run();
-
 	case (state)
 		0:
 			begin
@@ -28,7 +27,6 @@ module ExecuteStage(DecodeToExecuteBus decode_bus, ExecuteToStoreBus store_bus, 
 			end
 		126:
 			begin
-				$display("EXECUTE-start");
 				state <= 128; // GOTO
 				return;
 			end
@@ -50,13 +48,11 @@ module ExecuteStage(DecodeToExecuteBus decode_bus, ExecuteToStoreBus store_bus, 
 			end
 		129:
 			begin
-				$display("EXECUTE-end");
 				if (!(decode_bus.is_busy))
 				begin
 					state <= 131; // GOTO
 					return;
 				end
-				$display("EXECUTE-recv");
 				pkt <= decode_bus.recv();
 				// CONTEXT_SWITCH();
 				state <= 132; // GOTO

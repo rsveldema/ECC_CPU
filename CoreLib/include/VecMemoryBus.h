@@ -35,62 +35,56 @@ namespace ecc
 	class VecMemoryBus
 	{
 	public:
-		std::queue<VecBusPacket> request_queue;
-		std::queue<VecBusPacket> response_queue;
+		bool request_busy;
+		VecBusPacket request_queue;
+		
+		bool response_busy;
+		VecBusPacket response_queue;
 
-		void init(){}
+		void init()
+		{
+			request_busy = false;
+			response_busy = false;
+		}
 
 		void send_read_request_vec(const VectorValue &address, const BusID &source)
 		{
-			VecBusPacket pkt{VEC_BUS_PKT_TYPE_read_vec64, source, address};
-			send_request(pkt);
+			assert(! request_busy);		
+			request_queue.source = source;
+			request_queue.address = address;
+			request_queue.type = VEC_BUS_PKT_TYPE_read_vec64;
+			request_busy = true;
 		}
 
 		void send_write_request_vec(const VectorValue &address,
 									const BusID &source,
 									const VectorValue &value)
 		{
-			VecBusPacket pkt{VEC_BUS_PKT_TYPE_write_vec64,
-							 source, address, value};
-			send_request(pkt);
+			request_queue.source = source;
+			request_queue.address = address;
+			request_queue.payload = value;
+			request_queue.type = VEC_BUS_PKT_TYPE_write_vec64;
+			request_busy = true;
 		}
 
-		std::optional<VecBusPacket> try_accept_request()
+		VecBusPacket accept_request()
 		{
-			if (!request_queue.empty())
-			{
-				const VecBusPacket f = request_queue.front();
-				request_queue.pop();
-				return f;
-			}
-			return std::nullopt;
+			assert(request_busy);
+			request_busy = false;
+			return request_queue;
 		}
 
-		std::optional<VecBusPacket> try_accept_response()
+		VecBusPacket accept_response()
 		{
-			if (!response_queue.empty())
-			{
-				const VecBusPacket f = response_queue.front();
-				response_queue.pop();
-				return f;
-			}
-			return std::nullopt;
-		}
-
-		void send_request(const VecBusPacket &pkt)
-		{
-			assert(!is_busy());
-			request_queue.push(pkt);
+			assert(response_busy);
+			response_busy = false;
+			return response_queue;
 		}
 
 		void send_response(const VecBusPacket &pkt)
 		{
-			response_queue.push(pkt);
-		}
-
-		bool is_busy() const
-		{
-			return request_queue.size() > 0;
+			response_queue = pkt;
+			response_busy = true;
 		}
 	};
 
