@@ -39,7 +39,8 @@ namespace ecc
 							pkt.PC,
 							STORAGE_STORE_VALUE_INTO_REG,
 							RegisterID::REG_FLAGS,
-							compare_vecs(pkt.value0.vec, pkt.value1));
+							compare_vecs(pkt.value0.vec, pkt.value1),
+							false);
 					break;
 				}
 
@@ -51,7 +52,8 @@ namespace ecc
 							pkt.PC,
 							STORAGE_STORE_VALUE_INTO_REG,
 							pkt.value0.regID,
-							pkt.value1);
+							pkt.value1,
+							false);
 					break;
 				}
 
@@ -64,8 +66,8 @@ namespace ecc
 							pkt.PC,
 							STORAGE_STORE_VALUE_INTO_REG,
 							pkt.value0.regID,
-							or_shift_left(pkt.value2, pkt.value1, 24));
-
+							or_shift_left(pkt.value2, pkt.value1, 24),
+							false);
 					break;
 				}
 
@@ -78,7 +80,8 @@ namespace ecc
 							pkt.PC,
 							STORAGE_STORE_VALUE_INTO_REG,
 							pkt.value0.regID,
-							or_shift_left(pkt.value2, pkt.value1, 48));
+							or_shift_left(pkt.value2, pkt.value1, 48),
+							false);
 					break;
 				}
 
@@ -90,7 +93,8 @@ namespace ecc
 							pkt.PC,
 							STORAGE_STORE_VALUE_INTO_REG,
 							pkt.value0.regID,
-							shift_left(pkt.value1, pkt.value2));
+							shift_left(pkt.value1, pkt.value2),
+							false);
 					break;
 				}
 
@@ -102,7 +106,8 @@ namespace ecc
 							pkt.PC,
 							STORAGE_STORE_VALUE_INTO_REG,
 							pkt.value0.regID,
-							add(pkt.value1, pkt.value2));
+							add(pkt.value1, pkt.value2),
+							false);
 					break;
 				}
 
@@ -115,8 +120,8 @@ namespace ecc
 							pkt.PC,
 							STORAGE_LOAD_MEM_INTO_REG,
 							pkt.value0.regID,
-							add(pkt.value1, pkt.value2));
-
+							add(pkt.value1, pkt.value2),
+							false);
 					break;
 				}
 
@@ -132,26 +137,19 @@ namespace ecc
 
 				case ExecuteStageOpcode::EXEC_LOAD_RESTORE_PC:
 				{
-					VectorValue offset = add(pkt.value0.vec, pkt.value1);
-
-					const auto dest = RegisterID::REG_PC;
-
-					ExecStagePacket store_pkt{ pkt.exec_mask, 
-						pkt.PC, StorageStageOpcode::STORAGE_LOAD_MEM_INTO_REG,
-							{.regID = dest}, 
-							{.value = offset}, 
-							0 
-						};
-					store_pkt.is_store_to_pc = true;
-					store_bus.send(store_pkt);
+					store_bus.send_reg_vec(pkt.exec_mask, 
+							pkt.PC,
+							STORAGE_LOAD_MEM_INTO_REG,
+							RegisterID::REG_PC,
+							add(pkt.value0.vec, pkt.value1),
+							true);
 					break;
 				}
 
 
 				case ExecuteStageOpcode::EXEC_COND_JMP:
 				{
-					const auto new_address = pkt.PC + get(pkt.value0.vec, 0);
-					const auto next_address = pkt.PC + 4;
+					//const auto new_address = ;
 
 					const auto& jmp_mask = pkt.value1;
 					const auto& exec_mask = pkt.exec_mask;
@@ -163,49 +161,45 @@ namespace ecc
 
 					const VectorValue flags = regs.get(RegisterID::REG_FLAGS);
 					const auto& should_jmp_masks = bit_and(flags, jmp_mask);
-					const uint64_t should_jmp = exec_mask & reduce_to_uint64_t(should_jmp_masks);
+					const uint64_t execution_flags_true = exec_mask & reduce_to_uint64_t(should_jmp_masks);
 					const uint64_t all_threads_mask = exec_mask & ALL_THREADS_EXEC_MASK_INT64;
 
-					if (should_jmp == 0)
+					if (execution_flags_true == 0)
 					{
 						// no thread wants to jump to the next-insn
-						ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_JMP,
-							next_address };
-						store_bus.send(store_pkt);
+						store_bus.send_address(pkt.exec_mask, 
+							pkt.PC,
+							STORAGE_JMP,
+							pkt.PC + sizeof(instruction_t));
 					}
-					else if (should_jmp == all_threads_mask)
+					else if (execution_flags_true == all_threads_mask)
 					{
 						// all threads just want to go to the next-insn
-						ExecStagePacket store_pkt{ pkt.exec_mask,
-							 pkt.PC, StorageStageOpcode::STORAGE_JMP,
-							new_address };
-						store_bus.send(store_pkt);
+						store_bus.send_address(pkt.exec_mask, 
+							pkt.PC,
+							STORAGE_JMP,
+							pkt.PC + get(pkt.value0.vec, 0));					
 					}
 					else
 					{
 						// some threads want to jump, some don't.
-						execution_mask_t execution_flags_true(should_jmp);
-						execution_mask_t execution_flags_false(exec_mask & ~should_jmp);
-						bool is_store_to_pc = false;
-
-						ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_CJMP,
-							new_address,
-							next_address,
-							is_store_to_pc,
+						store_bus.send_2_address(pkt.exec_mask, 
+							pkt.PC,
+							STORAGE_CJMP,
+							pkt.PC + get(pkt.value0.vec, 0),
+							pkt.PC + sizeof(instruction_t),							
 							execution_flags_true,
-							execution_flags_false
-						};
-						store_bus.send(store_pkt);
+							(exec_mask & ~execution_flags_true)); // these threads didn't want to jmp 								
 					}
 					break;
 				}
 
 				case ExecuteStageOpcode::EXEC_JMP:
 				{
-					const memory_address_t new_address = pkt.PC + get(pkt.value0.vec, 0);
-
-					ExecStagePacket store_pkt{ pkt.exec_mask, pkt.PC, StorageStageOpcode::STORAGE_JMP, new_address };
-					store_bus.send(store_pkt);
+					store_bus.send_address(pkt.exec_mask, 
+							pkt.PC,
+							STORAGE_JMP,
+							pkt.PC + get(pkt.value0.vec, 0));
 					break;
 				}
 
