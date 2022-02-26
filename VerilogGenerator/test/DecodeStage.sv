@@ -609,9 +609,6 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 					state <= 112; // GOTO
 					return;
 				end
-
-				$display("[DECODE] load constant");
-
 				value0.regID <= (RegisterID'((pkt.insn >> 8)));
 				value1 <= create_vec_int16((int16_t'((pkt.insn >> 16))));
 				execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE, value0, value1);
@@ -698,9 +695,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 					state <= 120; // GOTO
 					return;
 				end
-				value0.regID <= (RegisterID'((pkt.insn >> 8)));
-				value1 <= create_vec_int64(((int64_t'((uint16_t'((pkt.insn >> 16))))) + pkt.PC));
-				execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE, value0, value1);
+				execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE, {(RegisterID'((pkt.insn >> 8)))}, create_vec_int64(((int64_t'((uint16_t'((pkt.insn >> 16))))) + pkt.PC)));
 				state <= 38; // GOTO
 				return;
 				state <= 119; // GOTO

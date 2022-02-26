@@ -54,9 +54,6 @@ namespace ecc
 										   DecodeToExecuteBus &execute_bus,
 										   RegisterFile &regs)
 	{
-		DecodeStageValue value0;
-		VectorValue value1;
-		VectorValue value2;
 
 		while (1)
 		{
@@ -81,21 +78,17 @@ namespace ecc
 
 				case INSN_OPCODE_HALT:
 				{
-					execute_bus.send_req1(pkt.exec_mask, pkt.PC, EXEC_HALT, value0);
+					execute_bus.send_req0(pkt.exec_mask, pkt.PC, EXEC_HALT);
 					break;
 				}
 
 				case INSN_OPCODE_MOVE_PCREL_REG_CONST16:
 				{
-					value0.regID = static_cast<RegisterID>((pkt.insn >> 8));
-					value1 = create_vec_int64(static_cast<int64_t>(static_cast<uint16_t>(pkt.insn >> 16)) 
-												+ pkt.PC);
-
-					execute_bus.send_req2(pkt.exec_mask,
-										  pkt.PC,
-										  EXEC_MOVE_REG_VALUE,
-										  value0,
-										  value1);
+					execute_bus.send_req2_reg(pkt.exec_mask,
+											  pkt.PC,
+											  EXEC_MOVE_REG_VALUE,
+											  static_cast<RegisterID>((pkt.insn >> 8)),
+											  create_vec_int64(static_cast<int64_t>(static_cast<uint16_t>(pkt.insn >> 16)) + pkt.PC));
 					break;
 				}
 
@@ -108,33 +101,28 @@ namespace ecc
 						CONTEXT_SWITCH();
 					}
 
-					value0.vec = regs.get(static_cast<RegisterID>((pkt.insn >> 8)));
-					value2 = regs.get(static_cast<RegisterID>((pkt.insn >> 16)));
-					value1 = create_vec_int16(static_cast<int16_t>(static_cast<uint8_t>(pkt.insn >> 24)));
-
-					execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_STORE_ADDR_VALUE,
-										  value0, value1, value2);
+					execute_bus.send_req3_vec(pkt.exec_mask, pkt.PC, EXEC_STORE_ADDR_VALUE,
+										  regs.get(static_cast<RegisterID>((pkt.insn >> 8))),
+										  create_vec_int16(static_cast<int16_t>(static_cast<uint8_t>(pkt.insn >> 24))),
+										  regs.get(static_cast<RegisterID>((pkt.insn >> 16))));
 					break;
 				}
 
 				// reg = blockIndex
 				case INSN_OPCODE_MOVE_REG_BLOCK_INDEX:
 				{
-					value0.regID = static_cast<RegisterID>((pkt.insn >> 8));
-					value1 = create_vec_incrementing_values();
 
-					execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE,
-										  value0, value1);
+					execute_bus.send_req2_reg(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE,
+										  static_cast<RegisterID>((pkt.insn >> 8)),
+										  create_vec_incrementing_values());
 					break;
 				}
 
 				case INSN_OPCODE_MOVE_REG_CONST16:
 				{
-					value0.regID = static_cast<RegisterID>((pkt.insn >> 8));
-					value1 = create_vec_int16(static_cast<int16_t>((pkt.insn >> 16)));
-
-					execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE,
-										  value0, value1);
+					execute_bus.send_req2_reg(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE,
+											  static_cast<RegisterID>((pkt.insn >> 8)),
+											  create_vec_int16(static_cast<int16_t>((pkt.insn >> 16))));
 					break;
 				}
 
@@ -145,11 +133,9 @@ namespace ecc
 						CONTEXT_SWITCH();
 					}
 
-					value0.regID = static_cast<RegisterID>((pkt.insn >> 8));
-					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16)));
-
-					execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE,
-										  value0, value1);
+					execute_bus.send_req2_reg(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE,
+										  static_cast<RegisterID>((pkt.insn >> 8)),
+										  regs.get(static_cast<RegisterID>((pkt.insn >> 16))));
 					break;
 				}
 
@@ -160,31 +146,26 @@ namespace ecc
 						CONTEXT_SWITCH();
 					}
 
-					value0.regID = static_cast<RegisterID>((pkt.insn >> 8));
-					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16)));
-					value2 = create_vec_int8(static_cast<int8_t>((pkt.insn >> 24)));
-
-					execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_SHL_REG_VALUE_VALUE,
-										  value0, value1, value2);
+					execute_bus.send_req3_reg(pkt.exec_mask, pkt.PC, EXEC_SHL_REG_VALUE_VALUE,
+										  static_cast<RegisterID>((pkt.insn >> 8)),
+										  regs.get(static_cast<RegisterID>((pkt.insn >> 16))),
+										  create_vec_int8(static_cast<int8_t>((pkt.insn >> 24))));
 					break;
 				}
 
 				case INSN_OPCODE_ADD_REG_REG_REG:
 				{
 					while ((!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16)))) |
-							(!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 24)))))
+						   (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 24)))))
 					{
 						CONTEXT_SWITCH();
 					}
 
-
-					value0.regID = static_cast<RegisterID>((pkt.insn >> 8) );
-					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16)));
-					value2 = regs.get(static_cast<RegisterID>((pkt.insn >> 24)));
-
-					execute_bus.send_req3(pkt.exec_mask, pkt.PC,
+					execute_bus.send_req3_reg(pkt.exec_mask, pkt.PC,
 										  EXEC_ADD_REG_VALUE_VALUE,
-										  value0, value1, value2);
+										  static_cast<RegisterID>((pkt.insn >> 8)),
+										  regs.get(static_cast<RegisterID>((pkt.insn >> 16))),
+										  regs.get(static_cast<RegisterID>((pkt.insn >> 24))));
 					break;
 				}
 
@@ -196,42 +177,32 @@ namespace ecc
 						CONTEXT_SWITCH();
 					}
 
-					value0.regID = static_cast<RegisterID>((pkt.insn >> 8));
-					value2 = create_vec_int8(static_cast<int8_t>((pkt.insn >> 24)));
-					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16)));
+					execute_bus.send_req3_reg(pkt.exec_mask, pkt.PC, EXEC_ADD_REG_VALUE_VALUE,
+											  static_cast<RegisterID>((pkt.insn >> 8)),
+											  regs.get(static_cast<RegisterID>((pkt.insn >> 16))),
+											  create_vec_int8(static_cast<int8_t>((pkt.insn >> 24))));
 
-					execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_ADD_REG_VALUE_VALUE,
-										  value0,
-										  value1,
-										  value2);
 					break;
 				}
 
 				case INSN_OPCODE_JMP_ALWAYS:
 				{
-					value0.vec = create_vec_int32(static_cast<int32_t>(pkt.insn >> 8));
-
 					execute_bus.send_req1(pkt.exec_mask, pkt.PC, EXEC_JMP,
-										  value0);
+										  create_vec_int32(static_cast<int32_t>(pkt.insn >> 8)));
 					break;
 				}
 
 				case INSN_OPCODE_CMP_REG_REG:
-				{					
+				{
 					while ((!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 8)))) |
-							(!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16)))))
+						   (!regs.is_valid(static_cast<RegisterID>((pkt.insn >> 16)))))
 					{
 						CONTEXT_SWITCH();
 					}
 
-					value0.vec = regs.get(static_cast<RegisterID>((pkt.insn >> 8)));
-					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 16)));
-
-					// std::cerr << "[DECODE] CMP: " << value1 << " -- " << value2 << std::endl;
-
-					execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_CMP,
-										  value0,
-										  value1);
+					execute_bus.send_req2_vec(pkt.exec_mask, pkt.PC, EXEC_CMP,
+											  regs.get(static_cast<RegisterID>((pkt.insn >> 8))),
+											  regs.get(static_cast<RegisterID>((pkt.insn >> 16))));
 					break;
 				}
 
@@ -242,13 +213,11 @@ namespace ecc
 				case INSN_OPCODE_JMP_GREATER:
 				case INSN_OPCODE_JMP_GREATER_EQUAL:
 				{
-					
-					value1 = create_vec_int64(get_expected_cond_jump_flags_mask(static_cast<Opcode>(pkt.insn)));
-					value0.vec = create_vec_int32(static_cast<int32_t>(pkt.insn >> 8));
+					execute_bus.send_req2_vec(pkt.exec_mask, pkt.PC,
+											  EXEC_COND_JMP,
+											  create_vec_int32(static_cast<int32_t>(pkt.insn >> 8)),
+											  create_vec_int64(get_expected_cond_jump_flags_mask(static_cast<Opcode>(pkt.insn))));
 
-					execute_bus.send_req2(pkt.exec_mask, pkt.PC,
-										  EXEC_COND_JMP,
-										  value0, value1);
 					break;
 				}
 
@@ -259,12 +228,9 @@ namespace ecc
 						CONTEXT_SWITCH();
 					}
 
-					value0.vec = create_vec_int16(static_cast<int16_t>(pkt.insn >> 16));
-					value1 = regs.get(static_cast<RegisterID>((pkt.insn >> 8)));
-
-					execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_LOAD_RESTORE_PC,
-										  value0,
-										  value1);
+					execute_bus.send_req2_vec(pkt.exec_mask, pkt.PC, EXEC_LOAD_RESTORE_PC,
+											  create_vec_int16(static_cast<int16_t>(pkt.insn >> 16)),
+											  regs.get(static_cast<RegisterID>((pkt.insn >> 8))));
 					break;
 				}
 
@@ -276,25 +242,18 @@ namespace ecc
 						CONTEXT_SWITCH();
 					}
 
-					value0.regID = static_cast<RegisterID>((pkt.insn >> 8));
-					value2 = regs.get(static_cast<RegisterID>((pkt.insn >> 16)));
-					value1 = create_vec_int16(static_cast<int16_t>(pkt.insn >> 24));
-
-					execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_LOAD_REG,
-										  value0,
-										  value1,
-										  value2);
+					execute_bus.send_req3_reg(pkt.exec_mask, pkt.PC, EXEC_LOAD_REG,
+											  static_cast<RegisterID>((pkt.insn >> 8)),
+											  create_vec_int16(static_cast<int16_t>(pkt.insn >> 24)),
+											  regs.get(static_cast<RegisterID>((pkt.insn >> 16))));
 					break;
 				}
 
 				case INSN_OPCODE_MOVE_R0_CONST24A:
 				{
-					value0.regID = REG_R0;
-					value1 = create_vec_int32(static_cast<int32_t>(pkt.insn >> 8));
-
-					execute_bus.send_req2(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE,
-										  value0,
-										  value1);
+					execute_bus.send_req2_reg(pkt.exec_mask, pkt.PC, EXEC_MOVE_REG_VALUE,
+											  REG_R0,
+											  create_vec_int32(static_cast<int32_t>(pkt.insn >> 8)));
 					break;
 				}
 
@@ -304,14 +263,11 @@ namespace ecc
 					{
 						CONTEXT_SWITCH();
 					}
-					value0.regID = REG_R0;
-					value1 = create_vec_int32(static_cast<int32_t>(pkt.insn >> 8));
-					value2 = regs.get(REG_R0);
 
-					execute_bus.send_req3(pkt.exec_mask, pkt.PC, EXEC_ORB_REG_VALUE,
-										  value0,
-										  value1,
-										  value2);
+					execute_bus.send_req3_reg(pkt.exec_mask, pkt.PC, EXEC_ORB_REG_VALUE,
+											  REG_R0,
+											  create_vec_int32(static_cast<int32_t>(pkt.insn >> 8)),
+											  regs.get(REG_R0));
 					break;
 				}
 
@@ -321,15 +277,12 @@ namespace ecc
 					{
 						CONTEXT_SWITCH();
 					}
-					value0.regID = REG_R0;
-					value1 = create_vec_int32(static_cast<int32_t>(pkt.insn >> 8));
-					value2 = regs.get(REG_R0);
 
-					execute_bus.send_req3(pkt.exec_mask, pkt.PC,
-										  EXEC_ORC_REG_VALUE,
-										  value0,
-										  value1,
-										  value2);
+					execute_bus.send_req3_reg(pkt.exec_mask, pkt.PC,
+											  EXEC_ORC_REG_VALUE,
+											  REG_R0,
+											  create_vec_int32(static_cast<int32_t>(pkt.insn >> 8)),
+											  regs.get(REG_R0));
 					break;
 				}
 
