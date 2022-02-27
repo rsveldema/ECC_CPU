@@ -112,7 +112,10 @@ class MyTransformer(Transformer):
         if len(tree) == 1:
             return tree[0]
         else:
-            return BinaryExpr("[]", tree[0], tree[1])
+            b = BinaryExpr("[]", tree[0], tree[1])
+            if len(tree) > 2:
+                b = DotAccessExpr(b, tree[2:])
+            return b;
 
 
     def access_expr(self, tree):        

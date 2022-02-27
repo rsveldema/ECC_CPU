@@ -99,7 +99,8 @@ namespace ecc
 							count_num_bits64(pkt.execution_flags_true),
 							count_num_bits64(pkt.execution_flags_false));
 					
-					divergence_queue.push_front(regs, pkt.dest.address, pkt.execution_flags_true);
+					divergence_queue.push_to_front(regs, pkt.dest.address, pkt.execution_flags_true);
+					divergence_queue.advance_write_pos();
 
 					fetch_bus.send(pkt.execution_flags_false, pkt.src.address);
 					break;

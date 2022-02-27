@@ -75,7 +75,7 @@ call_stmt: access "(" args ")" ";"
 
 access: qual_ident ("." IDENT)* ("->" IDENT)?
 
-lhs: access ("[" term "]")?
+lhs: access ("[" term "]" ("." IDENT)*)? 
 
 if_stmt: "if" "(" expr ")" block ("else" block)?
 

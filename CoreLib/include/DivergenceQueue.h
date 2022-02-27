@@ -38,7 +38,7 @@ namespace ecc
 			return read_pos == write_pos;
 		}
 
-		void push_front(RegisterFile regs,
+		void push_to_front(RegisterFile regs,
 						memory_address_t PC,
 						execution_mask_t exec_mask)
 		{
@@ -49,9 +49,7 @@ namespace ecc
 			}
 			contexts[write_pos].exec_mask = exec_mask;
 			contexts[write_pos].PC = PC;
-			contexts[write_pos].regs = regs;
-			
-			write_pos = get_next_pos(write_pos);
+			contexts[write_pos].regs = regs;			
 		}
 
 		ThreadContext get_back()
@@ -65,6 +63,11 @@ namespace ecc
 		void advance_read_pos()
 		{
 			read_pos = get_next_pos(read_pos);
+		}
+
+		void advance_write_pos()
+		{
+			write_pos = get_next_pos(write_pos);
 		}
 
 		static uint32_t get_next_pos(uint32_t v)
