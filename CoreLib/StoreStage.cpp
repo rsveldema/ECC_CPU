@@ -8,7 +8,11 @@ namespace ecc
 	METHOD_SECTION;
 
 	template<CoreID core_id>
-	ReturnObject StoreStage<core_id>::run()
+	ReturnObject StoreStage<core_id>::run(ExecuteToStoreBus &execute_bus,
+						 VecMemoryBus &memory_bus,
+						 RegisterFile &regs,
+						 StoreToFetchBus &fetch_bus,
+						 DivergenceQueue &divergence_queue)
 	{
 		while (1)
 		{
@@ -91,21 +95,11 @@ namespace ecc
 				{
 					__global_stats.numVectorLocalDivergences += 1;
 
-					//const auto new_address = pkt.dest.address;
-					//const auto next_address = pkt.src.address;
-					//const auto& exec_mask_new_address = pkt.execution_flags_true;
-					//const auto& exec_mask_next_address = pkt.execution_flags_false;
-
 					$display("[STORE] splitting cond-jump: ", 
 							count_num_bits64(pkt.execution_flags_true),
 							count_num_bits64(pkt.execution_flags_false));
-
-					ThreadContext ctxt{
-						regs,
-						pkt.dest.address,
-						pkt.execution_flags_true
-					};
-					divergence_queue.push_front(ctxt);
+					
+					divergence_queue.push_front(regs, pkt.dest.address, pkt.execution_flags_true);
 
 					fetch_bus.send(pkt.execution_flags_false, pkt.src.address);
 					break;
@@ -119,8 +113,10 @@ namespace ecc
 					}
 					else
 					{
-						const auto& new_thread_ctxt_opt = divergence_queue.pop_back();
-						const auto& new_thread_ctxt = *new_thread_ctxt_opt;
+						const ThreadContext new_thread_ctxt = divergence_queue.get_back();
+						divergence_queue.advance_read_pos();
+
+						CONTEXT_SWITCH();
 
 						regs = new_thread_ctxt.regs;
 

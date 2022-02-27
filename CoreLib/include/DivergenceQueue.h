@@ -8,30 +8,36 @@
 
 namespace ecc
 {
+	static constexpr uint32_t MAX_THREAD_CONTEXTS = 64;
+
 	struct ThreadContext
 	{
 		RegisterFile regs;
-		ecc::memory_address_t PC{ 0 };
+		memory_address_t PC;
 		execution_mask_t exec_mask;
 	};
 
 
-	class DivergenceQueue
+	INTERFACE DivergenceQueue
 	{
-	public:
-		DivergenceQueue()
-		{
-		}
+		std::array<ThreadContext, MAX_THREAD_CONTEXTS> contexts;
+		uint16_t read_pos;
+		uint16_t write_pos;
 
 		void init()
-		{}
+		{
+			read_pos = 0;
+			write_pos = 0;
+		}
 
 		bool is_empty() const
 		{
 			return read_pos == write_pos;
 		}
 
-		void push_front(const ThreadContext& ctxt)
+		void push_front(RegisterFile regs,
+						memory_address_t PC,
+						execution_mask_t exec_mask)
 		{
 			auto next_write_pos = get_next_pos(write_pos);
 			if (next_write_pos == read_pos)
@@ -39,30 +45,25 @@ namespace ecc
 				std::cerr << "DivergenceQueue is FULL!" << std::endl;
 				abort();
 			}
-			contexts[write_pos] = ctxt;
+			contexts[write_pos].exec_mask = exec_mask;
+			contexts[write_pos].PC = PC;
+			contexts[write_pos].regs = regs;
+			
 			write_pos = next_write_pos;
 		}
 
-		std::optional<ThreadContext> pop_back()
+		ThreadContext get_back()
 		{
-			if (is_empty())
-			{
-				return std::nullopt;
-			}
-			const auto& v = contexts[read_pos];
-			read_pos = get_next_pos(read_pos);
-			return v;
+			assert(! is_empty());
+
+			return contexts[read_pos];
 		}
 
-	private:
 
-		static constexpr uint32_t MAX_THREAD_CONTEXTS = 64;
-
-		ThreadContext contexts[MAX_THREAD_CONTEXTS];
-		unsigned read_pos = 0;
-		unsigned write_pos = 0;
-
-
+		void advance_read_pos()
+		{
+			read_pos = get_next_pos(read_pos);
+		}
 
 		static uint32_t get_next_pos(uint32_t v)
 		{
