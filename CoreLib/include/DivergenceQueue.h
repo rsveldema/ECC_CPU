@@ -24,6 +24,9 @@ namespace ecc
 		uint16_t read_pos;
 		uint16_t write_pos;
 
+
+		METHOD_SECTION;
+
 		void init()
 		{
 			read_pos = 0;
@@ -39,17 +42,16 @@ namespace ecc
 						memory_address_t PC,
 						execution_mask_t exec_mask)
 		{
-			auto next_write_pos = get_next_pos(write_pos);
-			if (next_write_pos == read_pos)
+			if (get_next_pos(write_pos) == read_pos)
 			{
-				std::cerr << "DivergenceQueue is FULL!" << std::endl;
-				abort();
+				$display("DivergenceQueue is FULL!");
+				assert(false);
 			}
 			contexts[write_pos].exec_mask = exec_mask;
 			contexts[write_pos].PC = PC;
 			contexts[write_pos].regs = regs;
 			
-			write_pos = next_write_pos;
+			write_pos = get_next_pos(write_pos);
 		}
 
 		ThreadContext get_back()
