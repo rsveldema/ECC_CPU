@@ -12,7 +12,7 @@
 
 namespace ecc
 {
-	enum VecBusPacketType
+	enum VecBusPacketType: uint8_t
 	{
 		VEC_BUS_PKT_TYPE_read_vec64,
 		VEC_BUS_PKT_TYPE_write_vec64,
@@ -32,14 +32,15 @@ namespace ecc
 
 	/** simple memory bus that allows sending requests and receiving replies.
 	 */
-	class VecMemoryBus
+	INTERFACE VecMemoryBus
 	{
-	public:
 		bool request_busy;
 		VecBusPacket request_queue;
 		
 		bool response_busy;
 		VecBusPacket response_queue;
+
+		METHOD_SECTION;
 
 		void init()
 		{
@@ -83,6 +84,7 @@ namespace ecc
 
 		void send_response(const VecBusPacket &pkt)
 		{
+			assert(!response_busy);
 			response_queue = pkt;
 			response_busy = true;
 		}
