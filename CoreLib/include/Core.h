@@ -45,7 +45,7 @@ namespace ecc
 		MemoryBus L1d_to_l2d;
 		//RawMemoryBus idle_core_memory_bus;
 		VecMemoryBus store_to_vec_controller_bus;
-		VectorMemoryController vecMemController;
+		VectorMemoryController<core_id> vecMemController;
 
 	public:
 

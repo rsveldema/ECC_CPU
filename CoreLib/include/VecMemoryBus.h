@@ -24,7 +24,7 @@ namespace ecc
 
 	struct VecBusPacket
 	{
-		VecBusPacketType type;
+		VecBusPacketType packet_type;
 		BusID source;
 		VectorValue address;
 		vec_bus_payload_t payload;
@@ -53,7 +53,7 @@ namespace ecc
 			assert(! request_busy);		
 			request_queue.source = source;
 			request_queue.address = address;
-			request_queue.type = VEC_BUS_PKT_TYPE_read_vec64;
+			request_queue.packet_type = VEC_BUS_PKT_TYPE_read_vec64;
 			request_busy = true;
 		}
 
@@ -64,7 +64,7 @@ namespace ecc
 			request_queue.source = source;
 			request_queue.address = address;
 			request_queue.payload = value;
-			request_queue.type = VEC_BUS_PKT_TYPE_write_vec64;
+			request_queue.packet_type = VEC_BUS_PKT_TYPE_write_vec64;
 			request_busy = true;
 		}
 

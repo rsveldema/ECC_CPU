@@ -76,6 +76,9 @@ module main(input clk);
     DecodeStage #(.core_id(0)) decoder (fetch_decode_bus, decode_exec_bus, reg_file);
     ExecuteStage #(.core_id(0)) executor (decode_exec_bus, exec_store_bus, reg_file);
 
+    VecMemoryBus vec_mem_bus_to_cpu;
+    VectorMemoryController#(.core_id(0)) vec_mem_controller(vec_mem_bus_to_cpu, memory_bus);
+
 
     initial begin
         int fd;

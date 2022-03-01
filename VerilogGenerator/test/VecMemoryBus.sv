@@ -11,7 +11,7 @@ typedef VectorValue vec_bus_payload_t;
 
 
 typedef struct packed {
-	VecBusPacketType type;
+	VecBusPacketType packet_type;
 	BusID source;
 	VectorValue address;
 	vec_bus_payload_t payload;
@@ -39,7 +39,7 @@ interface VecMemoryBus;
 		assert(!(request_busy));
 		request_queue.source <= source;
 		request_queue.address <= address;
-		request_queue.type <= VEC_BUS_PKT_TYPE_read_vec64;
+		request_queue.packet_type <= VEC_BUS_PKT_TYPE_read_vec64;
 		request_busy <= 1;
 	end
 	end
@@ -52,7 +52,7 @@ interface VecMemoryBus;
 		request_queue.source <= source;
 		request_queue.address <= address;
 		request_queue.payload <= value;
-		request_queue.type <= VEC_BUS_PKT_TYPE_write_vec64;
+		request_queue.packet_type <= VEC_BUS_PKT_TYPE_write_vec64;
 		request_busy <= 1;
 	end
 	end

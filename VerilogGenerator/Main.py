@@ -61,7 +61,8 @@ def main():
 
 
     inc_path = "../CoreLib/include/"
-    includes = ["Defines.h", "VectorValue.h", "Packets.h", "RegisterFile.h", "DecodeToExecuteBus.h", "DivergenceQueue.h", "FetchToDecodeBus.h", "StoreToFetchBus.h", "ExecuteToStoreBus.h", "VecMemoryBus.h"]
+    includes = ["Defines.h", "VectorValue.h", "Packets.h", "RegisterFile.h", "DecodeToExecuteBus.h", "DivergenceQueue.h", "FetchToDecodeBus.h", 
+                "StoreToFetchBus.h", "ExecuteToStoreBus.h", "VecMemoryBus.h"]
     for file in includes:
         tree = parseFile(parser, inc_path + file)
         ast = createAST(tree)
@@ -73,7 +74,8 @@ def main():
             generate(methods, ps)
 
 
-    files = ["../CoreLib/FetchStage.cpp", "../CoreLib/DecodeStage.cpp", "../CoreLib/ExecuteStage.cpp", "../CoreLib/DRAM.cpp", "../CoreLib/include/MemoryBus.h"]
+    files = ["../CoreLib/FetchStage.cpp", "../CoreLib/DecodeStage.cpp", "../CoreLib/ExecuteStage.cpp", "../CoreLib/DRAM.cpp", 
+            "../CoreLib/include/MemoryBus.h", "../CoreLib/VectorMemoryController.cpp"]
     for file in files:
         module_name = get_file_name(file)
 

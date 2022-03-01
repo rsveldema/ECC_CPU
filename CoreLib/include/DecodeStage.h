@@ -39,7 +39,7 @@ namespace ecc
 
 	private:
 
-		ecc::ReturnObject handle_conditional_jump(uint32_t jmp_mask_const, const FetchToDecodeBusPacket& pkt);
+		ReturnObject handle_conditional_jump(uint32_t jmp_mask_const, const FetchToDecodeBusPacket& pkt);
 	};
 
 	template class DecodeStage<CORE_ID_Core0>;
