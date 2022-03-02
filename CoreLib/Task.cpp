@@ -1,5 +1,5 @@
 #include "Task.h"
-#include "Stats.h"
+#include "GlobalStats.h"
 #include "FetchStage.h"
 
 namespace ecc

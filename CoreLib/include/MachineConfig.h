@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Stats.h"
+#include "GlobalStats.h"
 
 
 namespace ecc

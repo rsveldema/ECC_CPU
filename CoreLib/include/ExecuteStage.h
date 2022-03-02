@@ -13,26 +13,30 @@ namespace ecc
 		DecodeToExecuteBus& _decode_bus;
 		ExecuteToStoreBus& _store_bus;
 		RegisterFile& _regs;
+		GlobalStats& _stats;
 
 	public:
 		ExecuteStage(SimComponentRegistry& registry, 
 			DecodeToExecuteBus& _decode_bus, 
 			ExecuteToStoreBus& _store_bus,
-			RegisterFile& _regs)
+			RegisterFile& _regs,
+			GlobalStats& stats)
 			: SimComponent(registry, "execute"),
 			_decode_bus(_decode_bus),
 			_store_bus(_store_bus),
-			_regs(_regs)
+			_regs(_regs),
+			_stats(stats)
 		{}
 
 		ReturnObject run() override
 		{
-			return run(_decode_bus, _store_bus, _regs);
+			return run(_decode_bus, _store_bus, _regs, _stats);
 		}
 
 		ReturnObject run(DecodeToExecuteBus& decode_bus,
 					ExecuteToStoreBus& store_bus,
-					RegisterFile& regs);
+					RegisterFile& regs,
+					GlobalStats& stats);
 	};
 
 	template class ExecuteStage<CORE_ID_Core0>;

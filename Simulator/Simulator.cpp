@@ -98,6 +98,9 @@ void write_config(const std::string& filename)
 	f.close();
 }
 
+
+
+
 int main(int argc, char** argv)
 {
 	printf("booted!\n");
@@ -131,7 +134,7 @@ int main(int argc, char** argv)
 	registry.run(machine);
 
 	std::cerr << "finished simulation" << std::endl;
-	__global_stats.dump();
+	machine.dump_stats();
 
 	return 0;
 }

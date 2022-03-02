@@ -12,7 +12,8 @@ namespace ecc
 						 VecMemoryBus &memory_bus,
 						 RegisterFile &regs,
 						 StoreToFetchBus &fetch_bus,
-						 DivergenceQueue &divergence_queue)
+						 DivergenceQueue &divergence_queue,
+						 GlobalStats& stats)
 	{
 		while (1)
 		{
@@ -77,7 +78,7 @@ namespace ecc
 						}
 						else
 						{
-							__global_stats.waitForOperandFetch++;
+							stats.incWaitForOperandFetch();
 						}
 
 						CONTEXT_SWITCH();
@@ -93,7 +94,7 @@ namespace ecc
 
 				case STORAGE_CJMP:
 				{
-					__global_stats.numVectorLocalDivergences += 1;
+					stats.incNumVectorLocalDivergences();
 
 					$display("[STORE] splitting cond-jump: ", 
 							count_num_bits64(pkt.execution_flags_true),

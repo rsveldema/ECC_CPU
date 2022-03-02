@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "Stats.h"
+#include "GlobalStats.h"
 
 namespace ecc
 {

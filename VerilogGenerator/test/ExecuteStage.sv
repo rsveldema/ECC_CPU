@@ -9,7 +9,7 @@ end
 endfunction
 
 
-module ExecuteStage(DecodeToExecuteBus decode_bus, ExecuteToStoreBus store_bus, RegisterFile regs);
+module ExecuteStage(DecodeToExecuteBus decode_bus, ExecuteToStoreBus store_bus, RegisterFile regs, GlobalStats stats);
 	parameter CoreID core_id;
 	reg[32:0] state = 0;
 	DecodeExecPacket pkt;
@@ -27,6 +27,7 @@ module ExecuteStage(DecodeToExecuteBus decode_bus, ExecuteToStoreBus store_bus, 
 			end
 		126:
 			begin
+				stats.incNumCyclesUsed();
 				state <= 128; // GOTO
 				return;
 			end

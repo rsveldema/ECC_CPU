@@ -45,7 +45,7 @@ end
 endfunction
 
 
-module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus);
+module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, MemoryBus memory_bus, GlobalStats stats);
 	parameter CoreID core_id;
 	reg[32:0] state = 0;
 	bool have_outstanding_jmp;
@@ -197,7 +197,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		17:
 			begin
-				incFetchedInsnWait();
+				stats.incFetchedInsnWait();
 				// CONTEXT_SWITCH();
 				state <= 20; // GOTO
 				return;

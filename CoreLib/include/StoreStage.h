@@ -18,6 +18,7 @@ namespace ecc
 		RegisterFile &_regs;
 		StoreToFetchBus &_fetch_bus;
 		DivergenceQueue &_divergence_queue;
+		GlobalStats& _stats;
 
 	public:
 		StoreStage(SimComponentRegistry &registry,
@@ -25,27 +26,29 @@ namespace ecc
 				   VecMemoryBus &_memory_bus,
 				   RegisterFile &_regs,
 				   StoreToFetchBus &_fetch_bus,
-				   DivergenceQueue &_divergence_queue)
-
+				   DivergenceQueue &_divergence_queue,
+				   GlobalStats& stats)
 			: SimComponent(registry, "storer"),
 			  _execute_bus(_execute_bus),
 			  _memory_bus(_memory_bus),
 			  _regs(_regs),
 			  _fetch_bus(_fetch_bus),
-			  _divergence_queue(_divergence_queue)
+			  _divergence_queue(_divergence_queue),
+			  _stats(stats)
 		{
 		}
 
 		ReturnObject run() override
 		{
-			return run(_execute_bus, _memory_bus, _regs, _fetch_bus, _divergence_queue);
+			return run(_execute_bus, _memory_bus, _regs, _fetch_bus, _divergence_queue, _stats);
 		}
 
 		ReturnObject run(ExecuteToStoreBus &execute_bus,
 						 VecMemoryBus &memory_bus,
 						 RegisterFile &regs,
 						 StoreToFetchBus &fetch_bus,
-						 DivergenceQueue &divergence_queue);
+						 DivergenceQueue &divergence_queue,
+						 GlobalStats& _stats);
 	};
 
 	template class StoreStage<CORE_ID_Core0>;

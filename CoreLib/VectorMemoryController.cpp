@@ -7,6 +7,8 @@ namespace ecc
 	template <CoreID core_id>
 	ReturnObject VectorMemoryController<core_id>::run(VecMemoryBus &toCPU, MemoryBus &toMemory)
 	{
+		uint32_t i = 0;
+
 		while (1)
 		{
 			if (toCPU.request_busy)
@@ -34,10 +36,10 @@ namespace ecc
 
 				if (pkt.packet_type == VEC_BUS_PKT_TYPE_read_vec64)
 				{
-					VecBusPacket reply = {
-						VEC_BUS_PKT_TYPE_read_response_vec64};
+					pkt.packet_type = VEC_BUS_PKT_TYPE_read_response_vec64;
 
-					for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
+					i = 0;
+					while (i < NUMBER_OF_VECTOR_THREADS_INT64)
 					{
 						// wait for the bus to clear so we can send another request
 						while (toMemory.request_busy)
@@ -51,28 +53,32 @@ namespace ecc
 						{
 							if (toMemory.response_busy)
 							{
-								auto pkt = toMemory.get_response();
+								BusPacket mem_pkt = toMemory.get_response();
 
-								reply.payload.data[i] = pkt.payload;
+								pkt.payload.data[i] = mem_pkt.payload;
 								break;
 							}
 							CONTEXT_SWITCH();
 						}
+
+						i++;
 					}
 
-					toCPU.send_response(reply);
+					toCPU.send_response(pkt);
 				}
 				else
 				{
 					if (pkt.packet_type == VEC_BUS_PKT_TYPE_write_vec64)
 					{
-						for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
+						i = 0;
+						while (i < NUMBER_OF_VECTOR_THREADS_INT64)
 						{
 							while (toMemory.request_busy)
 							{
 								CONTEXT_SWITCH();
 							}
 							toMemory.send_write_request_data(pkt.address.data[i], pkt.source, get(pkt.payload, i));
+							i++;
 						}
 					}
 					else

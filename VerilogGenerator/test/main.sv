@@ -63,6 +63,8 @@ module main(input clk);
 
     // bit clk;
 
+    GlobalStats stats;
+
     DecodeToExecuteBus decode_exec_bus;
     FetchToDecodeBus fetch_decode_bus;
     StoreToFetchBus store_fetch_bus;
@@ -72,9 +74,9 @@ module main(input clk);
     DRAM dram (memory_bus);
     RegisterFile reg_file;
 
-    FetchStage  #(.core_id(0)) fetcher (fetch_decode_bus, store_fetch_bus, memory_bus);
+    FetchStage  #(.core_id(0)) fetcher (fetch_decode_bus, store_fetch_bus, memory_bus, stats);
     DecodeStage #(.core_id(0)) decoder (fetch_decode_bus, decode_exec_bus, reg_file);
-    ExecuteStage #(.core_id(0)) executor (decode_exec_bus, exec_store_bus, reg_file);
+    ExecuteStage #(.core_id(0)) executor (decode_exec_bus, exec_store_bus, reg_file, stats);
 
     VecMemoryBus vec_mem_bus_to_cpu;
     VectorMemoryController#(.core_id(0)) vec_mem_controller(vec_mem_bus_to_cpu, memory_bus);

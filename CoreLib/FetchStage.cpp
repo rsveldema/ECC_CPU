@@ -44,7 +44,8 @@ namespace ecc
 	template<CoreID core_id>
 	ReturnObject FetchStage<core_id>::run(FetchToDecodeBus &decode_bus,
 								 StoreToFetchBus &store_bus,
-								 MemoryBus &memory_bus)
+								 MemoryBus &memory_bus,
+								 GlobalStats& stats)
 	{
 		bool have_outstanding_jmp = false;
 		memory_address_t fetch_PC = 0;
@@ -59,7 +60,6 @@ namespace ecc
 		while (1)
 		{
 			$display("have outstanding jmp: ", have_outstanding_jmp);
-
 
 			if (have_outstanding_jmp)
 			{
@@ -121,7 +121,7 @@ namespace ecc
 							break;
 						}
 
-						incFetchedInsnWait();
+						stats.incFetchedInsnWait();
 						CONTEXT_SWITCH();
 					}
 				}

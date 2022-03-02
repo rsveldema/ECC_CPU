@@ -16,6 +16,11 @@ namespace ecc
 		Multiplexer<MemoryBus> main_memory_insn_access_multiplexer;
 		MemoryBus sram_multiplexer_bus;
 
+		void dump_stats()
+		{
+			dump(core0.stats);
+		}
+
 		void init()
 		{
 			core0.init();

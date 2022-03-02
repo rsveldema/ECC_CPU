@@ -7,9 +7,21 @@
 #include <string>
 #include "Defines.h"
 
+#include "GlobalStats.h"
+
 namespace ecc
 {
 	using phys_memory_address_t = uint32_t;
+
+	static inline
+	void dump(GlobalStats& stats)
+	{
+		std::cout << "-----------------<<[  Stats ]>>------------------" << std::endl;
+		std::cout << "Total #cycles                   : " << std::to_string(stats.numCyclesUsed) << std::endl;
+		std::cout << "wait #wait cycles in fetch-insn : " << std::to_string(stats.waitForInsnFetch) << std::endl;
+		std::cout << "wait #wait cycles in fetch-op   : " << std::to_string(stats.waitForOperandFetch) << std::endl;
+		std::cout << "numVectorLocalDivergences       : " << std::to_string(stats.numVectorLocalDivergences) << std::endl;
+	}
 
 
 

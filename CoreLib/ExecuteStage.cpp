@@ -14,10 +14,13 @@ namespace ecc
 	template <CoreID core_id>
 	ReturnObject ExecuteStage<core_id>::run(DecodeToExecuteBus& decode_bus,
 					ExecuteToStoreBus& store_bus,
-					RegisterFile& regs)
+					RegisterFile& regs,
+					GlobalStats& stats)
 	{
 		while (1)
 		{
+			stats.incNumCyclesUsed();
+
 			while (store_bus.is_busy)
 			{
 				CONTEXT_SWITCH();

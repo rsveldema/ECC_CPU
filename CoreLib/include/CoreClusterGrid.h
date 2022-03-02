@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Stats.h"
+#include "GlobalStats.h"
 #include "MachineConfig.h"
 
 #include "L2DataCache.h"
@@ -34,6 +34,11 @@ namespace ecc
 		DRAM dram;
 
 		CoreCluster coreCluster;
+
+		void dump_stats()
+		{
+			coreCluster.dump_stats();
+		}
 
 
 		void init()

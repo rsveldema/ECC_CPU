@@ -48,6 +48,9 @@ namespace ecc
 		VectorMemoryController<core_id> vecMemController;
 
 	public:
+		GlobalStats stats;
+
+	public:
 
 	void init()
 	{
@@ -62,16 +65,18 @@ namespace ecc
 		fetch_decode_bus.init();
 		decode_execute_bus.init();
 		execute_store_bus.init();
+
+		stats.init();
 	}
 
 	public:
 		Core(SimComponentRegistry& registry)
 			: regs{},
-			fetch(registry, fetch_decode_bus, core_L1i, store_fetch_bus),
+			fetch(registry, fetch_decode_bus, core_L1i, store_fetch_bus, stats),
 			decode(registry, fetch_decode_bus, decode_execute_bus, regs),
-			execute(registry, decode_execute_bus, execute_store_bus, regs),
+			execute(registry, decode_execute_bus, execute_store_bus, regs, stats),
 			store(registry, execute_store_bus, store_to_vec_controller_bus, 
-					regs, store_fetch_bus, divergence_queue),
+					regs, store_fetch_bus, divergence_queue, stats),
 			L1d(registry, "L1d", core_L1d, L1d_to_l2d),
 			L1i(registry, "L1i", core_L1i, L1i_to_L2i),
 			vecMemController(registry, "vec_mem_controller", store_to_vec_controller_bus, core_L1d)
