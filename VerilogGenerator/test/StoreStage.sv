@@ -82,7 +82,7 @@ module StoreStage(ExecuteToStoreBus execute_bus, VecMemoryBus memory_bus, Regist
 			end
 		141:
 			begin
-				regs <= new_thread_ctxt.regs;
+				regs.data <= new_thread_ctxt.regs;
 				fetch_bus.send(new_thread_ctxt.exec_mask, new_thread_ctxt.PC);
 				state <= 139; // GOTO
 				return;
@@ -106,7 +106,7 @@ module StoreStage(ExecuteToStoreBus execute_bus, VecMemoryBus memory_bus, Regist
 				end
 				stats.incNumVectorLocalDivergences();
 				$display("[STORE] splitting cond-jump: ", count_num_bits64(pkt.execution_flags_true), count_num_bits64(pkt.execution_flags_false));
-				divergence_queue.push_to_front(regs, pkt.dest.address, pkt.execution_flags_true);
+				divergence_queue.push_to_front(regs.data, pkt.dest.address, pkt.execution_flags_true);
 				divergence_queue.advance_write_pos();
 				fetch_bus.send(pkt.execution_flags_false, pkt.src.address);
 				state <= 131; // GOTO
@@ -240,7 +240,7 @@ module StoreStage(ExecuteToStoreBus execute_bus, VecMemoryBus memory_bus, Regist
 					state <= 159; // GOTO
 					return;
 				end
-				assert(are_all_adjacent_memory_addresses(pkt.dest.value, POINTER_SIZE));
+				assert(are_all_adjacent_memory_addresses(pkt.dest.value, (int64_t'(POINTER_SIZE))));
 				$display("STORE ----> exec: ", pkt.dest.value, pkt.src.value);
 				memory_bus.send_write_request_vec(pkt.dest.value, createBusID(core_id, COMPONENT_TYPE_STORE), pkt.src.value);
 				state <= 131; // GOTO

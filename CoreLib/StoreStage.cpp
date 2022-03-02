@@ -40,7 +40,7 @@ namespace ecc
 
 				case STORAGE_STORE_REG_INTO_MEM:
 				{
-					assert(are_all_adjacent_memory_addresses(pkt.dest.value, POINTER_SIZE));
+					assert(are_all_adjacent_memory_addresses(pkt.dest.value, static_cast<int64_t>(POINTER_SIZE)));
 
 					$display("STORE ----> exec: ", pkt.dest.value, pkt.src.value);
 
@@ -100,7 +100,7 @@ namespace ecc
 							count_num_bits64(pkt.execution_flags_true),
 							count_num_bits64(pkt.execution_flags_false));
 					
-					divergence_queue.push_to_front(regs, pkt.dest.address, pkt.execution_flags_true);
+					divergence_queue.push_to_front(regs.data, pkt.dest.address, pkt.execution_flags_true);
 					divergence_queue.advance_write_pos();
 
 					fetch_bus.send(pkt.execution_flags_false, pkt.src.address);
@@ -120,7 +120,7 @@ namespace ecc
 
 						CONTEXT_SWITCH();
 
-						regs = new_thread_ctxt.regs;
+						regs.data = new_thread_ctxt.regs; 
 
 						fetch_bus.send( new_thread_ctxt.exec_mask, new_thread_ctxt.PC );
 					}

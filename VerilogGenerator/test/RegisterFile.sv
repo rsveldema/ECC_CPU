@@ -1,17 +1,31 @@
+
+typedef uint8_t TinyCounter;
+
+
+typedef struct packed {
+	TinyCounter[((int'(MAX_REG_ID))) - 1:0] invalidated_regs;
+	TinyCounter[((int'(MAX_REG_ID))) - 1:0] written_regs;
+	VectorValue[((int'(MAX_REG_ID))) - 1:0] regs;
+	flags_reg_t machine_flags;
+} RegisterSet;
 interface RegisterFile;
+	RegisterSet data;
 	
-	typedef uint8_t TinyCounter;
-	VectorValue regs[(int'(MAX_REG_ID))];
-	TinyCounter invalidated_regs[(int'(MAX_REG_ID))];
-	TinyCounter written_regs[(int'(MAX_REG_ID))];
-	flags_reg_t machine_flags = 0;
+	
+	function void init();
+	begin
+	begin
+		data.machine_flags = 0;
+	end
+	end
+	endfunction
 	
 	
 	function void mark_invalid(input RegisterID id);
 	begin
 	begin
 		assert(isValidIndex(id));
-		invalidated_regs[(int'(id))] <= invalidated_regs[(int'(id))] + 1;
+		data.invalidated_regs[(int'(id))] <= data.invalidated_regs[(int'(id))] + 1;
 	end
 	end
 	endfunction
@@ -21,7 +35,7 @@ interface RegisterFile;
 	begin
 	begin
 		assert(isValidIndex(id));
-		written_regs[(int'(id))] <= written_regs[(int'(id))] + 1;
+		data.written_regs[(int'(id))] <= data.written_regs[(int'(id))] + 1;
 	end
 	end
 	endfunction
@@ -31,7 +45,7 @@ interface RegisterFile;
 	begin
 	begin
 		assert(isValidIndex(id));
-		return (written_regs[(int'(id))] == invalidated_regs[(int'(id))]);
+		return (data.written_regs[(int'(id))] == data.invalidated_regs[(int'(id))]);
 	end
 	end
 	endfunction
@@ -41,7 +55,7 @@ interface RegisterFile;
 	begin
 	begin
 		assert(isValidIndex(id));
-		regs[(int'(id))] <= v;
+		data.regs[(int'(id))] <= v;
 	end
 	end
 	endfunction
@@ -51,7 +65,7 @@ interface RegisterFile;
 	begin
 	begin
 		assert(isValidIndex(id));
-		return regs[(int'(id))];
+		return data.regs[(int'(id))];
 	end
 	end
 	endfunction
@@ -60,7 +74,7 @@ interface RegisterFile;
 	function void setMachineFlag(input uint64_t flags);
 	begin
 	begin
-		machine_flags <= machine_flags | flags;
+		data.machine_flags <= data.machine_flags | flags;
 	end
 	end
 	endfunction
@@ -69,7 +83,7 @@ interface RegisterFile;
 	function void setHasHalted();
 	begin
 	begin
-		machine_flags <= machine_flags | MACHINE_FLAGS_MASK_HALT;
+		data.machine_flags <= data.machine_flags | MACHINE_FLAGS_MASK_HALT;
 	end
 	end
 	endfunction
@@ -78,7 +92,7 @@ interface RegisterFile;
 	function bool hasHalted();
 	begin
 	begin
-		return ((machine_flags & MACHINE_FLAGS_MASK_HALT) != 0);
+		return ((data.machine_flags & MACHINE_FLAGS_MASK_HALT) != 0);
 	end
 	end
 	endfunction

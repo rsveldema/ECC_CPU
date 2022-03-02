@@ -12,7 +12,7 @@ namespace ecc
 
 	struct ThreadContext
 	{
-		RegisterFile regs;
+		RegisterSet regs;
 		memory_address_t PC;
 		execution_mask_t exec_mask;
 	};
@@ -21,8 +21,8 @@ namespace ecc
 	INTERFACE DivergenceQueue
 	{
 		std::array<ThreadContext, MAX_THREAD_CONTEXTS> contexts;
-		uint16_t read_pos;
-		uint16_t write_pos;
+		uint32_t read_pos;
+		uint32_t write_pos;
 
 
 		METHOD_SECTION;
@@ -38,7 +38,7 @@ namespace ecc
 			return read_pos == write_pos;
 		}
 
-		void push_to_front(RegisterFile regs,
+		void push_to_front(RegisterSet regs,
 						memory_address_t PC,
 						execution_mask_t exec_mask)
 		{

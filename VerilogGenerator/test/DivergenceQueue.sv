@@ -3,14 +3,14 @@ parameter uint32_t MAX_THREAD_CONTEXTS = 64;
 
 
 typedef struct packed {
-	RegisterFile regs;
+	RegisterSet regs;
 	memory_address_t PC;
 	execution_mask_t exec_mask;
 } ThreadContext;
 interface DivergenceQueue;
 	ThreadContext contexts[MAX_THREAD_CONTEXTS];
-	uint16_t read_pos;
-	uint16_t write_pos;
+	uint32_t read_pos;
+	uint32_t write_pos;
 	
 	
 	function void init();
@@ -32,7 +32,7 @@ interface DivergenceQueue;
 	endfunction
 	
 	
-	function void push_to_front(input RegisterFile regs, input memory_address_t PC, input execution_mask_t exec_mask);
+	function void push_to_front(input RegisterSet regs, input memory_address_t PC, input execution_mask_t exec_mask);
 	begin
 	begin
 		if ((get_next_pos(write_pos) == read_pos))

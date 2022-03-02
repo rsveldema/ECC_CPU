@@ -54,6 +54,7 @@ namespace ecc
 
 	void init()
 	{
+		regs.init();
 		core_L1d.init();
 		core_L1i.init();
 		L1i_to_L2i.init();
