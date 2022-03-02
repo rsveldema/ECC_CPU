@@ -25,7 +25,7 @@ namespace ecc
 
 				switch (pkt.opcode)
 				{
-				case STORAGE_NOP: break;
+				case STORAGE_NOP: { break; }
 
 				case STORAGE_STORE_VALUE_INTO_REG:
 				{
@@ -127,9 +127,10 @@ namespace ecc
 					break;
 				}
 
-				default:
+				default: {
 					$display("unhandled store insn");
 					assert(false);
+				}
 				}
 			}
 
