@@ -3,6 +3,7 @@
 #include "MachineConfig.h"
 #include "MemoryBus.h"
 #include "Core.h"
+#include "CoreSelectionMemoryMultiplexer.h"
 
 namespace ecc
 {
@@ -12,8 +13,8 @@ namespace ecc
 		Core<CORE_ID_Core0> core0;
 		//RAM idle_code;
 
-		Multiplexer<MemoryBus> main_memory_data_access_multiplexer;
-		Multiplexer<MemoryBus> main_memory_insn_access_multiplexer;
+		CoreSelectionMemoryMultiplexer main_memory_data_access_multiplexer;
+		CoreSelectionMemoryMultiplexer main_memory_insn_access_multiplexer;
 		MemoryBus sram_multiplexer_bus;
 
 		void dump_stats()
@@ -38,15 +39,9 @@ namespace ecc
 			sram_multiplexer_bus.init();
 
 
-			main_memory_data_access_multiplexer.addInput(&core0.getExternalDataBus(),
-				[](const BusPacket& pkt) {
-					return pkt.source.core_id == CORE_ID_Core0;
-				});
+			main_memory_data_access_multiplexer.addInput(&core0.getExternalDataBus());
 
-			main_memory_insn_access_multiplexer.addInput(&core0.getExternalInsnBus(),
-				[](const BusPacket& pkt) {
-					return pkt.source.core_id == CORE_ID_Core0;
-				});			
+			main_memory_insn_access_multiplexer.addInput(&core0.getExternalInsnBus());			
 		}
 
 		bool hasHalted() const

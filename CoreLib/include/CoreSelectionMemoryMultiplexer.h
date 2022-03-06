@@ -2,6 +2,7 @@
 
 #include <functional>
 #include "MemoryBus.h"
+#include "SimComponent.h"
 
 
 namespace ecc
@@ -10,46 +11,47 @@ namespace ecc
 	* When some data comes back up (a reponse), the multiplexer also de-multiplexes to send the reply to
 	* the correct up-stream input.
 	*/
-	class Multiplexer : public SimComponent
+	class CoreSelectionMemoryMultiplexer : public SimComponent
 	{
 	public:
 		using PacketType = BusPacket;
-		using demultiplexer_func_t = std::function<bool(PacketType&)>;
+
+		static constexpr uint32_t NUM_CORES = 1;
 
 	private:
 		MemoryBus& out;
 
 		/** @brief N inputs
 		*/
-		struct Input {
-			MemoryBus* bus;
-			demultiplexer_func_t packetResponseShouldBeSentToThisInput;
-		};
-
-		std::vector<Input> inputs;
+		std::vector<MemoryBus*> inputs;
 
 
-	public:
-		Multiplexer(SimComponentRegistry& registry, MemoryBus& _out)
+	public:		
+	
+		void addInput(MemoryBus* input)
+		{
+			inputs.push_back(input);
+		}
+
+		CoreSelectionMemoryMultiplexer(SimComponentRegistry& registry, MemoryBus& _out)
 			: SimComponent(registry, "multiplexer"),
 			out(_out)
 		{
 		}
 
-		void addInput(MemoryBus* input, demultiplexer_func_t func)
-		{
-			inputs.push_back(Input{ input, func });
-		}
 
 		ReturnObject run()
 		{
 			while (1)
 			{
-				for (auto& in : inputs)
+				for (uint32_t ix = 0; ix < NUM_CORES; ix++)
 				{
-					if (in.bus->request_busy)
+					if (inputs[ix]->request_busy)
 					{
-						auto pkt = in.bus->accept_request();
+						BusPacket pkt = inputs[ix]->accept_request();
+
+						CONTEXT_SWITCH();
+
 						while (out.request_busy)
 						{
 							CONTEXT_SWITCH();
@@ -64,15 +66,17 @@ namespace ecc
 				// in one step, hence no co_await here.
 				if (out.response_busy)
 				{
-					auto pkt = out.get_response();
+					BusPacket pkt = out.get_response();
+
+					CONTEXT_SWITCH();
 				
 					bool sent = false;
-					for (auto& in : inputs)
+					for (uint32_t ix = 0; ix < NUM_CORES; ix++)
 					{
-						if (in.packetResponseShouldBeSentToThisInput(pkt))
+						if (pkt.source.core_id == ix)
 						{
 							sent = true;
-							in.bus->send_response(pkt);
+							inputs[ix]->send_response(pkt);
 						}
 					}
 					assert(sent);

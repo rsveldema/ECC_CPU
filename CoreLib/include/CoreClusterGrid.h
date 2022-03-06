@@ -27,7 +27,7 @@ namespace ecc
 		L2DataCache L2d;
 		L2InsnCache L2i;
 
-		Multiplexer<MemoryBus> l2di_multiplexer;
+		Multiplexer l2di_multiplexer;
 
 		L3Cache L3;
 
