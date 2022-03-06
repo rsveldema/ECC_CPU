@@ -32,7 +32,7 @@ namespace ecc
 
 				CONTEXT_SWITCH();
 
-				$display("EXECUTE: ", pkt.PC, pkt.opcode);
+				$display("[EXECUTE] ", pkt.PC, pkt.opcode);
 
 				switch (pkt.opcode)
 				{

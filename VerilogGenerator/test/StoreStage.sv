@@ -1,5 +1,17 @@
 
 
+function void dump_vec(input VectorValue v);
+begin
+begin
+	for (uint32_t i = 0; (i < NUMBER_OF_VECTOR_THREADS_INT64); i=(i + 1))
+		begin
+			$display("VEC[", i, "] = ", v.data[i]);
+		end
+end
+end
+endfunction
+
+
 module StoreStage(ExecuteToStoreBus execute_bus, VecMemoryBus memory_bus, RegisterFile regs, StoreToFetchBus fetch_bus, DivergenceQueue divergence_queue, GlobalStats stats);
 	parameter CoreID core_id;
 	reg[32:0] state = 0;
@@ -45,6 +57,7 @@ module StoreStage(ExecuteToStoreBus execute_bus, VecMemoryBus memory_bus, Regist
 					state <= 146; // GOTO
 					return;
 				end
+				$display("HALT");
 				if (divergence_queue.is_empty())
 				begin
 				end
@@ -104,6 +117,7 @@ module StoreStage(ExecuteToStoreBus execute_bus, VecMemoryBus memory_bus, Regist
 					state <= 148; // GOTO
 					return;
 				end
+				$display("CJMP");
 				stats.incNumVectorLocalDivergences();
 				$display("[STORE] splitting cond-jump: ", count_num_bits64(pkt.execution_flags_true), count_num_bits64(pkt.execution_flags_false));
 				divergence_queue.push_to_front(regs.data, pkt.dest.address, pkt.execution_flags_true);
@@ -141,7 +155,8 @@ module StoreStage(ExecuteToStoreBus execute_bus, VecMemoryBus memory_bus, Regist
 					return;
 				end
 				assert(isValidIndex(pkt.dest.regID));
-				$display("STORE ----> exec: ", pkt.dest.regID, pkt.src.value);
+				$display("STORE-M2R ----> exec: ", pkt.dest.regID);
+				dump_vec(pkt.src.value);
 				memory_bus.send_read_request_vec(pkt.src.value, createBusID(core_id, COMPONENT_TYPE_STORE));
 				state <= 132; // GOTO
 				return;
@@ -241,7 +256,10 @@ module StoreStage(ExecuteToStoreBus execute_bus, VecMemoryBus memory_bus, Regist
 					return;
 				end
 				assert(are_all_adjacent_memory_addresses(pkt.dest.value, (int64_t'(POINTER_SIZE))));
-				$display("STORE ----> exec: ", pkt.dest.value, pkt.src.value);
+				$display("STORE-R2M ----> exec-dest:");
+				dump_vec(pkt.dest.value);
+				$display("STORE-R2M ----> exec-src:");
+				dump_vec(pkt.src.value);
 				memory_bus.send_write_request_vec(pkt.dest.value, createBusID(core_id, COMPONENT_TYPE_STORE), pkt.src.value);
 				state <= 131; // GOTO
 				return;
@@ -259,7 +277,8 @@ module StoreStage(ExecuteToStoreBus execute_bus, VecMemoryBus memory_bus, Regist
 					return;
 				end
 				assert(isValidIndex(pkt.dest.regID));
-				$display("STORE ----> exec: ", pkt.dest.regID, pkt.src.value);
+				$display("STORE-V2R ----> exec: ", pkt.dest.regID);
+				dump_vec(pkt.src.value);
 				regs.mark_valid(pkt.dest.regID);
 				regs.set(pkt.dest.regID, pkt.src.value);
 				state <= 131; // GOTO

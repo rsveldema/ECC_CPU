@@ -8,6 +8,7 @@
 #include "Defines.h"
 #include "Task.h"
 
+
 namespace ecc
 {
 	struct VectorValue
@@ -16,6 +17,7 @@ namespace ecc
 	};
 
 	METHOD_SECTION;
+
 
 	static inline int64_t get(const VectorValue &v, uint32_t ix)
 	{
@@ -32,42 +34,58 @@ namespace ecc
 
 	static VectorValue or_shift_left(const VectorValue &self, const VectorValue &other, uint32_t shift_count)
 	{
-		VectorValue ret;
-		for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
-		{
-			ret.data[i] = self.data[i] | (other.data[i] << shift_count);
-		}
-		return ret;
+		return {
+			(self.data[0] | (other.data[0] << shift_count)),
+			(self.data[1] | (other.data[1] << shift_count)),
+			(self.data[2] | (other.data[2] << shift_count)),
+			(self.data[3] | (other.data[3] << shift_count)),
+			(self.data[4] | (other.data[4] << shift_count)),
+			(self.data[5] | (other.data[5] << shift_count)),
+			(self.data[6] | (other.data[6] << shift_count)),
+			(self.data[7] | (other.data[7] << shift_count))
+		};
 	}
 
 	static VectorValue shift_left(const VectorValue &self, const VectorValue &other)
 	{
-		VectorValue ret;
-		for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
-		{
-			ret.data[i] = self.data[i] << other.data[i];
-		}
-		return ret;
+		return {
+			(self.data[0] << other.data[0]),
+			(self.data[1] << other.data[1]),
+			(self.data[2] << other.data[2]),
+			(self.data[3] << other.data[3]),
+			(self.data[4] << other.data[4]),
+			(self.data[5] << other.data[5]),
+			(self.data[6] << other.data[6]),
+			(self.data[7] << other.data[7])
+		};
 	}
 
 	static VectorValue add(const VectorValue &self, const VectorValue &other)
 	{
-		VectorValue ret;
-		for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
-		{
-			ret.data[i] = self.data[i] + other.data[i];
-		}
-		return ret;
+		return {
+			(self.data[0] + other.data[0]),
+			(self.data[1] + other.data[1]),
+			(self.data[2] + other.data[2]),
+			(self.data[3] + other.data[3]),
+			(self.data[4] + other.data[4]),
+			(self.data[5] + other.data[5]),
+			(self.data[6] + other.data[6]),
+			(self.data[7] + other.data[7])
+		};
 	}
 
 	static VectorValue bit_and(const VectorValue &self, const VectorValue &other)
 	{
-		VectorValue ret;
-		for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
-		{
-			ret.data[i] = self.data[i] & other.data[i];
-		}
-		return ret;
+		return {
+			(self.data[0] & other.data[0]),
+			(self.data[1] & other.data[1]),
+			(self.data[2] & other.data[2]),
+			(self.data[3] & other.data[3]),
+			(self.data[4] & other.data[4]),
+			(self.data[5] & other.data[5]),
+			(self.data[6] & other.data[6]),
+			(self.data[7] & other.data[7])
+		};
 	}
 
 	static bool all_equal(const VectorValue &self)
@@ -101,12 +119,16 @@ namespace ecc
 
 	static VectorValue compare_vecs(const VectorValue &self, const VectorValue &other)
 	{
-		VectorValue ret;
-		for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
-		{
-			ret.data[i] = get_compare_result(self.data[i], other.data[i]);
-		}
-		return ret;
+		return {
+				get_compare_result(self.data[0], other.data[0]),
+				get_compare_result(self.data[1], other.data[1]),
+				get_compare_result(self.data[2], other.data[2]),
+				get_compare_result(self.data[3], other.data[3]),
+				get_compare_result(self.data[4], other.data[4]),
+				get_compare_result(self.data[5], other.data[5]),
+				get_compare_result(self.data[6], other.data[6]),
+				get_compare_result(self.data[7], other.data[7])
+		};
 	}
 
 	static bool are_all_adjacent_memory_addresses(const VectorValue &v, int64_t elt_size)
@@ -129,7 +151,7 @@ namespace ecc
 
 	static uint64_t reduce_to_uint64_t(const VectorValue &v)
 	{
-		uint64_t ret = 0;
+		uint64_t ret;
 		for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
 		{
 			SET_BIT(ret, i, (v.data[i] != 0));
@@ -139,22 +161,21 @@ namespace ecc
 
 	static VectorValue create_vec_incrementing_values()
 	{
-		VectorValue ret;
-		for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
-		{
-			ret.data[i] = static_cast<int64_t>(i);
-		}
-		return ret;
+		return {
+			static_cast<int64_t>(0),
+			static_cast<int64_t>(1),
+			static_cast<int64_t>(2),
+			static_cast<int64_t>(3),
+			static_cast<int64_t>(4),
+			static_cast<int64_t>(5),
+			static_cast<int64_t>(6),
+			static_cast<int64_t>(7)
+		};
 	}
 
 	static VectorValue create_vec_int64(const int64_t v)
 	{
-		VectorValue ret;
-		for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
-		{
-			ret.data[i] = v;
-		}
-		return ret;
+		return {v, v, v, v, v, v, v, v};
 	}
 
 	static VectorValue create_vec_int8(const int8_t v)

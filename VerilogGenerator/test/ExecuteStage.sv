@@ -61,7 +61,7 @@ module ExecuteStage(DecodeToExecuteBus decode_bus, ExecuteToStoreBus store_bus, 
 			end
 		171:
 			begin
-				$display("EXECUTE: ", pkt.PC, pkt.opcode);
+				$display("[EXECUTE] ", pkt.PC, pkt.opcode);
 				state <= 172; // GOTO
 				return;
 			end

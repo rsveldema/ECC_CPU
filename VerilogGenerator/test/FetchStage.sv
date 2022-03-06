@@ -87,7 +87,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 					return;
 				end
 				have_outstanding_jmp <= 0;
-				$display("waiting for store pipline to tell us the cond-jump-address");
+				$display("[FETCH] waiting for store pipline to tell us the cond-jump-address");
 				state <= 5; // GOTO
 				return;
 			end
@@ -134,7 +134,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		4:
 			begin
-				$display("testing cache adress");
+				$display("[FETCH] testing cache adress");
 				if ((address_cached == fetch_PC))
 				begin
 				end
@@ -143,7 +143,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 					state <= 12; // GOTO
 					return;
 				end
-				$display("testing cache adress: already have it cached 1");
+				$display("[FETCH] testing cache adress: already have it cached 1");
 				state <= 11; // GOTO
 				return;
 			end
@@ -157,13 +157,13 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 					state <= 14; // GOTO
 					return;
 				end
-				$display("testing cache adress: already have it cached 2");
+				$display("[FETCH] testing cache adress: already have it cached 2");
 				state <= 13; // GOTO
 				return;
 			end
 		14:
 			begin
-				$display("requesting memory at address: ", get_address_to_fetch_from_PC(fetch_PC));
+				$display("[FETCH] requesting memory at address: ", get_address_to_fetch_from_PC(fetch_PC));
 				memory_bus.send_read_request_data(get_address_to_fetch_from_PC(fetch_PC), createBusID(core_id, COMPONENT_TYPE_FETCH));
 				state <= 15; // GOTO
 				return;
@@ -182,7 +182,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		18:
 			begin
-				$display("response received from caches: ", response.packet_type);
+				$display("[FETCH] response received from caches: ", response.packet_type);
 				assert((response.packet_type == bus_read_response));
 				address_cached <= get_address_to_fetch_from_PC(fetch_PC);
 				insn_data_cached <= getInsnData(response.payload);
@@ -219,7 +219,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		11:
 			begin
-				$display("testing cache adress: retrieving from local cache");
+				$display("[FETCH] testing cache adress: retrieving from local cache");
 				insn <= 0;
 				if ((address_cached == fetch_PC))
 				begin
@@ -249,7 +249,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		24:
 			begin
-				$error("failed to get insn from local fetcher cache");
+				$error("[FETCH] failed to get insn from local fetcher cache");
 				assert(0);
 				state <= 23; // GOTO
 				return;

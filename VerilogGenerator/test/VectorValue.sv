@@ -17,13 +17,8 @@ endfunction
 
 function VectorValue or_shift_left(input VectorValue self, input VectorValue other, input uint32_t shift_count);
 begin
-	VectorValue ret;
 begin
-	for (uint32_t i = 0; (i < NUMBER_OF_VECTOR_THREADS_INT64); i=(i + 1))
-		begin
-			ret.data[i] <= (self.data[i] | (other.data[i] << shift_count));
-		end
-	return ret;
+	return {(self.data[0] | (other.data[0] << shift_count)), (self.data[1] | (other.data[1] << shift_count)), (self.data[2] | (other.data[2] << shift_count)), (self.data[3] | (other.data[3] << shift_count)), (self.data[4] | (other.data[4] << shift_count)), (self.data[5] | (other.data[5] << shift_count)), (self.data[6] | (other.data[6] << shift_count)), (self.data[7] | (other.data[7] << shift_count))};
 end
 end
 endfunction
@@ -31,13 +26,8 @@ endfunction
 
 function VectorValue shift_left(input VectorValue self, input VectorValue other);
 begin
-	VectorValue ret;
 begin
-	for (uint32_t i = 0; (i < NUMBER_OF_VECTOR_THREADS_INT64); i=(i + 1))
-		begin
-			ret.data[i] <= (self.data[i] << other.data[i]);
-		end
-	return ret;
+	return {(self.data[0] << other.data[0]), (self.data[1] << other.data[1]), (self.data[2] << other.data[2]), (self.data[3] << other.data[3]), (self.data[4] << other.data[4]), (self.data[5] << other.data[5]), (self.data[6] << other.data[6]), (self.data[7] << other.data[7])};
 end
 end
 endfunction
@@ -45,13 +35,8 @@ endfunction
 
 function VectorValue add(input VectorValue self, input VectorValue other);
 begin
-	VectorValue ret;
 begin
-	for (uint32_t i = 0; (i < NUMBER_OF_VECTOR_THREADS_INT64); i=(i + 1))
-		begin
-			ret.data[i] <= (self.data[i] + other.data[i]);
-		end
-	return ret;
+	return {(self.data[0] + other.data[0]), (self.data[1] + other.data[1]), (self.data[2] + other.data[2]), (self.data[3] + other.data[3]), (self.data[4] + other.data[4]), (self.data[5] + other.data[5]), (self.data[6] + other.data[6]), (self.data[7] + other.data[7])};
 end
 end
 endfunction
@@ -59,13 +44,8 @@ endfunction
 
 function VectorValue bit_and(input VectorValue self, input VectorValue other);
 begin
-	VectorValue ret;
 begin
-	for (uint32_t i = 0; (i < NUMBER_OF_VECTOR_THREADS_INT64); i=(i + 1))
-		begin
-			ret.data[i] <= (self.data[i] & other.data[i]);
-		end
-	return ret;
+	return {(self.data[0] & other.data[0]), (self.data[1] & other.data[1]), (self.data[2] & other.data[2]), (self.data[3] & other.data[3]), (self.data[4] & other.data[4]), (self.data[5] & other.data[5]), (self.data[6] & other.data[6]), (self.data[7] & other.data[7])};
 end
 end
 endfunction
@@ -106,13 +86,8 @@ endfunction
 
 function VectorValue compare_vecs(input VectorValue self, input VectorValue other);
 begin
-	VectorValue ret;
 begin
-	for (uint32_t i = 0; (i < NUMBER_OF_VECTOR_THREADS_INT64); i=(i + 1))
-		begin
-			ret.data[i] <= get_compare_result(self.data[i], other.data[i]);
-		end
-	return ret;
+	return {get_compare_result(self.data[0], other.data[0]), get_compare_result(self.data[1], other.data[1]), get_compare_result(self.data[2], other.data[2]), get_compare_result(self.data[3], other.data[3]), get_compare_result(self.data[4], other.data[4]), get_compare_result(self.data[5], other.data[5]), get_compare_result(self.data[6], other.data[6]), get_compare_result(self.data[7], other.data[7])};
 end
 end
 endfunction
@@ -149,7 +124,6 @@ function uint64_t reduce_to_uint64_t(input VectorValue v);
 begin
 	uint64_t ret;
 begin
-	ret <= 0;
 	for (uint32_t i = 0; (i < NUMBER_OF_VECTOR_THREADS_INT64); i=(i + 1))
 		begin
 			`SET_BIT(ret, i, (v.data[i] != 0));
@@ -162,13 +136,8 @@ endfunction
 
 function VectorValue create_vec_incrementing_values();
 begin
-	VectorValue ret;
 begin
-	for (uint32_t i = 0; (i < NUMBER_OF_VECTOR_THREADS_INT64); i=(i + 1))
-		begin
-			ret.data[i] <= (int64_t'(i));
-		end
-	return ret;
+	return {(int64_t'(0)), (int64_t'(1)), (int64_t'(2)), (int64_t'(3)), (int64_t'(4)), (int64_t'(5)), (int64_t'(6)), (int64_t'(7))};
 end
 end
 endfunction
@@ -176,13 +145,8 @@ endfunction
 
 function VectorValue create_vec_int64(input int64_t v);
 begin
-	VectorValue ret;
 begin
-	for (uint32_t i = 0; (i < NUMBER_OF_VECTOR_THREADS_INT64); i=(i + 1))
-		begin
-			ret.data[i] <= v;
-		end
-	return ret;
+	return {v, v, v, v, v, v, v, v};
 end
 end
 endfunction

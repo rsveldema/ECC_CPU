@@ -7,6 +7,15 @@ namespace ecc
 
 	METHOD_SECTION;
 
+	void dump_vec(const VectorValue& v)
+	{
+		for (uint32_t i=0;i<NUMBER_OF_VECTOR_THREADS_INT64;i++)
+		{
+			$display("VEC[",i,"] = ", v.data[i]);
+		}
+	}
+
+
 	template<CoreID core_id>
 	ReturnObject StoreStage<core_id>::run(ExecuteToStoreBus &execute_bus,
 						 VecMemoryBus &memory_bus,
@@ -31,7 +40,8 @@ namespace ecc
 				{
 					assert(isValidIndex(pkt.dest.regID));
 
-					$display("STORE ----> exec: ", pkt.dest.regID,  pkt.src.value);
+					$display("STORE-V2R ----> exec: ", pkt.dest.regID);
+					dump_vec(pkt.src.value);
 
 					regs.mark_valid(pkt.dest.regID);
 					regs.set(pkt.dest.regID,  pkt.src.value);
@@ -42,7 +52,10 @@ namespace ecc
 				{
 					assert(are_all_adjacent_memory_addresses(pkt.dest.value, static_cast<int64_t>(POINTER_SIZE)));
 
-					$display("STORE ----> exec: ", pkt.dest.value, pkt.src.value);
+					$display("STORE-R2M ----> exec-dest:");
+					dump_vec(pkt.dest.value);
+					$display("STORE-R2M ----> exec-src:");
+					dump_vec(pkt.src.value);
 
 					memory_bus.send_write_request_vec(pkt.dest.value, 
 								createBusID(core_id, COMPONENT_TYPE_STORE), 
@@ -55,7 +68,9 @@ namespace ecc
 				{
 					assert(isValidIndex(pkt.dest.regID));
 
-					$display("STORE ----> exec: ", pkt.dest.regID, pkt.src.value);
+					$display("STORE-M2R ----> exec: ", pkt.dest.regID);
+					dump_vec(pkt.src.value);
+
 
 					memory_bus.send_read_request_vec(pkt.src.value, createBusID(core_id, COMPONENT_TYPE_STORE));
 
@@ -94,6 +109,8 @@ namespace ecc
 
 				case STORAGE_CJMP:
 				{
+					$display("CJMP");
+
 					stats.incNumVectorLocalDivergences();
 
 					$display("[STORE] splitting cond-jump: ", 
@@ -109,6 +126,8 @@ namespace ecc
 
 				case STORAGE_HALT:
 				{
+					$display("HALT");
+
 					if (divergence_queue.is_empty())
 					{
 						regs.setHasHalted();
@@ -127,7 +146,8 @@ namespace ecc
 					break;
 				}
 
-				default: {
+				default: 
+				{
 					$display("unhandled store insn");
 					assert(false);
 				}

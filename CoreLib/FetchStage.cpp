@@ -65,7 +65,7 @@ namespace ecc
 			{
 				have_outstanding_jmp = false;
 
-				$display("waiting for store pipline to tell us the cond-jump-address");
+				$display("[FETCH] waiting for store pipline to tell us the cond-jump-address");
 
 				while (1)
 				{
@@ -84,23 +84,23 @@ namespace ecc
 			}
 
 
-			$display("testing cache adress");
+			$display("[FETCH] testing cache adress");
 
 			if (address_cached == fetch_PC)
 			{
 				// nothing to do	
-				$display("testing cache adress: already have it cached 1");
+				$display("[FETCH] testing cache adress: already have it cached 1");
 			}
 			else
 			{
 				if ((address_cached + sizeof(instruction_t)) == fetch_PC)
 				{
 					// nothing to do.
-					$display("testing cache adress: already have it cached 2");
+					$display("[FETCH] testing cache adress: already have it cached 2");
 				}
 				else
 				{
-					$display("requesting memory at address: ", get_address_to_fetch_from_PC(fetch_PC));
+					$display("[FETCH] requesting memory at address: ", get_address_to_fetch_from_PC(fetch_PC));
 					memory_bus.send_read_request_data(get_address_to_fetch_from_PC(fetch_PC), 	
 								createBusID(core_id, COMPONENT_TYPE_FETCH));
 
@@ -112,7 +112,7 @@ namespace ecc
 					
 							CONTEXT_SWITCH();
 
-							$display("response received from caches: ", response.packet_type);
+							$display("[FETCH] response received from caches: ", response.packet_type);
 							assert(response.packet_type == bus_read_response);
 
 							address_cached = get_address_to_fetch_from_PC(fetch_PC);				
@@ -127,7 +127,7 @@ namespace ecc
 				}
 			}
 
-			$display("testing cache adress: retrieving from local cache");
+			$display("[FETCH] testing cache adress: retrieving from local cache");
 
 
 			instruction_t insn = 0;
@@ -143,7 +143,7 @@ namespace ecc
 				}
 				else
 				{
-					$error("failed to get insn from local fetcher cache");
+					$error("[FETCH] failed to get insn from local fetcher cache");
 					assert(false);
 				}
 			}

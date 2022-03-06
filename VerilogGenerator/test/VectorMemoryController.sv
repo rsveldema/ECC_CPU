@@ -39,7 +39,7 @@ module VectorMemoryController(VecMemoryBus toCPU, MemoryBus toMemory);
 				end
 				else
 				begin
-					state <= 241; // GOTO
+					state <= 242; // GOTO
 					return;
 				end
 				pkt.packet_type <= VEC_BUS_PKT_TYPE_read_response_vec64;
@@ -82,6 +82,15 @@ module VectorMemoryController(VecMemoryBus toCPU, MemoryBus toMemory);
 					return;
 				end
 				mem_pkt <= toMemory.get_response();
+				// CONTEXT_SWITCH();
+				state <= 240; // GOTO
+				return;
+			end
+		240:
+			begin
+				assert((mem_pkt.source.core_id == pkt.source.core_id));
+				assert((mem_pkt.source.within_core_id == pkt.source.within_core_id));
+				$display("read value ", mem_pkt.payload, " for address ", pkt.address.data[i]);
 				pkt.payload.data[i] <= mem_pkt.payload;
 				state <= 238; // GOTO
 				return;
@@ -89,10 +98,10 @@ module VectorMemoryController(VecMemoryBus toCPU, MemoryBus toMemory);
 		239:
 			begin
 				// CONTEXT_SWITCH();
-				state <= 240; // GOTO
+				state <= 241; // GOTO
 				return;
 			end
-		240:
+		241:
 			begin
 				state <= 237; // GOTO
 				return;
@@ -114,16 +123,9 @@ module VectorMemoryController(VecMemoryBus toCPU, MemoryBus toMemory);
 				state <= 231; // GOTO
 				return;
 			end
-		241:
+		242:
 			begin
-				if ((pkt.packet_type == VEC_BUS_PKT_TYPE_write_vec64))
-				begin
-				end
-				else
-				begin
-					state <= 248; // GOTO
-					return;
-				end
+				assert((pkt.packet_type == VEC_BUS_PKT_TYPE_write_vec64));
 				i <= 0;
 				state <= 243; // GOTO
 				return;
@@ -151,6 +153,7 @@ module VectorMemoryController(VecMemoryBus toCPU, MemoryBus toMemory);
 			end
 		246:
 			begin
+				$display("store vec value ", get(pkt.payload, i), " for address ", pkt.address.data[i]);
 				toMemory.send_write_request_data(pkt.address.data[i], pkt.source, get(pkt.payload, i));
 				i <= (i + 1);
 				if ((i < NUMBER_OF_VECTOR_THREADS_INT64))
@@ -163,18 +166,6 @@ module VectorMemoryController(VecMemoryBus toCPU, MemoryBus toMemory);
 			end
 		244:
 			begin
-				state <= 242; // GOTO
-				return;
-			end
-		248:
-			begin
-				$display("unrecnognized pkt type in vector-memory-controller");
-				assert(0);
-				state <= 242; // GOTO
-				return;
-			end
-		242:
-			begin
 				state <= 231; // GOTO
 				return;
 			end
@@ -186,10 +177,10 @@ module VectorMemoryController(VecMemoryBus toCPU, MemoryBus toMemory);
 		229:
 			begin
 				// CONTEXT_SWITCH();
-				state <= 249; // GOTO
+				state <= 248; // GOTO
 				return;
 			end
-		249:
+		248:
 			begin
 				state <= 227; // GOTO
 				return;

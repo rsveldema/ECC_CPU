@@ -55,6 +55,14 @@ namespace ecc
 							{
 								BusPacket mem_pkt = toMemory.get_response();
 
+								CONTEXT_SWITCH();
+
+								assert(mem_pkt.source.core_id == pkt.source.core_id);
+								assert(mem_pkt.source.within_core_id == pkt.source.within_core_id);
+								//assert(mem_pkt.address == pkt.address.data[i]);
+
+								$display("read value ", mem_pkt.payload, " for address ", pkt.address.data[i]);
+
 								pkt.payload.data[i] = mem_pkt.payload;
 								break;
 							}
@@ -68,23 +76,17 @@ namespace ecc
 				}
 				else
 				{
-					if (pkt.packet_type == VEC_BUS_PKT_TYPE_write_vec64)
+					assert(pkt.packet_type == VEC_BUS_PKT_TYPE_write_vec64);
+					i = 0;
+					while (i < NUMBER_OF_VECTOR_THREADS_INT64)
 					{
-						i = 0;
-						while (i < NUMBER_OF_VECTOR_THREADS_INT64)
+						while (toMemory.request_busy)
 						{
-							while (toMemory.request_busy)
-							{
-								CONTEXT_SWITCH();
-							}
-							toMemory.send_write_request_data(pkt.address.data[i], pkt.source, get(pkt.payload, i));
-							i++;
+							CONTEXT_SWITCH();
 						}
-					}
-					else
-					{
-						$display("unrecnognized pkt type in vector-memory-controller");
-						assert(false);
+						$display("store vec value ", get(pkt.payload, i), " for address ", pkt.address.data[i]);
+						toMemory.send_write_request_data(pkt.address.data[i], pkt.source, get(pkt.payload, i));
+						i++;
 					}
 				}
 

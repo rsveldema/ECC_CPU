@@ -89,4 +89,9 @@ namespace ecc
 	{
 		return "core[" + std::to_string((int)core_id) + "]";
 	}
+
+	static std::string to_string(const char* str)
+	{
+		return str;
+	}
 }
