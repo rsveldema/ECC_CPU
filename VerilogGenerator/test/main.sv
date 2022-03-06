@@ -77,11 +77,16 @@ module main(input clk);
     MemoryBus memory_bus;
     DRAM dram (memory_bus);
 
+    MemoryBus core0_fetch_input;
+    MemoryBus core0_vec_access_input;
+
+    CoreInternalMemoryMultiplexer core0_fetch_store_multiplexer(memory_bus, core0_fetch_input, core0_vec_access_input);
+
 
     VecMemoryBus vec_mem_bus_to_cpu;
-    VectorMemoryController#(.core_id(0)) vec_mem_controller(vec_mem_bus_to_cpu, memory_bus);
+    VectorMemoryController#(.core_id(0)) vec_mem_controller(vec_mem_bus_to_cpu, core0_vec_access_input);
 
-    FetchStage  #(.core_id(0)) fetcher (fetch_decode_bus, store_fetch_bus, memory_bus, stats);
+    FetchStage  #(.core_id(0)) fetcher (fetch_decode_bus, store_fetch_bus, core0_fetch_input, stats);
     DecodeStage #(.core_id(0)) decoder (fetch_decode_bus, decode_exec_bus, reg_file);
     ExecuteStage #(.core_id(0)) executor (decode_exec_bus, exec_store_bus, reg_file, stats);
     StoreStage #(.core_id(0)) storer (exec_store_bus, vec_mem_bus_to_cpu, reg_file, store_fetch_bus, divergence_queue, stats);
@@ -95,6 +100,8 @@ module main(input clk);
         uint64_t address;
 
         memory_bus.init();
+        core0_fetch_input.init();
+        core0_vec_access_input.init();
 
         stats.init();
 
@@ -142,6 +149,7 @@ module main(input clk);
 
      always @(posedge clk) 
      begin
+        core0_fetch_store_multiplexer.run();
         fetcher.run();    
         decoder.run();    
         executor.run();

@@ -75,7 +75,7 @@ def main():
 
 
     files = ["../CoreLib/FetchStage.cpp", "../CoreLib/DecodeStage.cpp", "../CoreLib/StoreStage.cpp", "../CoreLib/ExecuteStage.cpp", "../CoreLib/DRAM.cpp", 
-            "../CoreLib/include/MemoryBus.h", "../CoreLib/VectorMemoryController.cpp"]
+            "../CoreLib/include/MemoryBus.h", "../CoreLib/VectorMemoryController.cpp", "../CoreLib/CoreInternalMemoryMultiplexer.cpp"]
     for file in files:
         module_name = get_file_name(file)
 

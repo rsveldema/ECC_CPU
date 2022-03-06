@@ -36,59 +36,8 @@ namespace ecc
 			return run(out, fetch_input, other_input);
 		}
 
-		ReturnObject run(MemoryBus& out, MemoryBus& fetch_input, MemoryBus& other_input)
-		{
-			while (1)
-			{
-				if (fetch_input.request_busy)
-				{
-					BusPacket pkt = fetch_input.accept_request();
+		ReturnObject run(MemoryBus& out, MemoryBus& fetch_input, MemoryBus& other_input);
 
-					CONTEXT_SWITCH();
-
-					while (out.request_busy)
-					{
-						CONTEXT_SWITCH();
-					}
-					out.send_request(pkt);
-				}
-
-				if (other_input.request_busy)
-				{
-					BusPacket pkt = other_input.accept_request();
-
-					CONTEXT_SWITCH();
-
-					while (out.request_busy)
-					{
-						CONTEXT_SWITCH();
-					}
-					out.send_request(pkt);
-				}
-
-				// we should be able to forward the incoming packet to the source
-				// in one step, hence no co_await here.
-				if (out.response_busy)
-				{
-					BusPacket pkt = out.get_response();
-
-					CONTEXT_SWITCH();
-
-					if (pkt.source.within_core_id == CoreComponentID::COMPONENT_TYPE_FETCH)
-					{
-						fetch_input.send_response(pkt);
-					}
-					else
-					{
-						other_input.send_response(pkt);
-					}
-				}
-				else
-				{
-					CONTEXT_SWITCH();
-				}
-			}
-		}
 	};
 
 }
