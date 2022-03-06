@@ -7,7 +7,7 @@
 
 #include "SimComponent.h"
 #include "MachineInfo.h"
-#include "Multiplexer.h"
+#include "CoreInternalMemoryMultiplexer.h"
 #include "FetchToDecodeBus.h"
 #include "DecodeStage.h"
 #include "ExecuteStage.h"

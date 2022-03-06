@@ -8,7 +8,7 @@
 
 #include "L3Cache.h"
 
-#include "Multiplexer.h"
+#include "CoreInternalMemoryMultiplexer.h"
 #include "DRAM.h"
 #include "CoreCluster.h"
 
@@ -27,7 +27,7 @@ namespace ecc
 		L2DataCache L2d;
 		L2InsnCache L2i;
 
-		Multiplexer l2di_multiplexer;
+		CoreInternalMemoryMultiplexer l2di_multiplexer;
 
 		L3Cache L3;
 
@@ -68,13 +68,7 @@ namespace ecc
 			core_to_L2d.init();
 			core_to_L2i.init();
 
-			// this one takes everything that takes every pkt to the fetcher:
-			l2di_multiplexer.addInput(&L2i_multiplexer_bus, [](const BusPacket &p)
-									  { return p.source.within_core_id == CoreComponentID::COMPONENT_TYPE_FETCH; });
-
-			// this takes everything else:
-			l2di_multiplexer.addInput(&L2d_multiplexer_bus, [](const BusPacket &p)
-									  { return p.source.within_core_id != CoreComponentID::COMPONENT_TYPE_FETCH; });
+			l2di_multiplexer.addInput(&L2i_multiplexer_bus, &L2d_multiplexer_bus);
 		}
 
 		bool hasHalted()

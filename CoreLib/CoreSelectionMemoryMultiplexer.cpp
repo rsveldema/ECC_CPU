@@ -23,7 +23,7 @@ namespace ecc
 				{
 					if (inputs[ix]->request_busy)
 					{
-						BusPacket pkt = inputs[ix]->accept_request();
+						BusPacket in_pkt = inputs[ix]->accept_request();
 
 						CONTEXT_SWITCH();
 
@@ -31,7 +31,7 @@ namespace ecc
 						{
 							CONTEXT_SWITCH();
 						}
-						out.send_request(pkt);
+						out.send_request(in_pkt);
 					}
 					// sending one packet will cost us a cycle (as will testing if an input has a pkt for us to send.
 					CONTEXT_SWITCH();
@@ -41,18 +41,19 @@ namespace ecc
 				// in one step, hence no co_await here.
 				if (out.response_busy)
 				{
-					BusPacket pkt = out.get_response();
+					BusPacket out_pkt = out.get_response();
 
 					CONTEXT_SWITCH();
 				
 					for (uint32_t ix = 0; ix < NUM_CORES; ix++)
 					{
-						if (pkt.source.core_id == ix)
+						if (out_pkt.source.core_id == ix)
 						{
-							inputs[ix]->send_response(pkt);
+							inputs[ix]->send_response(out_pkt);
+                            break;
 						}
 					}
-					assert(oneInputMatches(pkt, NUM_CORES));
+					assert(oneInputMatches(out_pkt, NUM_CORES));
 				}
 
 				CONTEXT_SWITCH();
