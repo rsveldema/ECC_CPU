@@ -92,7 +92,7 @@ module DecodeStage(FetchToDecodeBus fetch_bus, DecodeToExecuteBus execute_bus, R
 			end
 		36:
 			begin
-				$display("DECODE exec: ", pkt.PC, getOpcode(pkt.insn));
+				$display("[DECODE] exec: ", pkt.PC, getOpcode(pkt.insn));
 				state <= 37; // GOTO
 				return;
 			end

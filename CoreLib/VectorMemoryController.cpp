@@ -36,6 +36,8 @@ namespace ecc
 
 				if (pkt.packet_type == VEC_BUS_PKT_TYPE_read_vec64)
 				{
+					$display("[VEC-CTRL] going to request read memory");
+
 					pkt.packet_type = VEC_BUS_PKT_TYPE_read_response_vec64;
 
 					i = 0;
@@ -46,6 +48,7 @@ namespace ecc
 						{
 							CONTEXT_SWITCH();
 						}
+						$display("[VEC-CTRL] going to request read memory: target idle, req addr ", pkt.address.data[i]);
 						toMemory.send_read_request_data(pkt.address.data[i], pkt.source);
 
 						// wait for response:
@@ -61,7 +64,7 @@ namespace ecc
 								assert(mem_pkt.source.within_core_id == pkt.source.within_core_id);
 								//assert(mem_pkt.address == pkt.address.data[i]);
 
-								$display("read value ", mem_pkt.payload, " for address ", pkt.address.data[i]);
+								$display("[VEC-CTRL] read value ", mem_pkt.payload, " for address ", pkt.address.data[i]);
 
 								pkt.payload.data[i] = mem_pkt.payload;
 								break;
@@ -70,6 +73,7 @@ namespace ecc
 						}
 
 						i++;
+						CONTEXT_SWITCH();
 					}
 
 					toCPU.send_response(pkt);
@@ -80,13 +84,15 @@ namespace ecc
 					i = 0;
 					while (i < NUMBER_OF_VECTOR_THREADS_INT64)
 					{
+						$display("[VEC-CTRL] store waiting for target bus idle");
 						while (toMemory.request_busy)
 						{
 							CONTEXT_SWITCH();
 						}
-						$display("store vec value ", get(pkt.payload, i), " for address ", pkt.address.data[i]);
+						$display("[VEC-CTRL] store vec value ", get(pkt.payload, i), " for address ", pkt.address.data[i]);
 						toMemory.send_write_request_data(pkt.address.data[i], pkt.source, get(pkt.payload, i));
 						i++;
+						CONTEXT_SWITCH();
 					}
 				}
 

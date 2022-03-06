@@ -199,10 +199,7 @@ namespace ecc
 	static inline
 	BusID createBusID(CoreID core_id, CoreComponentID within_id)
 	{
-		BusID ret;
-		ret.core_id = core_id;
-		ret.within_core_id = within_id;
-		return ret;
+		return { core_id, within_id };
 	}
 
 	static inline

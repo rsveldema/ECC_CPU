@@ -157,6 +157,7 @@ module main(input clk);
 
      always @(posedge clk) 
      begin
+        vec_mem_controller.run();
         core0_fetch_store_multiplexer.run();
         fetcher.run();    
         decoder.run();    

@@ -59,7 +59,7 @@ namespace ecc
 
 		while (1)
 		{
-			$display("have outstanding jmp: ", have_outstanding_jmp);
+			$display("[FETCH] have outstanding jmp: ", have_outstanding_jmp);
 
 			if (have_outstanding_jmp)
 			{

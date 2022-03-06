@@ -67,7 +67,7 @@ namespace ecc
 				const FetchToDecodeBusPacket pkt = fetch_bus.recv();
 				CONTEXT_SWITCH();
 
-				$display("DECODE exec: ", pkt.PC, getOpcode(pkt.insn));
+				$display("[DECODE] exec: ", pkt.PC, getOpcode(pkt.insn));
 
 				switch (getOpcode(pkt.insn))
 				{

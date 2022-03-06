@@ -39,9 +39,10 @@ module VectorMemoryController(VecMemoryBus toCPU, MemoryBus toMemory);
 				end
 				else
 				begin
-					state <= 242; // GOTO
+					state <= 243; // GOTO
 					return;
 				end
+				$display("[VEC-CTRL] going to request read memory");
 				pkt.packet_type <= VEC_BUS_PKT_TYPE_read_response_vec64;
 				i <= 0;
 				state <= 232; // GOTO
@@ -70,6 +71,7 @@ module VectorMemoryController(VecMemoryBus toCPU, MemoryBus toMemory);
 			end
 		235:
 			begin
+				$display("[VEC-CTRL] going to request read memory: target idle, req addr ", pkt.address.data[i]);
 				toMemory.send_read_request_data(pkt.address.data[i], pkt.source);
 				state <= 237; // GOTO
 				return;
@@ -90,7 +92,7 @@ module VectorMemoryController(VecMemoryBus toCPU, MemoryBus toMemory);
 			begin
 				assert((mem_pkt.source.core_id == pkt.source.core_id));
 				assert((mem_pkt.source.within_core_id == pkt.source.within_core_id));
-				$display("read value ", mem_pkt.payload, " for address ", pkt.address.data[i]);
+				$display("[VEC-CTRL] read value ", mem_pkt.payload, " for address ", pkt.address.data[i]);
 				pkt.payload.data[i] <= mem_pkt.payload;
 				state <= 238; // GOTO
 				return;
@@ -109,6 +111,12 @@ module VectorMemoryController(VecMemoryBus toCPU, MemoryBus toMemory);
 		238:
 			begin
 				i <= (i + 1);
+				// CONTEXT_SWITCH();
+				state <= 242; // GOTO
+				return;
+			end
+		242:
+			begin
 				if ((i < NUMBER_OF_VECTOR_THREADS_INT64))
 				begin
 					state <= 232; // GOTO
@@ -123,48 +131,55 @@ module VectorMemoryController(VecMemoryBus toCPU, MemoryBus toMemory);
 				state <= 231; // GOTO
 				return;
 			end
-		242:
+		243:
 			begin
 				assert((pkt.packet_type == VEC_BUS_PKT_TYPE_write_vec64));
 				i <= 0;
-				state <= 243; // GOTO
+				state <= 244; // GOTO
 				return;
 			end
-		243:
+		244:
 			begin
-				state <= 245; // GOTO
-				return;
-			end
-		245:
-			begin
-				// CONTEXT_SWITCH();
-				state <= 247; // GOTO
-				return;
-			end
-		247:
-			begin
-				if (toMemory.request_busy)
-				begin
-					state <= 245; // GOTO
-					return;
-				end
+				$display("[VEC-CTRL] store waiting for target bus idle");
 				state <= 246; // GOTO
 				return;
 			end
 		246:
 			begin
-				$display("store vec value ", get(pkt.payload, i), " for address ", pkt.address.data[i]);
-				toMemory.send_write_request_data(pkt.address.data[i], pkt.source, get(pkt.payload, i));
-				i <= (i + 1);
-				if ((i < NUMBER_OF_VECTOR_THREADS_INT64))
-				begin
-					state <= 243; // GOTO
-					return;
-				end
-				state <= 244; // GOTO
+				// CONTEXT_SWITCH();
+				state <= 248; // GOTO
 				return;
 			end
-		244:
+		248:
+			begin
+				if (toMemory.request_busy)
+				begin
+					state <= 246; // GOTO
+					return;
+				end
+				state <= 247; // GOTO
+				return;
+			end
+		247:
+			begin
+				$display("[VEC-CTRL] store vec value ", get(pkt.payload, i), " for address ", pkt.address.data[i]);
+				toMemory.send_write_request_data(pkt.address.data[i], pkt.source, get(pkt.payload, i));
+				i <= (i + 1);
+				// CONTEXT_SWITCH();
+				state <= 249; // GOTO
+				return;
+			end
+		249:
+			begin
+				if ((i < NUMBER_OF_VECTOR_THREADS_INT64))
+				begin
+					state <= 244; // GOTO
+					return;
+				end
+				state <= 245; // GOTO
+				return;
+			end
+		245:
 			begin
 				state <= 231; // GOTO
 				return;
@@ -177,10 +192,10 @@ module VectorMemoryController(VecMemoryBus toCPU, MemoryBus toMemory);
 		229:
 			begin
 				// CONTEXT_SWITCH();
-				state <= 248; // GOTO
+				state <= 250; // GOTO
 				return;
 			end
-		248:
+		250:
 			begin
 				state <= 227; // GOTO
 				return;

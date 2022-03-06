@@ -171,11 +171,8 @@ endfunction
 
 function BusID createBusID(input CoreID core_id, input CoreComponentID within_id);
 begin
-	BusID ret;
 begin
-	ret.core_id <= core_id;
-	ret.within_core_id <= within_id;
-	return ret;
+	return {core_id, within_id};
 end
 end
 endfunction

@@ -80,7 +80,7 @@ module FetchStage(FetchToDecodeBus decode_bus, StoreToFetchBus store_bus, Memory
 			end
 		2:
 			begin
-				$display("have outstanding jmp: ", have_outstanding_jmp);
+				$display("[FETCH] have outstanding jmp: ", have_outstanding_jmp);
 				if (!(have_outstanding_jmp))
 				begin
 					state <= 4; // GOTO
