@@ -16,9 +16,17 @@ typedef bit bool;
 typedef reg[20:0] phys_memory_address_t;
 
 
-`define PACK8(a0, a1, a2, a3, a4, a5, a6, a7) {>> {  a3, a2, a1, a0, a7, a6, a5, a4}}
+`define PACK8_BYTES(a0, a1, a2, a3, a4, a5, a6, a7) {>> {  a3, a2, a1, a0, a7, a6, a5, a4}}
 
-`define SET_BIT(ret, ix, value)   ret[ix] <= value
+`define PACK8_BITS(a0, a1, a2, a3, a4, a5, a6, a7) ( \
+    ((uint64_t'(a0)) << 0) | \
+	((uint64_t'(a1)) << 1) | \
+	((uint64_t'(a2)) << 2) | \
+	((uint64_t'(a3)) << 3) | \
+	((uint64_t'(a4)) << 4) | \
+	((uint64_t'(a5)) << 5) | \
+	((uint64_t'(a6)) << 6) | \
+	((uint64_t'(a7)) << 7))
 
 `define PACK2(a0, a1) { a0, a1 }
 

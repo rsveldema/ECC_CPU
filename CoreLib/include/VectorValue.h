@@ -133,7 +133,6 @@ namespace ecc
 
 	static bool are_all_adjacent_memory_addresses(const VectorValue &v, int64_t elt_size)
 	{
-		int64_t first = v.data[0];
 		for (uint32_t i = 1; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
 		{
 			if (v.data[i] != (v.data[i - 1] + elt_size))
@@ -151,12 +150,15 @@ namespace ecc
 
 	static uint64_t reduce_to_uint64_t(const VectorValue &v)
 	{
-		uint64_t ret;
-		for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
-		{
-			SET_BIT(ret, i, (v.data[i] != 0));
-		}
-		return ret;
+		return PACK8_BITS(  
+				(v.data[0] != 0), 
+				(v.data[1] != 0), 
+				(v.data[2] != 0), 
+				(v.data[3] != 0), 
+				(v.data[4] != 0), 
+				(v.data[5] != 0), 
+				(v.data[6] != 0), 
+				(v.data[7] != 0));
 	}
 
 	static VectorValue create_vec_incrementing_values()

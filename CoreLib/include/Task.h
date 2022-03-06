@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <coroutine>
 #include <iostream>
 #include <cassert>
@@ -25,9 +24,17 @@ namespace ecc
 
 
 
-#define SET_BIT(ret, bitnum, value)    ret |= ((value) << bitnum)
+#define PACK8_BITS(a0, a1, a2, a3, a4, a5, a6, a7)    ( \
+	((uint64_t)a0) << 0 | \
+	((uint64_t)a1) << 1 | \
+	((uint64_t)a2) << 2 | \
+	((uint64_t)a3) << 3 | \
+	((uint64_t)a4) << 4 | \
+	((uint64_t)a5) << 5 | \
+	((uint64_t)a6) << 6 | \
+	((uint64_t)a7) << 7)
 
-#define PACK8(a0, a1, a2, a3, a4, a5, a6, a7)    ( \
+#define PACK8_BYTES(a0, a1, a2, a3, a4, a5, a6, a7)    ( \
 	((uint64_t)a0) << 0 |  \
 	((uint64_t)a1) << 8 |  \
 	((uint64_t)a2) << 16 | \

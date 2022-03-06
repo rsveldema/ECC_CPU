@@ -95,9 +95,7 @@ endfunction
 
 function bool are_all_adjacent_memory_addresses(input VectorValue v, input int64_t elt_size);
 begin
-	int64_t first;
 begin
-	first <= v.data[0];
 	for (uint32_t i = 1; (i < NUMBER_OF_VECTOR_THREADS_INT64); i=(i + 1))
 		begin
 			if ((v.data[i] != (v.data[(i - 1)] + elt_size)))
@@ -122,13 +120,8 @@ endfunction
 
 function uint64_t reduce_to_uint64_t(input VectorValue v);
 begin
-	uint64_t ret;
 begin
-	for (uint32_t i = 0; (i < NUMBER_OF_VECTOR_THREADS_INT64); i=(i + 1))
-		begin
-			`SET_BIT(ret, i, (v.data[i] != 0));
-		end
-	return ret;
+	return `PACK8_BITS((v.data[0] != 0), (v.data[1] != 0), (v.data[2] != 0), (v.data[3] != 0), (v.data[4] != 0), (v.data[5] != 0), (v.data[6] != 0), (v.data[7] != 0));
 end
 end
 endfunction
