@@ -21,7 +21,7 @@ add_library (CoreLib  "include/CoreLib.h"
          "include/CoreCluster.h" "include/CoreClusterGrid.h" 
          "include/SimComponentRegistry.h" "include/Logger.h" 
          "include/GlobalStats.h" "include/MachineConfig.h" 
-         "include/units.h" 
+         "include/units.h" "CoreSelectionMemoryMultiplexer.cpp"
           "include/VectorValue.h" 
           "include/DivergenceQueue.h" 
           "L2InsnCache.cpp" "include/MemoryBus.h" "include/L2DataCache.h" "include/L2InsnCache.h" "include/L1InsnCache.h" "include/VectorMemoryController.h" "L1DataCache.cpp" "L2DataCache.cpp" "L3Cache.cpp" "VectorMemoryController.cpp")

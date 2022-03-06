@@ -39,9 +39,9 @@ namespace ecc
 			sram_multiplexer_bus.init();
 
 
-			main_memory_data_access_multiplexer.addInput(&core0.getExternalDataBus());
+			main_memory_data_access_multiplexer.addInput(0, &core0.getExternalDataBus());
 
-			main_memory_insn_access_multiplexer.addInput(&core0.getExternalInsnBus());			
+			main_memory_insn_access_multiplexer.addInput(0, &core0.getExternalInsnBus());			
 		}
 
 		bool hasHalted() const

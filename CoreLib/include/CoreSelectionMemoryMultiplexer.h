@@ -19,72 +19,31 @@ namespace ecc
 		static constexpr uint32_t NUM_CORES = 1;
 
 	private:
-		MemoryBus& out;
+		MemoryBus& _out;
 
 		/** @brief N inputs
 		*/
-		std::vector<MemoryBus*> inputs;
+		std::array<MemoryBus*, NUM_CORES> _inputs;
 
 
 	public:		
 	
-		void addInput(MemoryBus* input)
+		void addInput(unsigned ix, MemoryBus* input)
 		{
-			inputs.push_back(input);
+			_inputs[ix] = input;
 		}
 
 		CoreSelectionMemoryMultiplexer(SimComponentRegistry& registry, MemoryBus& _out)
 			: SimComponent(registry, "multiplexer"),
-			out(_out)
+			_out(_out)
 		{
 		}
 
-
-		ReturnObject run()
-		{
-			while (1)
-			{
-				for (uint32_t ix = 0; ix < NUM_CORES; ix++)
-				{
-					if (inputs[ix]->request_busy)
-					{
-						BusPacket pkt = inputs[ix]->accept_request();
-
-						CONTEXT_SWITCH();
-
-						while (out.request_busy)
-						{
-							CONTEXT_SWITCH();
-						}
-						out.send_request(pkt);
-					}
-					// sending one packet will cost us a cycle (as will testing if an input has a pkt for us to send.
-					CONTEXT_SWITCH();
-				}
-
-				// we should be able to forward the incoming packet to the source
-				// in one step, hence no co_await here.
-				if (out.response_busy)
-				{
-					BusPacket pkt = out.get_response();
-
-					CONTEXT_SWITCH();
-				
-					bool sent = false;
-					for (uint32_t ix = 0; ix < NUM_CORES; ix++)
-					{
-						if (pkt.source.core_id == ix)
-						{
-							sent = true;
-							inputs[ix]->send_response(pkt);
-						}
-					}
-					assert(sent);
-				}
-
-				CONTEXT_SWITCH();
-			}
+		ReturnObject run() override {
+			return run(_out, _inputs);
 		}
+
+		ReturnObject run(MemoryBus& out, std::array<MemoryBus*, NUM_CORES>& inputs);
 	};
 
 }
