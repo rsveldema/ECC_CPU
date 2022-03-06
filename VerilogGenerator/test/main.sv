@@ -22,6 +22,7 @@ typedef reg[20:0] phys_memory_address_t;
 
 `define PACK2(a0, a1) { a0, a1 }
 
+`define COUNT_BITS64(x)   (uint32_t'($countones(x)))
 
 `include "Defines.sv"
 

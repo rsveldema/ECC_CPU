@@ -2,6 +2,9 @@
 
 #include <array>
 
+#include "builtin_verilog_ops.h"
+
+
 #define INTERFACE struct
 #define METHOD_SECTION
 
@@ -205,12 +208,7 @@ namespace ecc
 	static inline
 	uint32_t count_num_bits64(const execution_mask_t& value)
 	{
-		uint32_t c = 0;
-		for (uint32_t i = 0; i < NUMBER_OF_VECTOR_THREADS_INT64; i++)
-		{
-			c += static_cast<uint32_t>((value & (1 << i)) != 0);
-		}
-		return c;
+		return COUNT_BITS64(value);
 	}
 }
 

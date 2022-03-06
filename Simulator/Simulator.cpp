@@ -19,7 +19,7 @@ void read_code_memory_dump(CoreClusterGrid& machine, const std::string& filename
 	{
 		std::cerr << "expected a .bin file" << std::endl;
 		Usage();
-		return;
+		exit(1);
 	}
 
 	std::fstream f;
@@ -27,7 +27,7 @@ void read_code_memory_dump(CoreClusterGrid& machine, const std::string& filename
 	if (!f.is_open())
 	{
 		std::cerr << "failed to open " << filename << std::endl;
-		return;
+		exit(1);
 	}
 
 	uint64_t address = ecc::CODE_SEGMENT_START;

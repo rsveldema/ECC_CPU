@@ -51,7 +51,7 @@ namespace ecc
             CONTEXT_SWITCH(); \
         } \
 	}
-			
+
 	/** C++ coroutines require the return type to hold a nested promise_type.
 	*/
 	struct ReturnObject {

@@ -183,14 +183,8 @@ endfunction
 
 function uint32_t count_num_bits64(input execution_mask_t value);
 begin
-	uint32_t c;
 begin
-	c <= 0;
-	for (uint32_t i = 0; (i < NUMBER_OF_VECTOR_THREADS_INT64); i=(i + 1))
-		begin
-			c <= c + (uint32_t'(((value & (1 << i)) != 0)));
-		end
-	return c;
+	return `COUNT_BITS64(value);
 end
 end
 endfunction

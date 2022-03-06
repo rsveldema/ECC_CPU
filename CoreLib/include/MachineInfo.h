@@ -36,7 +36,7 @@ namespace ecc
 		{
 			if (it.second == r)
 			{
-				return it.first;
+				return std::to_string(static_cast<int>(r)) + "/"  + it.first;
 			}
 		}
 		return "unknown_register?";
@@ -48,7 +48,7 @@ namespace ecc
 		{
 			if (it.second.opcode == op)
 			{
-				return it.first;
+				return std::to_string(static_cast<int>(op)) + "/"  + it.first;
 			}
 		}
 		return "unknown insn";
@@ -61,7 +61,7 @@ namespace ecc
 		{
 			if (it.second.opcode == op)
 			{
-				return it.first;
+				return std::to_string(static_cast<int>(op)) + "/"  + it.first;
 			}
 		}
 		return "unknown exec insn";
@@ -69,17 +69,20 @@ namespace ecc
 
 	static std::string to_string(const StorageStageOpcode& op)
 	{
+		std::string ret;
 		switch (op)
 		{
-		case StorageStageOpcode::STORAGE_NOP: return "nop";
-		case StorageStageOpcode::STORAGE_STORE_VALUE_INTO_REG: return "value_to_reg";
-		case StorageStageOpcode::STORAGE_STORE_REG_INTO_MEM: return "store_mem";
-		case StorageStageOpcode::STORAGE_CJMP: return "cjmp";
-		case StorageStageOpcode::STORAGE_HALT: return "halt";
-		case StorageStageOpcode::STORAGE_JMP: return "jmp";
-		case StorageStageOpcode::STORAGE_LOAD_MEM_INTO_REG: return "load_reg";
+		case StorageStageOpcode::STORAGE_NOP: ret = "nop"; break;
+		case StorageStageOpcode::STORAGE_STORE_VALUE_INTO_REG: ret =  "value_to_reg"; break;
+		case StorageStageOpcode::STORAGE_STORE_REG_INTO_MEM: ret = "store_mem"; break;
+		case StorageStageOpcode::STORAGE_CJMP: ret =  "cjmp"; break;
+		case StorageStageOpcode::STORAGE_HALT: ret =  "halt"; break;
+		case StorageStageOpcode::STORAGE_JMP: ret =  "jmp"; break;
+		case StorageStageOpcode::STORAGE_LOAD_MEM_INTO_REG: ret =  "load_reg"; break;
+		default: ret = "unknown"; break;
 		}
-		return "unknown store type";
+		auto prefix = std::to_string(static_cast<int>(op)) + "/";
+		return prefix + ret;
 	}
 
 	static std::string to_string(const ecc::CoreID& core_id)
