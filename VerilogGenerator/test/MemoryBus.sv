@@ -41,12 +41,12 @@ interface MemoryBus;
 	endfunction
 	
 	
-	function void send_read_response(input bus_packet_payload_t value, input BusID source);
+	function void send_read_response(input bus_packet_payload_t value, input BusID source, input memory_address_t address);
 	begin
 	begin
 		response_data.packet_type <= bus_read_response;
 		response_data.source <= source;
-		response_data.address <= 0;
+		response_data.address <= address;
 		response_data.payload <= value;
 		response_busy <= 1;
 	end

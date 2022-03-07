@@ -70,6 +70,7 @@ namespace ecc
 		void setHasHalted()
 		{
 			data.machine_flags |= MACHINE_FLAGS_MASK_HALT;
+			$finish();
 		}
 
 

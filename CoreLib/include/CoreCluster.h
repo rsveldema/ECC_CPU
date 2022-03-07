@@ -1,6 +1,5 @@
 #pragma once
 
-#include "MachineConfig.h"
 #include "MemoryBus.h"
 #include "Core.h"
 #include "CoreSelectionMemoryMultiplexer.h"
@@ -17,11 +16,6 @@ namespace ecc
 		CoreSelectionMemoryMultiplexer main_memory_insn_access_multiplexer;
 		MemoryBus sram_multiplexer_bus;
 
-		void dump_stats()
-		{
-			dump(core0.stats);
-		}
-
 		void init()
 		{
 			core0.init();
@@ -30,8 +24,7 @@ namespace ecc
 
 		CoreCluster(SimComponentRegistry& registry, 
 					MemoryBus& _data_memory_bus, 
-					MemoryBus& _insn_memory_bus, 
-					const MachineConfig& config)
+					MemoryBus& _insn_memory_bus)
 			: core0(registry),
 			  main_memory_data_access_multiplexer(registry, _data_memory_bus),
 			  main_memory_insn_access_multiplexer(registry, _insn_memory_bus)

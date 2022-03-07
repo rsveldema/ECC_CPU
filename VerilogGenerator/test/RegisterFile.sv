@@ -84,6 +84,7 @@ interface RegisterFile;
 	begin
 	begin
 		data.machine_flags <= data.machine_flags | MACHINE_FLAGS_MASK_HALT;
+		$finish();
 	end
 	end
 	endfunction

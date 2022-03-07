@@ -140,7 +140,8 @@ logical_not_expr: "!" term
 hex_number_expr: HEX_NUMBER
 
 access_expr: access ("(" args ")")?
-array_access: access  "[" expr "]"
+
+array_access: access  "[" expr "]"  ("." IDENT)* ("->" IDENT)?
 
 static_cast: "static_cast" "<" type ">" "(" expr ")"
 

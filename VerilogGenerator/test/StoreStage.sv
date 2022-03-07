@@ -76,6 +76,7 @@ module StoreStage(ExecuteToStoreBus execute_bus, VecMemoryBus memory_bus, Regist
 			end
 		143:
 			begin
+				stats.dump();
 				regs.setHasHalted();
 				state <= 139; // GOTO
 				return;

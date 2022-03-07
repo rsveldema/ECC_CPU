@@ -94,4 +94,8 @@ namespace ecc
 	{
 		return str;
 	}
+
+	static
+	void $finish()
+	{}
 }

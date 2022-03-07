@@ -141,7 +141,10 @@ class MyTransformer(Transformer):
         return base
 
     def array_access(self, tree):
-        return BinaryExpr("[]", tree[0], tree[1])
+        b = BinaryExpr("[]", tree[0], tree[1])
+        if len(tree) > 2:
+            b = DotAccessExpr(b, tree[2:])
+        return b;
 
     def string(self, tree):
         t = tree[0] + ""

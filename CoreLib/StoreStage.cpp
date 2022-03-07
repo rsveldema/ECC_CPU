@@ -130,7 +130,8 @@ namespace ecc
 
 					if (divergence_queue.is_empty())
 					{
-						regs.setHasHalted();
+						stats.dump();
+						regs.setHasHalted();						
 					}
 					else
 					{

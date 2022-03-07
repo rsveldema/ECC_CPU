@@ -104,7 +104,7 @@ void write_config(const std::string& filename)
 int main(int argc, char** argv)
 {
 	printf("booted!\n");
-	if (argc != 3)
+	if (argc != 2)
 	{
 		Usage();
 		return -1;
@@ -114,18 +114,12 @@ int main(int argc, char** argv)
 
 	std::string filename(argv[1]);
 
-	unsigned num_cores = std::stoi(argv[2]);
-
 	std::cerr << "starting simulation: " << filename << std::endl;
 
 	GlobalStats globalStats;
 
-	MachineConfig config{
-		.num_cores = num_cores
-	};
-
 	SimComponentRegistry registry;
-	CoreClusterGrid machine(registry, config);
+	CoreClusterGrid machine(registry);
 	machine.init();
 
 	read_code_memory_dump(machine, filename);
@@ -134,7 +128,6 @@ int main(int argc, char** argv)
 	registry.run(machine);
 
 	std::cerr << "finished simulation" << std::endl;
-	machine.dump_stats();
 
 	return 0;
 }

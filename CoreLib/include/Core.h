@@ -33,11 +33,11 @@ namespace ecc
 		StoreStage<core_id>  store;
 
 		// data cache
-		L1DataCache L1d;
+		L1DataCache<core_id> L1d;
 		MemoryBus core_L1d;
 
 		// instruction cache
-		L1InsnCache L1i;
+		L1InsnCache<core_id> L1i;
 		MemoryBus core_L1i;
 
 
@@ -79,7 +79,7 @@ namespace ecc
 			store(registry, execute_store_bus, store_to_vec_controller_bus, 
 					regs, store_fetch_bus, divergence_queue, stats),
 			L1d(registry, "L1d", core_L1d, L1d_to_l2d),
-			L1i(registry, "L1i", core_L1i, L1i_to_L2i),
+			L1i(registry, "L1i", core_L1i, L1i_to_L2i, stats),
 			vecMemController(registry, "vec_mem_controller", store_to_vec_controller_bus, core_L1d)
 		{
 		}

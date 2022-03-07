@@ -3,9 +3,25 @@
 
 namespace ecc
 {
-	ecc::ReturnObject L1DataCache::run()
+	struct L1DataCacheLine {
+		memory_address_t address;
+		VectorValue payload;
+	};
+
+	static constexpr uint32_t NUM_CACHE_LINES_L1_DATA_CACHE = 128;
+
+
+	METHOD_SECTION;
+
+	uint32_t get_l1_data_cache_index(memory_address_t address)
 	{
-		running = true;
+		assert((address & (8-1)) == 0);
+		return (static_cast<uint32_t>(address) >> 3) & (NUM_CACHE_LINES_L1_DATA_CACHE - 1);
+	}
+
+	template <CoreID core_id>
+	ReturnObject L1DataCache<core_id>::run()
+	{
 		while (1)
 		{
 			if (! toMemory.request_busy)
@@ -28,6 +44,5 @@ namespace ecc
 
 			CONTEXT_SWITCH();
 		}
-		running = false;
 	}
 }

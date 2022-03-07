@@ -62,13 +62,13 @@ namespace ecc
 			request_busy = true;
 		}
 
-		void send_read_response(const bus_packet_payload_t &value, const BusID &source)
+		void send_read_response(const bus_packet_payload_t &value, const BusID &source, memory_address_t address)
 		{
 			//	std::cerr << "READ RESP: " << value << "\n";			
 
 			response_data.packet_type = bus_read_response;
 			response_data.source = source;
-			response_data.address = 0;
+			response_data.address = address;
 			response_data.payload = value;
 
 			response_busy = true;
