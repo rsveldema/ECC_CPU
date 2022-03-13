@@ -18,8 +18,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/Simulator/Simulator",
             "args": [
-                "${workspaceFolder}/Assembler/tests/t1.bin",
-                "1"
+                "${workspaceFolder}/Assembler/tests/t1.bin"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/Simulator",
